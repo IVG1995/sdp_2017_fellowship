@@ -1,0 +1,107 @@
+package vision.gui;
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
+
+import vision.colorAnalysis.SDPColor;
+import vision.distortion.Distortion;
+import vision.robotAnalysis.RobotColorSettings;
+import vision.settings.SaveLoadCapable;
+import vision.settings.SettingsManager;
+/**
+ * Created by Simon Rovder
+ */
+public class MiscelaneousSettings extends JPanel implements ActionListener, SaveLoadCapable{
+
+	
+	public static final MiscelaneousSettings miscSettings = new MiscelaneousSettings();
+	
+	private JButton saveSettings;
+	private JButton loadSettings;
+	private JCheckBox flipPitch;
+	private JCheckBox friendsAreYellow;
+	private JCheckBox friendOneIsGreen;
+	private JCheckBox foeOneIsGreen;
+	
+	private MiscelaneousSettings(){
+		super();
+		this.setLayout(null);
+		
+		this.saveSettings = new JButton("Save Settings");
+		this.saveSettings.setBounds(10, 30, 150, 30);
+		this.add(this.saveSettings);
+		this.saveSettings.addActionListener(this);
+		
+		this.loadSettings = new JButton("Load Settings");
+		this.loadSettings.setBounds(10, 70, 150, 30);
+		this.add(this.loadSettings);
+		this.loadSettings.addActionListener(this);
+
+		this.flipPitch = new JCheckBox("Flip Pitch");
+		this.flipPitch.setBounds(10, 110, 300, 30);
+		this.flipPitch.addActionListener(this);
+		this.add(this.flipPitch);
+
+		this.friendsAreYellow = new JCheckBox("Friends are Yellow");
+		this.friendsAreYellow.setBounds(10, 140, 300, 30);
+		this.friendsAreYellow.addActionListener(this);
+		this.add(this.friendsAreYellow);
+
+		this.friendOneIsGreen = new JCheckBox("Friend One is Green");
+		this.friendOneIsGreen.setBounds(10, 170, 300, 30);
+		this.friendOneIsGreen.addActionListener(this);
+		this.add(this.friendOneIsGreen);
+
+		this.foeOneIsGreen = new JCheckBox("Foe One is Green");
+		this.foeOneIsGreen.setBounds(10, 200, 300, 30);
+		this.foeOneIsGreen.addActionListener(this);
+		this.add(this.foeOneIsGreen);
+	}
+
+	private void checkBoxesToValues(){
+		Distortion.ROTATE_PITCH = this.flipPitch.isSelected();
+		RobotColorSettings.FRIEND_COLOR = this.friendsAreYellow.isSelected() ? SDPColor.YELLOW : SDPColor.BLUE;
+		RobotColorSettings.FOE_COLOR = this.friendsAreYellow.isSelected() ? SDPColor.BLUE : SDPColor.YELLOW;
+		RobotColorSettings.FRIEND_1_IS_GREEN = this.friendOneIsGreen.isSelected();
+		RobotColorSettings.FOE_1_IS_GREEN = this.foeOneIsGreen.isSelected();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == this.saveSettings){
+			try {
+				SettingsManager.saveSettings();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				SDPConsole.message("Cannot save settings.", this);
+			}
+		} else if(e.getSource() == this.loadSettings){
+			try {
+				SettingsManager.loadSettings();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				SDPConsole.message("Cannot load settings.", this);
+			}
+		}
+
+		this.checkBoxesToValues();
+	}
+
+	@Override
+	public String saveSettings() {
+		return this.flipPitch.isSelected() + ";" + this.friendsAreYellow.isSelected() + ";" + this.friendOneIsGreen.isSelected() + ";" + this.foeOneIsGreen.isSelected();
+	}
+
+	@Override
+	public void loadSettings(String settings) {
+		String[] set = settings.split(";");
+		this.flipPitch.setSelected(Boolean.parseBoolean(set[0]));
+		this.friendsAreYellow.setSelected(Boolean.parseBoolean(set[1]));
+		this.friendOneIsGreen.setSelected(Boolean.parseBoolean(set[2]));
+		this.foeOneIsGreen.setSelected(Boolean.parseBoolean(set[3]));
+		this.checkBoxesToValues();
+	}
+}
