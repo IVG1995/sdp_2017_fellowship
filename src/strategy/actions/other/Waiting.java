@@ -18,7 +18,6 @@ public class Waiting extends ActionBase {
         if(newState == 0){
             this.robot.MOTION_CONTROLLER.clearObstacles();
             this.robot.MOTION_CONTROLLER.setHeading(null);
-            this.robot.MOTION_CONTROLLER.clearObstacles();
         }
         this.state = newState;
     }

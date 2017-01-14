@@ -5,9 +5,7 @@ import strategy.actions.other.*;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
 import communication.ports.robotPorts.FredRobotPort;
-import strategy.points.basicPoints.ConstantPoint;
-import strategy.points.basicPoints.EnemyGoal;
-import strategy.points.basicPoints.MidFoePoint;
+import strategy.points.basicPoints.*;
 import strategy.robots.Fred;
 import communication.PortListener;
 import strategy.robots.RobotBase;
@@ -99,8 +97,19 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                 break;
             }
             switch(this.action){
+                case "a":
+                    fred.setControllersActive(true);
+                    break;
                 case "stop":
                     fred.ACTION_CONTROLLER.setAction(new Stop(fred));
+                    break;
+                case "!":
+                    System.out.print("Action: ");
+                    System.out.print(fred.ACTION_CONTROLLER.isActive());
+                    System.out.print(" Motion: ");
+                    System.out.print(fred.MOTION_CONTROLLER.isActive());
+                    System.out.print(" Propeller: ");
+                    System.out.println(fred.PROPELLER_CONTROLLER.isActive());
                     break;
                 case "?":
                     fred.ACTION_CONTROLLER.printDescription();
@@ -127,6 +136,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     fred.ACTION_CONTROLLER.setAction(new Goto(fred, new ConstantPoint(0,0)));
                     break;
                 case "remote":
+                    System.out.println(fred.ACTION_CONTROLLER.isActive());
                     fred.ACTION_CONTROLLER.setAction(new RemoteControl(fred));
                     break;
                 case "behave":
@@ -142,11 +152,29 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                 case "shunt":
                     fred.ACTION_CONTROLLER.setAction(new ShuntKick(fred));
                     break;
+                case "demo":
+                    fred.ACTION_CONTROLLER.setAction(new Demo(fred));
+                    break;
                 case "def":
                     fred.ACTION_CONTROLLER.setAction(new DefendGoal(fred));
                     break;
+                case "rot":
+                    fred.PROPELLER_CONTROLLER.setActive(false);
+                    ((FredRobotPort) fred.port).propeller(0);
+                    ((FredRobotPort) fred.port).propeller(0);
+                    ((FredRobotPort) fred.port).propeller(0);
+                    fred.ACTION_CONTROLLER.setActive(false);
+                    fred.MOTION_CONTROLLER.setDestination(new Rotate());
+                    fred.MOTION_CONTROLLER.setHeading(new BallPoint());
+                    break;
                 case "p":
-                    System.out.println(fred.MOTION_CONTROLLER.mode);
+                    boolean act = fred.PROPELLER_CONTROLLER.isActive();
+                    fred.PROPELLER_CONTROLLER.setActive(!act);
+                    if(!act){
+                        ((FredRobotPort) fred.port).propeller(0);
+                        ((FredRobotPort) fred.port).propeller(0);
+                        ((FredRobotPort) fred.port).propeller(0);
+                    }
                     System.out.println(fred.PROPELLER_CONTROLLER.isActive());
                     break;
                 case "test":

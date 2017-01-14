@@ -11,21 +11,19 @@ import vision.tools.VectorGeometry;
  */
 public class Rotate extends DynamicPointBase {
 
-    private boolean clockwise;
-
-    public Rotate(boolean clockwise){
-        this.clockwise = clockwise;
+    public Rotate(){
+        super();
     }
 
     @Override
     public void recalculate() {
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
         if(us != null){
-            VectorGeometry heading = VectorGeometry.fromAngular(us.location.direction, 10, null);
-            heading.rotate(this.clockwise ? -1 : 1);
-            heading.plus(us.location);
-            this.x = (int)heading.x;
-            this.y = (int)heading.y;
+            VectorGeometry location = us.location.clone();
+            location.setLength(50);
+            location.rotate(0.3);
+            this.x = (int)location.x;
+            this.y = (int)location.y;
         }
     }
 

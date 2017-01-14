@@ -9,7 +9,6 @@ import strategy.robots.RobotBase;
 public class Stop extends ActionBase {
     public Stop(RobotBase robot) {
         super(robot);
-        this.continueOnExit = false;
         this.rawDescription = "STOP";
     }
 

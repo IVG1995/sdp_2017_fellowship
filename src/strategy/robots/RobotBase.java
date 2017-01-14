@@ -58,4 +58,11 @@ public abstract class RobotBase implements RobotInterface{
             if(controller.isActive()) controller.perform();
         }
     }
+
+    @Override
+    public void setControllersActive(boolean active){
+        for (ControllerInterface c : this.controllers){
+            c.setActive(active);
+        }
+    }
 }

@@ -22,25 +22,23 @@ enum BehaviourEnum{
     DEFEND, SHUNT, KICK, SAFE, EMPTY
 }
 
+/**
+ * The main Action class. It basically plays the game.
+ */
 public class Behave extends StatefulActionBase<BehaviourEnum> {
 
-    private BehaviourEnum lastState = null;
 
     public static boolean RESET = true;
 
-    private final RobotBase robot;
 
     public Behave(RobotBase robot){
         super(robot, null);
-        this.robot = robot;
     }
 
     @Override
     public void enterState(int newState) {
         if(newState == 0){
-            if(this.robot instanceof Fred){
-                ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(true);
-            }
+            this.robot.setControllersActive(true);
         }
         this.state = newState;
     }
@@ -49,27 +47,23 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
     @Override
     public void tok() throws ActionException {
 
-        if((this.lastState != this.nextState || RESET) && this.nextState != null){
-            RESET = false;
-            this.robot.MOTION_CONTROLLER.clearObstacles();
-            if(this.robot instanceof Fred) ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(true);
-            this.lastState = this.nextState;
-            switch (this.nextState){
-                case DEFEND:
-                    this.enterAction(new DefendGoal(this.robot), 0, 0);
-                    break;
-                case KICK:
-                    this.enterAction(new OffensiveKick(this.robot), 0, 0);
-                    break;
-                case SHUNT:
-                    this.enterAction(new ShuntKick(this.robot), 0, 0);
-                    break;
-                case SAFE:
-                    this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
-                    break;
-            }
+        this.robot.MOTION_CONTROLLER.clearObstacles();
+        if(this.robot instanceof Fred) ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(true);
+        this.lastState = this.nextState;
+        switch (this.nextState){
+            case DEFEND:
+                this.enterAction(new DefendGoal(this.robot), 0, 0);
+                break;
+            case KICK:
+                this.enterAction(new OffensiveKick(this.robot), 0, 0);
+                break;
+            case SHUNT:
+                this.enterAction(new ShuntKick(this.robot), 0, 0);
+                break;
+            case SAFE:
+                this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
+                break;
         }
-        if(this.action != null) this.action.tik();
     }
 
     @Override

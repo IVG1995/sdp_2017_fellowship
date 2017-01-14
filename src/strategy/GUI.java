@@ -158,7 +158,7 @@ public class GUI extends JFrame implements KeyListener{
                     break;
                 case 'b':
                     Behave.RESET = true;
-                    this.robot.ACTION_CONTROLLER.setAction(new Behave(null));
+                    this.robot.ACTION_CONTROLLER.setAction(new Behave(this.robot));
                     break;
                 case '1':
                     this.robot.ACTION_CONTROLLER.setAction(new Goto(this.robot, new ConstantPoint(-50,-50)));

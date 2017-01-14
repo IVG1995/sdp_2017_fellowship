@@ -19,7 +19,9 @@ import vision.settings.SettingsManager;
  */
 public class MiscellaneousSettings extends JPanel implements ActionListener, SaveLoadCapable{
 
-	
+
+	public static final HashMap<RobotType, JComboBox<RobotAlias>> aliases = new HashMap<>();
+
 	public static final MiscellaneousSettings miscSettings = new MiscellaneousSettings();
 	
 	private JButton saveSettings;
@@ -29,7 +31,6 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 	private JCheckBox friendOneIsGreen;
 	private JCheckBox foeOneIsGreen;
 
-	public static final HashMap<RobotType, JComboBox<RobotAlias>> aliases = new HashMap<>();
 	
 	private MiscellaneousSettings(){
 		super();
