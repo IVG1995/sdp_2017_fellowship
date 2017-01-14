@@ -1,13 +1,13 @@
 package strategy.actions.other;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.points.DynamicPoint;
 import strategy.robots.RobotBase;
 /**
  * Created by Simon Rovder
  */
-public class HoldPosition extends AutomaticActionBase {
+public class HoldPosition extends ActionBase {
     public HoldPosition(RobotBase robot, DynamicPoint point) {
         super(robot, point);
         this.rawDescription = " Hold Position";

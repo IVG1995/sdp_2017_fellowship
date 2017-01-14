@@ -1,7 +1,7 @@
 package strategy.actions.other;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.robots.RobotBase;
 
 /**
@@ -9,7 +9,7 @@ import strategy.robots.RobotBase;
  *
  * When the robot fails, it shall Contemplate...
  */
-public class Contemplating extends AutomaticActionBase {
+public class Contemplating extends ActionBase {
     public Contemplating(RobotBase robot) {
         super(robot);
         this.rawDescription = " Contemplating...";

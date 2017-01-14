@@ -3,9 +3,12 @@ package vision.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.*;
 
+import vision.RobotAlias;
+import vision.RobotType;
 import vision.colorAnalysis.SDPColor;
 import vision.distortion.Distortion;
 import vision.robotAnalysis.RobotColorSettings;
@@ -14,10 +17,10 @@ import vision.settings.SettingsManager;
 /**
  * Created by Simon Rovder
  */
-public class MiscelaneousSettings extends JPanel implements ActionListener, SaveLoadCapable{
+public class MiscellaneousSettings extends JPanel implements ActionListener, SaveLoadCapable{
 
 	
-	public static final MiscelaneousSettings miscSettings = new MiscelaneousSettings();
+	public static final MiscellaneousSettings miscSettings = new MiscellaneousSettings();
 	
 	private JButton saveSettings;
 	private JButton loadSettings;
@@ -25,8 +28,10 @@ public class MiscelaneousSettings extends JPanel implements ActionListener, Save
 	private JCheckBox friendsAreYellow;
 	private JCheckBox friendOneIsGreen;
 	private JCheckBox foeOneIsGreen;
+
+	public static final HashMap<RobotType, JComboBox<RobotAlias>> aliases = new HashMap<>();
 	
-	private MiscelaneousSettings(){
+	private MiscellaneousSettings(){
 		super();
 		this.setLayout(null);
 		
@@ -59,6 +64,26 @@ public class MiscelaneousSettings extends JPanel implements ActionListener, Save
 		this.foeOneIsGreen.setBounds(10, 200, 300, 30);
 		this.foeOneIsGreen.addActionListener(this);
 		this.add(this.foeOneIsGreen);
+
+		int offset = 0;
+
+		for(RobotType type : RobotType.values()){
+
+
+			JLabel label = new JLabel(type.toString());
+			label.setBounds(10,230 + offset,300,30);
+			this.add(label);
+
+			JComboBox<RobotAlias> selection = new JComboBox<>(RobotAlias.values());
+			selection.setBounds(230,230 + offset,300,30);
+			selection.setSelectedItem(RobotAlias.UNKNOWN);
+			this.add(selection);
+
+
+			offset += 30;
+
+			MiscellaneousSettings.aliases.put(type, selection);
+		}
 	}
 
 	private void checkBoxesToValues(){

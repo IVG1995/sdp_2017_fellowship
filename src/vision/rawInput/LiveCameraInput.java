@@ -133,7 +133,6 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 		cleanupCapture();
 	}
 
-	boolean pairity = true;
 
 	@Override
 	public void nextFrame(VideoFrame frame) {
@@ -144,7 +143,6 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 			return;
 		}
 		this.listener.nextFrame(image, frame.getCaptureTime());
-		pairity = !pairity;
 		frame.recycle();
 	}
 

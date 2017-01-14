@@ -1,13 +1,13 @@
 package strategy.actions.other;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.robots.RobotBase;
 
 /**
  * Created by Simon Rovder
  */
-public class Waiting extends AutomaticActionBase {
+public class Waiting extends ActionBase {
     public Waiting(RobotBase robot) {
         super(robot);
         this.rawDescription = " Waiting.";

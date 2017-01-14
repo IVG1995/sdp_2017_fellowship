@@ -9,6 +9,8 @@ public class Robot {
     public DirectedPoint location;
     public DirectedPoint velocity;
     public RobotType type;
+    public RobotAlias alias;
+
 
     public Robot(){
 

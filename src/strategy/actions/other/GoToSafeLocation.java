@@ -2,7 +2,7 @@ package strategy.actions.other;
 
 import strategy.Strategy;
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.points.basicPoints.BallPoint;
 import strategy.navigation.Obstacle;
 import strategy.points.basicPoints.ConstantPoint;
@@ -18,7 +18,7 @@ import vision.tools.VectorGeometry;
 /**
  * Created by Simon Rovder
  */
-public class GoToSafeLocation extends AutomaticActionBase {
+public class GoToSafeLocation extends ActionBase {
     public GoToSafeLocation(RobotBase robot) {
         super(robot);
         this.rawDescription = " Go To safe location";

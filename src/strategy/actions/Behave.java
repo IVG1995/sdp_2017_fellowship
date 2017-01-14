@@ -22,10 +22,9 @@ enum BehaviourEnum{
     DEFEND, SHUNT, KICK, SAFE, EMPTY
 }
 
-public class Behave extends ManualActionBase {
+public class Behave extends StatefulActionBase<BehaviourEnum> {
 
     private BehaviourEnum lastState = null;
-    private BehaviourEnum nextBehaviour = null;
 
     public static boolean RESET = true;
 
@@ -50,34 +49,34 @@ public class Behave extends ManualActionBase {
     @Override
     public void tok() throws ActionException {
 
-        if((this.lastState != this.nextBehaviour || RESET) && this.nextBehaviour != null){
+        if((this.lastState != this.nextState || RESET) && this.nextState != null){
             RESET = false;
             this.robot.MOTION_CONTROLLER.clearObstacles();
             if(this.robot instanceof Fred) ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(true);
-            this.lastState = this.nextBehaviour;
-            switch (this.nextBehaviour){
+            this.lastState = this.nextState;
+            switch (this.nextState){
                 case DEFEND:
-                    this.enterBehaviourAction(new DefendGoal(this.robot));
+                    this.enterAction(new DefendGoal(this.robot), 0, 0);
                     break;
                 case KICK:
-                    this.enterBehaviourAction(new OffensiveKick(this.robot));
+                    this.enterAction(new OffensiveKick(this.robot), 0, 0);
                     break;
                 case SHUNT:
-                    this.enterBehaviourAction(new ShuntKick(this.robot));
+                    this.enterAction(new ShuntKick(this.robot), 0, 0);
                     break;
                 case SAFE:
-                    this.enterBehaviourAction(new GoToSafeLocation(this.robot));
+                    this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
                     break;
             }
         }
-        if(this.behaviourAction != null) this.behaviourAction.tik();
+        if(this.action != null) this.action.tik();
     }
 
     @Override
-    public void tik() throws ActionException {
+    protected BehaviourEnum getState() {
         Ball ball = Strategy.world.getBall();
         if(ball == null){
-            this.nextBehaviour = BehaviourEnum.DEFEND;
+            this.nextState = BehaviourEnum.DEFEND;
         } else {
             Robot us = Strategy.world.getRobot(this.robot.robotType);
             if(us == null){
@@ -85,10 +84,10 @@ public class Behave extends ManualActionBase {
             } else {
                 VectorGeometry ourGoal = new VectorGeometry(-Constants.PITCH_WIDTH/2, 0);
                 if(us.location.distance(ourGoal) > ball.location.distance(ourGoal)){
-                    this.nextBehaviour = BehaviourEnum.SAFE;
+                    this.nextState = BehaviourEnum.SAFE;
                 } else {
                     if(Math.abs(ball.location.x) > Constants.PITCH_WIDTH/2 - 20 && Math.abs(ball.location.y) > Constants.PITCH_HEIGHT/2 - 20){
-                        this.nextBehaviour = BehaviourEnum.SHUNT;
+                        this.nextState = BehaviourEnum.SHUNT;
                     } else {
                         boolean canKick = true;
                         for(Robot r : Strategy.world.getRobots()){
@@ -96,24 +95,14 @@ public class Behave extends ManualActionBase {
                         }
                         canKick = canKick && !WorldTools.isPointInEnemyDefenceArea(ball.location);
                         if(canKick && (this.lastState != BehaviourEnum.DEFEND || VectorGeometry.angle(ball.velocity, VectorGeometry.fromTo(ball.location, new VectorGeometry(-Constants.PITCH_WIDTH/2, 0))) > 2)){
-                            this.nextBehaviour = BehaviourEnum.KICK;
+                            this.nextState = BehaviourEnum.KICK;
                         } else {
-                            this.nextBehaviour = BehaviourEnum.DEFEND;
+                            this.nextState = BehaviourEnum.DEFEND;
                         }
                     }
                 }
             }
         }
-        GUI.gui.behaviour.setText(this.lastState != null ? this.lastState.toString() : "");
-        try{
-            this.tok();
-        } catch (ActionException ex){
-            this.behaviourAction = null;
-        }
-    }
-
-    @Override
-    public void delay(long millis) {
-
+        return this.nextState;
     }
 }

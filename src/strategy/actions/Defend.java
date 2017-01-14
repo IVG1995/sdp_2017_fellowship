@@ -11,12 +11,17 @@ import strategy.robots.RobotBase;
 /**
  * Created by Simon Rovder
  */
-public class Defend extends ManualActionBase<Status.BallState> {
+public class Defend extends StatefulActionBase<Status.BallState> {
     public Defend(RobotBase robot, DynamicPoint point) {
         super(robot, point);
         this.addEquivalence(Status.BallState.THEM, Status.BallState.FREE);
         this.addEquivalence(Status.BallState.THEM, Status.BallState.FRIEND);
         this.addEquivalence(Status.BallState.THEM, Status.BallState.LOST);
+    }
+
+    @Override
+    protected Status.BallState getState() {
+        return Strategy.status.ballState;
     }
 
     @Override
@@ -26,24 +31,22 @@ public class Defend extends ManualActionBase<Status.BallState> {
 
     @Override
     public void tok() throws ActionException {
-        if(!this.behaviourTik()){
-            switch(Strategy.status.ballState){
-                case THEM:
-                    this.enterBehaviourAction(new DefendGoal(null));
-                    break;
-                case FREE:
-                    this.enterBehaviourAction(new DefendGoal(null));
-                    break;
-                case ME:
-                    this.enterBehaviourAction(new Goto(this.robot, new BallPoint()));
-                    break;
-                case FRIEND:
-                    this.enterBehaviourAction(new DefendGoal(null));
-                    break;
-                case LOST:
-                    this.enterBehaviourAction(new DefendGoal(null));
-                    break;
-            }
+        switch(this.nextState){
+            case THEM:
+                this.enterAction(new DefendGoal(null), 0, 0);
+                break;
+            case FREE:
+                this.enterAction(new DefendGoal(null), 0, 0);
+                break;
+            case ME:
+                this.enterAction(new Goto(this.robot, new BallPoint()), 0, 0);
+                break;
+            case FRIEND:
+                this.enterAction(new DefendGoal(null), 0, 0);
+                break;
+            case LOST:
+                this.enterAction(new DefendGoal(null), 0, 0);
+                break;
         }
     }
 }

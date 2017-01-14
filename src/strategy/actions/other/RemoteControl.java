@@ -1,7 +1,7 @@
 package strategy.actions.other;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.robots.RobotBase;
 import vision.robotAnalysis.RobotPreview;
 
@@ -11,7 +11,7 @@ import java.awt.event.KeyListener;
 /**
  * Created by Simon Rovder
  */
-public class RemoteControl extends AutomaticActionBase implements KeyListener {
+public class RemoteControl extends ActionBase implements KeyListener {
 
     private boolean w = false;
     private boolean a = false;

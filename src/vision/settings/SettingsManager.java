@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColors;
 import vision.distortion.Distortion;
-import vision.gui.MiscelaneousSettings;
+import vision.gui.MiscellaneousSettings;
 import vision.gui.SDPConsole;
 /**
  * Created by Simon Rovder
@@ -30,7 +30,7 @@ public class SettingsManager {
 				writer.write(SDPColors.colors.get(key).saveSettings() + "\r\n");
 			}
 			writer.write("^MISC\r\n");
-			writer.write(MiscelaneousSettings.miscSettings.saveSettings() + "\r\n");
+			writer.write(MiscellaneousSettings.miscSettings.saveSettings() + "\r\n");
 
 			writer.write("^DISTORTION\r\n");
 			writer.write(Distortion.distortion.saveSettings() + "\r\n");
@@ -53,7 +53,7 @@ public class SettingsManager {
 			}
 			next = r.readLine();
 			while(!next.equals("^DISTORTION")){
-				MiscelaneousSettings.miscSettings.loadSettings(next);
+				MiscellaneousSettings.miscSettings.loadSettings(next);
 				next = r.readLine();
 			}
 			next = r.readLine();

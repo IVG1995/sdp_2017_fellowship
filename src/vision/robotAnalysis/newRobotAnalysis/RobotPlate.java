@@ -1,7 +1,9 @@
 package vision.robotAnalysis.newRobotAnalysis;
 
 import vision.Robot;
+import vision.RobotAlias;
 import vision.colorAnalysis.SDPColor;
+import vision.gui.MiscellaneousSettings;
 import vision.robotAnalysis.RobotColorSettings;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.spotAnalysis.recursiveSpotAnalysis.XYCumulativeAverage;
@@ -73,6 +75,7 @@ public class RobotPlate {
         Robot r = new Robot();
         r.type = RobotColorSettings.getRobotType(this.teamColor, this.mainColor);
         r.location = this.toDirectedPoint();
+        r.alias = (RobotAlias)(MiscellaneousSettings.aliases.get(r.type).getSelectedItem());
         return r;
     }
 

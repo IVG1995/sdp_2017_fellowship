@@ -1,7 +1,7 @@
 package strategy.actions.other;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.points.basicPoints.DangerousPoint;
 import strategy.points.basicPoints.MidDangerPoint;
 import strategy.robots.Fred;
@@ -10,7 +10,7 @@ import strategy.robots.RobotBase;
 /**
  * Created by Simon Rovder
  */
-public class DefendGoal extends AutomaticActionBase {
+public class DefendGoal extends ActionBase {
 
 
     public DefendGoal(RobotBase robot) {

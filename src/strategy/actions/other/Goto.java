@@ -1,7 +1,7 @@
 package strategy.actions.other;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.points.DynamicPoint;
 import strategy.Strategy;
 import strategy.robots.RobotBase;
@@ -12,7 +12,7 @@ import vision.tools.VectorGeometry;
 /**
  * Created by Simon Rovder
  */
-public class Goto extends AutomaticActionBase {
+public class Goto extends ActionBase {
     public Goto(RobotBase robot, DynamicPoint point) {
         super(robot, point);
         this.rawDescription = " GOTO";

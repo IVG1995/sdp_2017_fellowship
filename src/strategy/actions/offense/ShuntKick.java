@@ -1,7 +1,7 @@
 package strategy.actions.offense;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.ReverseBallDirection;
 import strategy.robots.RobotBase;
@@ -10,7 +10,7 @@ import vision.tools.VectorGeometry;
 /**
  * Created by Simon Rovder
  */
-public class ShuntKick extends AutomaticActionBase {
+public class ShuntKick extends ActionBase {
 
     public ShuntKick(RobotBase robot) {
         super(robot);

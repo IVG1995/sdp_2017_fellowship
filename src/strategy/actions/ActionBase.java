@@ -7,9 +7,9 @@ import vision.gui.SDPConsole;
 /**
  * Created by Simon Rovder
  */
-public abstract class AutomaticActionBase implements ActionInterface {
+public abstract class ActionBase implements ActionInterface {
     protected DynamicPoint point;
-    protected AutomaticActionBase action = null;
+    protected ActionBase action = null;
     private int successExit;
     private int failureExit;
     protected boolean continueOnExit = false;
@@ -20,17 +20,17 @@ public abstract class AutomaticActionBase implements ActionInterface {
 
     protected final RobotBase robot;
 
-    public AutomaticActionBase(RobotBase robot, DynamicPoint point){
+    public ActionBase(RobotBase robot, DynamicPoint point){
         this.robot = robot;
         this.point = point;
     }
 
-    public AutomaticActionBase(RobotBase robot){
+    public ActionBase(RobotBase robot){
         this.robot = robot;
         this.enterState(0);
     }
 
-    protected void enterAction(AutomaticActionBase action, int successExit, int failureExit){
+    protected void enterAction(ActionBase action, int successExit, int failureExit){
         SDPConsole.writeln("Creating action: " + action.getClass().getName());
         this.action = action;
         this.successExit = successExit;

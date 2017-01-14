@@ -13,9 +13,14 @@ import strategy.robots.RobotBase;
 /**
  * Created by Simon Rovder
  */
-public class Attack extends ManualActionBase<Status.BallState> {
+public class Attack extends StatefulActionBase<Status.BallState> {
     public Attack(RobotBase robot, DynamicPoint point) {
         super(robot, point);
+    }
+
+    @Override
+    protected Status.BallState getState() {
+        return Strategy.status.ballState;
     }
 
 
@@ -26,27 +31,29 @@ public class Attack extends ManualActionBase<Status.BallState> {
 
     @Override
     public void tok() throws ActionException {
-        if(!this.behaviourTik()){
-            switch(Strategy.status.ballState){
-                case THEM:
-                    this.enterBehaviourAction(new HoldPosition(this.robot, new MidFoePoint()));
-                    break;
-                case FREE:
-                    this.enterBehaviourAction(new Goto(this.robot, new BallPoint()));
-                    break;
-                case ME:
+        switch(Strategy.status.ballState){
+            case THEM:
+                this.enterAction(new HoldPosition(this.robot, new MidFoePoint()), 0, 0);
+                break;
+            case FREE:
+                this.enterAction(new Goto(this.robot, new BallPoint()), 0, 0);
+                break;
+            case ME:
 //                    if(Fred.FRED.hasBall()){
-                    this.enterBehaviourAction(new Goto(this.robot, new BallPoint()));
-                    break;
-                case FRIEND:
-                    this.enterBehaviourAction(new Stop(null));
-                    this.delay(1500);
-                    break;
-                case LOST:
-                    this.enterBehaviourAction(new Stop(null));
-                    this.delay(1500);
-                    break;
-            }
+                this.enterAction(new Goto(this.robot, new BallPoint()), 0, 0);
+                break;
+            case FRIEND:
+                this.enterAction(new Stop(null), 0, 0);
+                this.delay(1500);
+                break;
+            case LOST:
+                this.enterAction(new Stop(null), 0, 0);
+                this.delay(1500);
+                break;
         }
     }
 }
+
+
+
+

@@ -1,7 +1,7 @@
 package strategy.actions.offense;
 
 import strategy.actions.ActionException;
-import strategy.actions.AutomaticActionBase;
+import strategy.actions.ActionBase;
 import strategy.points.basicPoints.BallPoint;
 import strategy.robots.Fred;
 import strategy.robots.RobotBase;
@@ -9,7 +9,7 @@ import strategy.robots.RobotBase;
 /**
  * Created by Simon Rovder
  */
-public class OffensiveKick extends AutomaticActionBase {
+public class OffensiveKick extends ActionBase {
 
     public OffensiveKick(RobotBase robot) {
         super(robot);
