@@ -12,11 +12,6 @@ import java.util.LinkedList;
 public abstract class RobotAnalysisBase implements DistortionListener {
 
     private LinkedList<DynamicWorldListener> listeners;
-    protected SpotAnalysisBase spotAnalysis;
-
-    public void setSpotAnalysis(SpotAnalysisBase spotAnalysis){
-        this.spotAnalysis = spotAnalysis;
-    }
 
     protected DynamicWorld lastKnownWorld = null;
 
