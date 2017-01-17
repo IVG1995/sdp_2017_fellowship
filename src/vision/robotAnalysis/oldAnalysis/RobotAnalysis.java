@@ -19,7 +19,7 @@ import vision.tools.VectorGeometry;
 /**
  * Created by Simon Rovder
  */
-public class RobotAnalysis extends RobotAnalysisBase implements DistortionListener{
+public class RobotAnalysis extends RobotAnalysisBase {
 
 	public static final RobotAnalysis robots = new RobotAnalysis();
 	
