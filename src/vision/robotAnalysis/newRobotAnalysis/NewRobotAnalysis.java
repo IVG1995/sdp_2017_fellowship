@@ -6,6 +6,7 @@ import vision.Robot;
 import vision.colorAnalysis.SDPColor;
 import vision.robotAnalysis.RobotAnalysisBase;
 import vision.RobotType;
+import vision.robotAnalysis.RobotColorSettings;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
@@ -49,7 +50,7 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
 
         for(RobotPlate plate : plates){
             if(!plate.hasTeam()){
-                plate.setTeam(SDPColor.YELLOW);
+                plate.setTeam(RobotColorSettings.ASSUME_YELLOW ? SDPColor.YELLOW : SDPColor.BLUE);
             }
             r = plate.toRobot();
             world.setRobot(r);

@@ -13,6 +13,7 @@ public class RobotColorSettings {
     /* */ public static SDPColor FOE_COLOR = SDPColor.BLUE;
     /* */ public static boolean FRIEND_1_IS_GREEN = true;
     /* */ public static boolean FOE_1_IS_GREEN = true;
+    /* */ public static boolean ASSUME_YELLOW = true;
     /*    TO HERE WITHOUT REWRITING the MiscellaneousSettings class. */
 
     public static SDPColor getMainColor(RobotType type){
