@@ -14,6 +14,9 @@ import vision.distortion.Distortion;
 import vision.robotAnalysis.RobotColorSettings;
 import vision.settings.SaveLoadCapable;
 import vision.settings.SettingsManager;
+
+import static vision.RobotType.*;
+
 /**
  * Created by Simon Rovder
  */
@@ -125,7 +128,26 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 
 	@Override
 	public String saveSettings() {
-		return this.flipPitch.isSelected() + ";" + this.friendsAreYellow.isSelected() + ";" + this.friendOneIsGreen.isSelected() + ";" + this.foeOneIsGreen.isSelected() + ";" + this.assumeYellow.isSelected();
+		StringBuilder b = new StringBuilder();
+		b.append(this.flipPitch.isSelected());
+		b.append(';');
+		b.append(this.friendsAreYellow.isSelected());
+		b.append(';');
+		b.append(this.friendOneIsGreen.isSelected());
+		b.append(';');
+		b.append(this.foeOneIsGreen.isSelected());
+		b.append(';');
+		b.append(this.assumeYellow.isSelected());
+		b.append(';');
+		b.append(MiscellaneousSettings.aliases.get(FRIEND_1).getSelectedItem().toString());
+		b.append(';');
+		b.append(MiscellaneousSettings.aliases.get(FRIEND_2).getSelectedItem().toString());
+		b.append(';');
+		b.append(MiscellaneousSettings.aliases.get(FOE_1).getSelectedItem().toString());
+		b.append(';');
+		b.append(MiscellaneousSettings.aliases.get(FOE_2).getSelectedItem().toString());
+
+		return b.toString();
 	}
 
 	@Override
@@ -136,6 +158,10 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 		this.friendOneIsGreen.setSelected(Boolean.parseBoolean(set[2]));
 		this.foeOneIsGreen.setSelected(Boolean.parseBoolean(set[3]));
 		this.assumeYellow.setSelected(Boolean.parseBoolean(set[4]));
+		MiscellaneousSettings.aliases.get(FRIEND_1).setSelectedItem(RobotAlias.valueOf(set[5]));
+		MiscellaneousSettings.aliases.get(FRIEND_2).setSelectedItem(RobotAlias.valueOf(set[6]));
+		MiscellaneousSettings.aliases.get(FOE_1).setSelectedItem(RobotAlias.valueOf(set[7]));
+		MiscellaneousSettings.aliases.get(FOE_2).setSelectedItem(RobotAlias.valueOf(set[8]));
 		this.checkBoxesToValues();
 	}
 }

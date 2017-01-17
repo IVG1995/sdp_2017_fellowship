@@ -31,7 +31,7 @@ public class DefendGoal extends ActionBase {
     public void tok() throws ActionException {
         if(this.state == 0){
             robot.MOTION_CONTROLLER.setHeading(new DangerousPoint());
-            this.enterAction(new HoldPosition(this.robot, new MidDangerPoint()), 0, 0);
+            this.enterAction(new HoldPosition(this.robot, new MidDangerPoint(this.robot.robotType)), 0, 0);
             this.enterState(1);
         }
     }

@@ -91,7 +91,7 @@ public class MotionController extends ControllerBase {
                 }
             }
 
-            if(intersects){
+            if(intersects || us.location.distance(destination) > 30){
                 navigation = new AStarNavigation();
                 GUI.gui.searchType.setText("A*");
             } else {

@@ -16,6 +16,7 @@ import java.util.HashMap;
 public class DynamicWorld {
     // This HashMap contains the detected robots.
     private HashMap<RobotType, Robot> robots;
+    private HashMap<RobotAlias, Robot> aliases;
 
     // The location of the ball.
     private Ball ball;
@@ -38,12 +39,17 @@ public class DynamicWorld {
     public DynamicWorld(long time){
         this.time = time;
         this.robots = new HashMap<RobotType, Robot>();
+        this.aliases = new HashMap<RobotAlias, Robot>();
     }
 
     public Robot getRobot(RobotType type){
-        if(this.robots.containsKey(type)) return this.robots.get(type);
-        return null;
+        return this.robots.get(type);
     }
+
+    public Robot getRobot(RobotAlias alias){
+        return this.aliases.get(alias);
+    }
+
 
     public Ball getBall(){
         return this.ball;
@@ -67,6 +73,9 @@ public class DynamicWorld {
 
     public void setRobot(Robot r){
         this.robots.put(r.type, r);
+        if(r.alias != RobotAlias.UNKNOWN){
+            this.aliases.put(r.alias, r);
+        }
     }
 
 
@@ -90,4 +99,6 @@ public class DynamicWorld {
     public Collection<Robot> getRobots(){
         return this.robots.values();
     }
+
+
 }

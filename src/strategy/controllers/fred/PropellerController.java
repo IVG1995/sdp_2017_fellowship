@@ -19,7 +19,11 @@ public class PropellerController extends ControllerBase {
         this.propellerTracker = 0;
     }
 
-
+    @Override
+    public void setActive(boolean active) {
+        super.setActive(active);
+        this.propellerTracker = 0;
+    }
 
     private void propell(int dir){
         PropellerEquipedRobotPort port = (PropellerEquipedRobotPort) this.robot.port;

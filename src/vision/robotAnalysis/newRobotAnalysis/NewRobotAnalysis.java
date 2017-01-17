@@ -75,7 +75,7 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
         long timeDelta = 0;
         if(lastKnownWorld != null){
             oldBall = lastKnownWorld.getBall();
-            timeDelta = time - lastKnownWorld.getTime();
+            timeDelta = (time - lastKnownWorld.getTime())/1000000;
         }
 
         if(timeDelta == 0) timeDelta = 1;
@@ -156,7 +156,7 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
             if(toUndistort != null){
                 // This part moves the strategy.robots closer to the center of the pitch. It compensates for the height
                 // of the robot (15 cm)
-                toUndistort.location.setLength(toUndistort.location.length() * (1 - 15.0/250));
+                toUndistort.location.setLength(toUndistort.location.length() * (1 - 20.0/250));
             }
         }
         this.informListeners(world);

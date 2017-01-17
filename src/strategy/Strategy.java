@@ -9,10 +9,7 @@ import strategy.points.basicPoints.*;
 import strategy.robots.Fred;
 import communication.PortListener;
 import strategy.robots.RobotBase;
-import vision.DynamicWorld;
-import vision.RobotType;
-import vision.Vision;
-import vision.VisionListener;
+import vision.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -157,6 +154,11 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     break;
                 case "def":
                     fred.ACTION_CONTROLLER.setAction(new DefendGoal(fred));
+                    break;
+                case "annoy":
+                    fred.ACTION_CONTROLLER.setAction(null);
+                    fred.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.FELIX));
+                    fred.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
                     break;
                 case "rot":
                     fred.PROPELLER_CONTROLLER.setActive(false);

@@ -8,11 +8,12 @@ import strategy.actions.other.Goto;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.other.Waiting;
 import strategy.drives.FourWheelHolonomicDrive;
-import strategy.points.basicPoints.ConstantPoint;
+import strategy.points.basicPoints.*;
 import strategy.controllers.essentials.MotionController;
 import communication.ports.robotPorts.FredRobotPort;
 import strategy.robots.Fred;
 import strategy.robots.RobotBase;
+import vision.RobotAlias;
 
 import javax.swing.*;
 import java.awt.*;
@@ -147,17 +148,44 @@ public class GUI extends JFrame implements KeyListener{
             this.robot.port.sdpPort.commandSender("f");
             this.robot.port.sdpPort.commandSender("f");
             switch(e.getKeyChar()){
+                case 'a':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(null);
+                    this.robot.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.FELIX));
+                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
+                    break;
+                case 'q':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(null);
+                    this.robot.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.JEFFREY));
+                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.JEFFREY));
+                    break;
+                case 'o':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(null);
+                    this.robot.MOTION_CONTROLLER.setDestination(new MidPoint(new RobotPoint(RobotAlias.FELIX), new BallPoint()));
+                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
+                    break;
+                case 'p':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(null);
+                    this.robot.MOTION_CONTROLLER.setDestination(new MidPoint(new RobotPoint(RobotAlias.JEFFREY), new BallPoint()));
+                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.JEFFREY));
+                    break;
                 case 'd':
+                    this.robot.setControllersActive(true);
                     this.robot.ACTION_CONTROLLER.setAction(new DefendGoal(this.robot));
                     break;
                 case 'k':
+                    this.robot.setControllersActive(true);
                     this.robot.ACTION_CONTROLLER.setAction(new OffensiveKick(this.robot));
                     break;
                 case 's':
+                    this.robot.setControllersActive(true);
                     this.robot.ACTION_CONTROLLER.setAction(new GoToSafeLocation(this.robot));
                     break;
                 case 'b':
-                    Behave.RESET = true;
+                    this.robot.setControllersActive(true);
                     this.robot.ACTION_CONTROLLER.setAction(new Behave(this.robot));
                     break;
                 case '1':
@@ -198,7 +226,6 @@ public class GUI extends JFrame implements KeyListener{
                     }
                     this.robot.ACTION_CONTROLLER.setAction(new Waiting(this.robot));
                     break;
-
             }
         }
 

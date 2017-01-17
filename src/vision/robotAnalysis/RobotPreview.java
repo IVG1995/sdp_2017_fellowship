@@ -9,10 +9,7 @@ import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import vision.Ball;
-import vision.DynamicWorld;
-import vision.Robot;
-import vision.RobotType;
+import vision.*;
 import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
@@ -107,7 +104,8 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 			dp = state.getRobot(type);
 			if (dp != null ){
 				this.drawRect((int)dp.location.x, (int)dp.location.y, 20, 20, Color.WHITE);
-				this.drawString(type.toString(), (int)dp.location.x + 10, (int)dp.location.y + 10);
+				if(dp.alias == RobotAlias.UNKNOWN) this.drawString(type.toString(), (int)dp.location.x + 10, (int)dp.location.y + 10);
+				else this.drawString(dp.alias.toString(), (int)dp.location.x + 10, (int)dp.location.y + 10);
 				int x = (int) (Math.cos(dp.location.direction) * 50);
 				int y = (int) (Math.sin(dp.location.direction) * 50);
 				x = x + (int)dp.location.x;
