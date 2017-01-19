@@ -1,4 +1,4 @@
-# Setup
+# Setup (DON'T FOLLOW THESE INSTRUCTIONS< THEY ARE OUTDATED! GO TO fred.rovder.com FOR INSTRUCTIONS! )
 
 Follow these instructions to get up and running.
 
