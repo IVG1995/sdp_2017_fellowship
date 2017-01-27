@@ -24,85 +24,97 @@ import vision.gui.SDPConsole;
 /**
  * Created by Simon Rovder
  */
+ //class that gets the input from the camera
 public class LiveCameraInput extends AbstractRawInput implements CaptureCallback, ActionListener{
 
+
+    //devices that do the actual input stuff
     private VideoDevice     videoDevice;
     private FrameGrabber    frameGrabber;
-	
+
+  //buttons
 	private JButton startButton;
 	private JButton stopButton;
-	
-	
+
+	//a video video
 	private Video video;
 	private JSpinner channel;
 	private JTextField port;
-	
+
+  //box for choosing camera
 	private JComboBox<CameraChooser> choice;
-    
+
+  //list of possible cameras
 	private CameraChooser choosers[] = {
 			  new CameraChooser("STANDARD_PAL",    (short) V4L4JConstants.STANDARD_PAL),
 			  new CameraChooser("STANDARD_WEBCAM", (short) V4L4JConstants.STANDARD_WEBCAM),
 			  new CameraChooser("STANDARD_SECAM",  (short) V4L4JConstants.STANDARD_SECAM),
 			  new CameraChooser("STANDARD_NTSC",   (short) V4L4JConstants.STANDARD_NTSC)
 		  };
-	
+
+  //because camera chooser is defined in here instead of its own class for...
+  //...reasons?
 	private class CameraChooser{
 		public final String name;
 		public final short value;
-		
+
+    //constructor
 		public CameraChooser(String name, short value){
 			this.name = name;
 			this.value = value;
 		}
-		
+
 		public String toString(){
 			return name;
 		}
 	}
-	
+
+  //defined
 	public static final LiveCameraInput liveCameraInput = new LiveCameraInput();
-	
+
+  //constructor
 	private LiveCameraInput(){
+    //mostly doing gui setup
 		super();
 		this.setLayout(null);
 		this.tabName = "Camera";
-		
+
 		JLabel lblChannel = new JLabel("Channel:");
 		lblChannel.setBounds(10, 11, 150, 14);
 		this.add(lblChannel);
-		
+
 		JLabel lblVideoType = new JLabel("Video Type:");
 		lblVideoType.setBounds(10, 36, 150, 14);
 		this.add(lblVideoType);
-		
+
 		JLabel lblPort = new JLabel("Port:");
 		lblPort.setBounds(10, 61, 150, 14);
 		this.add(lblPort);
-		
+
 		this.channel = new JSpinner();
 		this.channel.setModel(new SpinnerNumberModel(2,0,4,1));
 		channel.setBounds(170, 8, 150, 20);
 		this.add(channel);
-		
+
 		this.choice = new JComboBox<CameraChooser>();
 		this.choice.setBounds(170, 36, 150, 20);
 		this.add(this.choice);
 		for(CameraChooser c : this.choosers){
 			this.choice.addItem(c);
 		}
-		
+
 
 		this.port = new JTextField();
 		this.port.setBounds(170, 61, 150, 20);
 		this.add(this.port);
 		this.port.setColumns(10);
 		this.port.setText("/dev/video0");
-		
+
 		this.startButton = new JButton("Start Feed");
 		this.startButton.addActionListener(this);
 		this.startButton.setBounds(10, 90, 150, 22);
 		this.add(this.startButton);
-		
+
 		this.stopButton = new JButton("Stop Feed");
 		this.stopButton.setBounds(170, 90, 150, 22);
 		this.stopButton.addActionListener(this);
@@ -111,7 +123,7 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 		this.stopButton.setEnabled(false);
     }
 
-    
+
     /**
      * this method stops the capture and releases the frame grabber and video device
      */
@@ -126,14 +138,15 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
             }
 
     }
-	
+
+  //exception handeling
 	@Override
 	public void exceptionReceived(V4L4JException arg0) {
 		arg0.printStackTrace();
 		cleanupCapture();
 	}
 
-
+  //get next image if we can
 	@Override
 	public void nextFrame(VideoFrame frame) {
 		BufferedImage image = frame.getBufferedImage();
@@ -146,6 +159,7 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 		frame.recycle();
 	}
 
+  //no means no
 	@Override
 	public void stop() {
 		System.out.println("Stopping video feed.");
@@ -155,6 +169,7 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 		this.setActive(false);
 	}
 
+  //continue receiving inputs
 	@Override
 	public void start() {
 		this.video = new Video(this, this.port.getText(), ((Integer)(this.channel.getValue())), ((CameraChooser)(this.choice.getSelectedItem())).value);
@@ -162,9 +177,10 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 		this.startButton.setEnabled(false);
 		this.stopButton.setEnabled(true);
 		Preview.preview.setVisible(true);
-		
+
 	}
 
+  //button press handler
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.startButton){
@@ -173,7 +189,8 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 			this.stop();
 		}
 	}
-	
+
+  //get the prot on which to receive
 	public void setVideoChannel(int port){
 		this.stop();
 		this.channel.setValue(port);
