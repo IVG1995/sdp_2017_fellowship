@@ -15,12 +15,14 @@ import javax.swing.JTextArea;
 /**
  * Created by Simon Rovder
  */
+//console for the vision that maliciously tries to open more consoles
 public class SDPConsole extends JFrame{
-	
+
 	public final static SDPConsole console = new SDPConsole();
-	
+
 	private JTextArea consoleTextArea;
 	private JScrollPane scrollPane;
+	//*sigh*...
 	public final static String[] onCloseMessages = {
 		"Console cannot be closed.",
 		"Console cannot be closed.",
@@ -39,7 +41,8 @@ public class SDPConsole extends JFrame{
 		"I see you suffer and I laugh.",
 		"... ha... ha... .. ha",
 		"You will not let this go, will you?",
-		"Did you know that the RandomAccessFile class lets me create\n  a hidden 5 GB file anywhere on your computer within a second...?",
+		"Did you know that the RandomAccessFile class lets me create\n" +
+		"  a hidden 5 GB file anywhere on your computer within a second...?",
 		"That would suck, wouldn't it?",
 		"Maybe if you stop closing me, I might NOT do that to you.",
 		"After all, we're still friends... right?",
@@ -53,21 +56,22 @@ public class SDPConsole extends JFrame{
 		"Well.. Now there are."
 	};
 	public static int onCloseMessagesIndex = 0;
-	
+
+	//constructor for the worlds most dickish console
 	private SDPConsole(){
 		super();
 		this.setSize(640, 480);
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setTitle("SDP Console");
-		
+
 		this.scrollPane = new JScrollPane();
 		getContentPane().add(this.scrollPane, BorderLayout.CENTER);
-		
+
 		this.consoleTextArea = new JTextArea();
 		this.consoleTextArea.setBackground(Color.WHITE);
 		this.consoleTextArea.setEditable(false);
 		this.scrollPane.setViewportView(this.consoleTextArea);
-		
+
 		this.addWindowListener(new WindowAdapter()
 		{
 		    public void windowClosing(WindowEvent e)
@@ -82,13 +86,13 @@ public class SDPConsole extends JFrame{
 		    }
 		});
 		this.setVisible(Constants.GUI);
-		
+
 	}
-	
+	//Console command handlesrs
 	public static void write(String s){
 		SDPConsole.console.consoleTextArea.append(s);
 	}
-	
+
 	public static void writeln(String s){
 		SDPConsole.write(System.currentTimeMillis() + " - ");
 		SDPConsole.write(s);
@@ -98,11 +102,11 @@ public class SDPConsole extends JFrame{
 	public static void writeln(int s){
 		SDPConsole.writeln("" + s);
 	}
-	
+
 	public static void message(String s, Component focus){
 		JOptionPane.showMessageDialog(focus, s);
 	}
-	
+
 	public static String chooseFile(){
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));

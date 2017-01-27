@@ -11,25 +11,32 @@ import vision.constants.Constants;
 /**
  * Created by Simon Rovder
  */
+ //distortion gui preview things
 public class DistortionPreview extends JFrame {
-	
+
+	//its a label
 	public final JLabel previewLabel;
-	
+
 	public static final DistortionPreview preview = new DistortionPreview();
-	
+
+	//list for listeners
 	private LinkedList<DistortionPreviewClickListener> listeners;
-	
+
+	//handles mpouse clicks
 	public void clickHandler(int x, int y){
 		for(DistortionPreviewClickListener l : this.listeners){
 			l.distortionPreviewClickHandler(x, y);
 		}
 	}
-	
+
+	//add a listener for distortion previews (most of these methods just do what they say)
 	public static void addDistortionPreviewClickListener(DistortionPreviewClickListener listener){
 		DistortionPreview.preview.listeners.add(listener);
 	}
-	
+
+	//constructor
 	private DistortionPreview(){
+		//mostly just gui setup
 		super("Distortion Preview");
 		this.setSize(Constants.INPUT_WIDTH, Constants.INPUT_HEIGHT + 20);
 		this.setResizable(false);
@@ -37,6 +44,7 @@ public class DistortionPreview extends JFrame {
 		this.previewLabel = new JLabel();
 		this.getContentPane().add(this.previewLabel);
 		this.setVisible(false);
+		//mouse listener methods
 		this.previewLabel.addMouseListener(new MouseListener() {
 	        @Override
 	        public void mouseClicked(MouseEvent e) {

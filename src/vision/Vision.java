@@ -50,28 +50,32 @@ public class Vision extends JFrame implements DynamicWorldListener {
 	public Vision(String[] args){
 		super("Vision");
 
+		//listener!
 		this.visionListeners   = new LinkedList<VisionListener>();
+		//gui things
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
+		//spot analysers
 		SpotAnalysisBase recursiveSpotAnalysis   = new RecursiveSpotAnalysis();
 		SpotAnalysisBase approximateSpotAnalysis = new ApproximatedSpotAnalysis();
 
 
 		// SDP2017NOTE
 		// This part builds the vision system pipeline
+		//pretty much all the listeners
 		RawInput.addRawInputListener(recursiveSpotAnalysis);
 		RawInput.addRawInputListener(Preview.preview);
 		RawInput.addRawInputListener(Distortion.distortion);
 		recursiveSpotAnalysis.addSpotListener(Distortion.distortion);
 		DistortionPreview.addDistortionPreviewClickListener(Distortion.distortion);
 		Distortion.addDistortionListener(RobotPreview.preview);
-
+		//except this bit here which defines a new robot analyser...
 		RobotAnalysisBase robotAnalysis = new NewRobotAnalysis();
 		Distortion.addDistortionListener(robotAnalysis);
 		robotAnalysis.addDynamicWorldListener(RobotPreview.preview);
 		robotAnalysis.addDynamicWorldListener(this);
 
-
+		//more gui setup
 		tabbedPane.addTab("Input Selection", null, RawInput.rawInputMultiplexer, null);
 		tabbedPane.addTab("Color Calibration", null, ColorCalibration.colorCalibration, null);
 		tabbedPane.addTab("Distortion", null, Distortion.distortion, null);
@@ -99,10 +103,12 @@ public class Vision extends JFrame implements DynamicWorldListener {
 		RawInput.rawInputMultiplexer.stopAllInputs();
 	}
 
+	//MAIN IS BAE
 	public static void main(String[] args){
 		new Vision(args);
 	}
 
+	//updates the DynamicWorld
 	@Override
 	public void nextDynamicWorld(DynamicWorld state) {
 		for(VisionListener visionListener : this.visionListeners){

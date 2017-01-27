@@ -20,13 +20,15 @@ import static vision.RobotType.*;
 /**
  * Created by Simon Rovder
  */
+ //GUI stuff for other settings
 public class MiscellaneousSettings extends JPanel implements ActionListener, SaveLoadCapable{
 
 
 	public static final HashMap<RobotType, JComboBox<RobotAlias>> aliases = new HashMap<>();
 
 	public static final MiscellaneousSettings miscSettings = new MiscellaneousSettings();
-	
+
+	//buttons and boxes
 	private JButton saveSettings;
 	private JButton loadSettings;
 	private JCheckBox flipPitch;
@@ -35,16 +37,17 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 	private JCheckBox foeOneIsGreen;
 	private JCheckBox assumeYellow;
 
-	
+	//constructor
 	private MiscellaneousSettings(){
+		//just deals with the layout and buttons and other things for the gui
 		super();
 		this.setLayout(null);
-		
+
 		this.saveSettings = new JButton("Save Settings");
 		this.saveSettings.setBounds(10, 30, 150, 30);
 		this.add(this.saveSettings);
 		this.saveSettings.addActionListener(this);
-		
+
 		this.loadSettings = new JButton("Load Settings");
 		this.loadSettings.setBounds(10, 70, 150, 30);
 		this.add(this.loadSettings);
@@ -77,6 +80,8 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 
 		int offset = 0;
 
+		//I believe this has more to do with specfic robots so this probably isnt
+		//useful for us yet
 		for(RobotType type : RobotType.values()){
 
 
@@ -96,6 +101,7 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 		}
 	}
 
+	//things
 	private void checkBoxesToValues(){
 		Distortion.ROTATE_PITCH = this.flipPitch.isSelected();
 		RobotColorSettings.FRIEND_COLOR = this.friendsAreYellow.isSelected() ? SDPColor.YELLOW : SDPColor.BLUE;
@@ -105,6 +111,7 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 		RobotColorSettings.ASSUME_YELLOW = this.assumeYellow.isSelected();
 	}
 
+	//deal with button presses and check boxes
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.saveSettings){
@@ -126,6 +133,8 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 		this.checkBoxesToValues();
 	}
 
+	//NOTE: again this will presumabely be written to file somewhere else as these
+	//only deal with strings not file inputs
 	@Override
 	public String saveSettings() {
 		StringBuilder b = new StringBuilder();

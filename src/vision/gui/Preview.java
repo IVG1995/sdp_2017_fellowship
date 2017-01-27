@@ -19,20 +19,24 @@ import vision.tools.ColoredPoint;
 /**
  * Created by Simon Rovder
  */
+ //Gui which ties all the individual preview code together into one frame
 public class Preview extends JFrame implements RawInputListener{
-	
+
+	//listeners and images and labels
 	public final static Preview preview = new Preview();
 	private ArrayList<PreviewSelectionListener> listeners;
 	private BufferedImage drawnImage;
 	private BufferedImage originalImage;
-	
+
 	public JLabel imageLabel;
-	
+
+	//constructor
 	private Preview(){
+		//gui and listener setup
 		super("Preview");
-		
+
 		this.listeners = new ArrayList<PreviewSelectionListener>();
-		
+
 		this.setSize(Constants.INPUT_WIDTH, Constants.INPUT_HEIGHT + 20);
 		this.setResizable(false);
 		this.imageLabel = new JLabel();
@@ -59,37 +63,45 @@ public class Preview extends JFrame implements RawInputListener{
 		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		this.setVisible(false);
 	}
-	
+
+	//listens for selections
 	public static void addSelectionListener(PreviewSelectionListener listener){
 		Preview.preview.listeners.add(listener);
 	}
-	
+
+	//get next frame of image
 	public void nextFrame(BufferedImage bi, long time){
 		Preview.preview.originalImage = bi;
 		Preview.preview.drawnImage = deepCopy(bi);
 	}
-	
+
+	//labels
 	public static void flushToLabel(){
 		if(Constants.GUI) Preview.preview.imageLabel.getGraphics().drawImage(Preview.preview.drawnImage, 0, 0, null);
 	}
-	
+
+
+	//get Graphics
 	public static Graphics getImageGraphics(){
 		if(Preview.preview.drawnImage == null){
 			return null;
 		}
 		return Preview.preview.drawnImage.getGraphics();
 	}
-	
+
+	//select points
 	private static void selection(int x, int y){
-		
+
 		if(Preview.preview.originalImage == null) return;
-		
+
 		ColoredPoint cp = new ColoredPoint(x, y, new Color(Preview.preview.originalImage.getRGB(x, y)));
 		for(PreviewSelectionListener psl : Preview.preview.listeners){
 			psl.previewClickHandler(cp);
 		}
 	}
-	
+
+	//thats deep man`
+	//but it actually just returns an image copy
 	static BufferedImage deepCopy(BufferedImage bi) {
 		ColorModel cm = bi.getColorModel();
 		boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
