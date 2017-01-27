@@ -1,11 +1,13 @@
 package vision;
 
+//import from other libraries
 import java.awt.BorderLayout;
 import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
+//imports from vision
 import vision.colorAnalysis.ColorCalibration;
 import vision.tools.CommandLineParser;
 import vision.distortion.Distortion;
@@ -32,7 +34,7 @@ import vision.spotAnalysis.recursiveSpotAnalysis.RecursiveSpotAnalysis;
 public class Vision extends JFrame implements DynamicWorldListener {
 
 	private LinkedList<VisionListener> visionListeners;
-	
+
 	/**
 	 * Add a vision listener. The Listener will be notified whenever the
 	 * vision system has a new world.
@@ -41,13 +43,13 @@ public class Vision extends JFrame implements DynamicWorldListener {
 	public void addVisionListener(VisionListener visionListener){
 		this.visionListeners.add(visionListener);
 	}
-	
+
 	/**
 	 * Vision system constructor. Please please please only call this once, or else it goes haywire.
 	 */
 	public Vision(String[] args){
 		super("Vision");
-		
+
 		this.visionListeners   = new LinkedList<VisionListener>();
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
@@ -68,16 +70,16 @@ public class Vision extends JFrame implements DynamicWorldListener {
 		Distortion.addDistortionListener(robotAnalysis);
 		robotAnalysis.addDynamicWorldListener(RobotPreview.preview);
 		robotAnalysis.addDynamicWorldListener(this);
-		
-		
+
+
 		tabbedPane.addTab("Input Selection", null, RawInput.rawInputMultiplexer, null);
 		tabbedPane.addTab("Color Calibration", null, ColorCalibration.colorCalibration, null);
 		tabbedPane.addTab("Distortion", null, Distortion.distortion, null);
 //		tabbedPane.addTab("Robots", null, RobotAnalysis.strategy.robots, null);
 		tabbedPane.addTab("Misc Settings", null,  MiscellaneousSettings.miscSettings, null);
-		
+
 		SDPConsole.console.setVisible(true);
-		
+
 		this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		this.setSize(640,480);
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
