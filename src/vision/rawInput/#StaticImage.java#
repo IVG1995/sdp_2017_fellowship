@@ -21,18 +21,18 @@ import vision.gui.SDPConsole;
 public class StaticImage extends AbstractRawInput implements ActionListener{
 	private Timer timer;
 	private BufferedImage img;
-
+	
 	private JButton btnStartInput;
 	private JButton btnStopInput;
 	private JButton btnBrowse;
-
+	
 	private String filePath;
-
+	
 	JLabel lblImageSource;
 	JTextField textField;
-
+	
 	public static final StaticImage staticImage = new StaticImage();
-
+	
 	private StaticImage(){
 		super();
 		this.setLayout(null);
@@ -40,8 +40,7 @@ public class StaticImage extends AbstractRawInput implements ActionListener{
 		this.timer = new Timer(300, this);
 		this.initGUI();
 	}
-
-	//sets up the GUI (funnily enough)
+	
 	private void initGUI(){
 		// TODO: Refactor This
 		textField = new JTextField();
@@ -49,30 +48,28 @@ public class StaticImage extends AbstractRawInput implements ActionListener{
 		textField.setEnabled(false);
 		this.add(textField);
 		textField.setColumns(10);
-
+		
 		lblImageSource = new JLabel("Image source:");
 		lblImageSource.setBounds(10, 28, 129, 14);
 		this.add(lblImageSource);
-
+		
 		btnBrowse = new JButton("Browse");
 		btnBrowse.setBounds(471, 24, 89, 23);
 		this.add(btnBrowse);
-
+		
 		btnStartInput = new JButton("Start Input");
 		btnStartInput.setBounds(20, 56, 150, 23);
 		this.add(btnStartInput);
-
+		
 		btnStopInput = new JButton("Stop Input");
 		btnStopInput.setBounds(180, 56, 150, 23);
 		this.add(btnStopInput);
-
+		
 		this.btnStartInput.addActionListener(this);
 		this.btnStopInput.addActionListener(this);
 		this.btnBrowse.addActionListener(this);
 	}
 
-
-	//Chooses actions based on button presses (button listener)
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.timer){
@@ -90,7 +87,7 @@ public class StaticImage extends AbstractRawInput implements ActionListener{
 		}
 	}
 
-	@Override
+    Override
 	public void stop() {
 		this.timer.stop();
 		this.btnBrowse.setEnabled(true);
@@ -111,6 +108,6 @@ public class StaticImage extends AbstractRawInput implements ActionListener{
 			SDPConsole.message("Could not open the image. Something went wrong. Try JPG and JPEG images of size 640 by 480.", this);
 		}
 	}
-
-
+	
+	
 }

@@ -27,50 +27,67 @@ public class DynamicWorld {
     // If the ball is not found, this will be set to the robot that is most likely holding it.
     private RobotType probableBallHolder;
 
+    //number of robots
     public int robotCount;
     public int robotChangeDelay;
 
+    //time in world
     private final long time;
 
+    //return time
     public long getTime(){
         return this.time;
     }
 
+    //constructor for dynamic world (which has time and robots)
     public DynamicWorld(long time){
         this.time = time;
         this.robots = new HashMap<RobotType, Robot>();
         this.aliases = new HashMap<RobotAlias, Robot>();
     }
 
+
+    //This is just a bunch of getters and setters
+    //Robots can be searched for by either alias or type
+
+    //returns robot from hashmap with the specified type
     public Robot getRobot(RobotType type){
         return this.robots.get(type);
     }
 
+    //returns robot from hashmap given an alias
     public Robot getRobot(RobotAlias alias){
         return this.aliases.get(alias);
     }
 
 
+    //returns the ball
     public Ball getBall(){
         return this.ball;
     }
 
+    //sets the ball
     public void setBall(Ball ball){
         this.ball = ball;
     }
 
+    //returns last known position of ball
     public Ball getLastKnownBall(){
         return this.lastKnownBall;
     }
 
+    //sets last known position of ball
     public void setLastKnownBall(Ball ball){
         this.lastKnownBall = ball;
     }
 
+    //returns the probable holder of the ball
     public RobotType getProbableBallHolder(){
         return this.probableBallHolder;
     }
 
+    //adds a robot to both hashmaps using the robots type and alias (if it has
+    //one)
     public void setRobot(Robot r){
         this.robots.put(r.type, r);
         if(r.alias != RobotAlias.UNKNOWN){
@@ -78,11 +95,13 @@ public class DynamicWorld {
         }
     }
 
-
+    //stes the probable holder of the ball
     public void setProbableBallHolder(RobotType type){
         this.probableBallHolder = type;
     }
 
+    //does what it says, pretty much prints every bit of information about the
+    //world. probably meant for debugging
     public void printData() {
 		DirectedPoint p;
 		if(this.ball != null){
@@ -96,6 +115,8 @@ public class DynamicWorld {
         if(this.lastKnownBall != null) SDPConsole.writeln("Last Known ball: " + this.lastKnownBall.toString());
 	}
 
+
+    //extra getter method that just returns all the robots
     public Collection<Robot> getRobots(){
         return this.robots.values();
     }
