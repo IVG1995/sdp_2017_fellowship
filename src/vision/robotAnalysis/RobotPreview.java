@@ -18,16 +18,18 @@ import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 /**
  * Created by Simon Rovder
  */
+ //We love GUIs dont we
 public class RobotPreview extends JFrame implements DistortionListener, DynamicWorldListener {
-	
+
 	public final JLabel previewLabel;
-	
+
 	public static final RobotPreview preview = new RobotPreview();
-	
+
 	private BufferedImage image;
-	
+
 	private final int bounds = 10;
-	
+
+	//I wonder what this does? Does it reset the image?
 	private void resetImage(){
 		Graphics g = this.image.getGraphics();
 		g.setColor(Color.BLACK);
@@ -37,7 +39,8 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 		g.drawLine(bounds + Constants.PITCH_WIDTH/2, Constants.PITCH_HEIGHT + bounds, bounds + Constants.PITCH_WIDTH/2, bounds);
 		g.drawLine(bounds, Constants.PITCH_HEIGHT/2 + bounds, Constants.PITCH_WIDTH + bounds, Constants.PITCH_HEIGHT/2 + bounds);
 	}
-	
+
+	//constructor
 	private RobotPreview(){
 		super("Robot Preview");
 		this.image = new BufferedImage(Constants.PITCH_WIDTH + 2*bounds, Constants.PITCH_HEIGHT + 2*bounds, BufferedImage.TYPE_3BYTE_BGR);
@@ -49,6 +52,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 		this.setVisible(true);
 	}
 
+	//Get the spots
 	@Override
 	public void nextUndistortedSpots(HashMap<SDPColor, ArrayList<Spot>> spots, long time) {
 		this.resetImage();
@@ -62,6 +66,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 		this.previewLabel.getGraphics().drawImage(this.image, 0, 0, null);
 	}
 
+	//Can draw an arc
 	public void drawArc(int x, int y, int radius, Color color){
 		Graphics g = this.previewLabel.getGraphics();
 		if(g != null){
@@ -69,7 +74,8 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 			g.drawArc(x - radius/2 + Constants.PITCH_WIDTH/2 + bounds, - y - radius/2 + Constants.PITCH_HEIGHT/2 + bounds, radius, radius, 0, 360);
 		}
 	}
-	
+
+	//can draw a rectangle
 	public void drawRect(int x, int y, int width, int height, Color color){
 		Graphics g = this.previewLabel.getGraphics();
 		if(g != null){
@@ -77,7 +83,8 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 			g.drawRect(x + Constants.PITCH_WIDTH/2 + bounds - height/2, - y + Constants.PITCH_HEIGHT/2 + bounds - height/2, width, height);
 		}
 	}
-	
+
+	//draws a line
 	public void drawLine(int x1, int y1, int x2, int y2, Color color){
 		Graphics g = this.previewLabel.getGraphics();
 		if(g != null){
@@ -86,6 +93,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 		}
 	}
 
+	//draws a string
 	public void drawString(String string, int x, int y){
 		Graphics g = this.previewLabel.getGraphics();
 		if(g != null){
@@ -94,6 +102,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 		}
 	}
 
+	//DRAWS EVERYTHING
 	@Override
 	public void nextDynamicWorld(DynamicWorld state) {
 		Robot dp;
@@ -124,7 +133,3 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 		}
 	}
 }
-	
-	
-	
-	

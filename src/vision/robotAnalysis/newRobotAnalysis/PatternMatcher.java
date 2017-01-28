@@ -9,6 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by Simon Rovder
  */
+ //This finds stuff on the image
 public class PatternMatcher {
     public static void patternMatch(ArrayList<Spot> spots, ArrayList<RobotPlate> plates){
         /*
@@ -29,6 +30,7 @@ public class PatternMatcher {
         }
     }
 
+    //valiadte plates
     public static void singularValidate(ArrayList<Spot> spots, ArrayList<RobotPlate> plates){
         for(RobotPlate plate : plates){
             for(Spot s : spots){
@@ -37,6 +39,7 @@ public class PatternMatcher {
         }
     }
 
+    //remove any wrongly classified plates
     public static void removeInvalid(ArrayList<RobotPlate> plates){
         for(int i = 0; i < plates.size(); i++){
             if(!plates.get(i).isValid()){
@@ -46,6 +49,7 @@ public class PatternMatcher {
         }
     }
 
+    //try to create teams
     public static void teamAnalysis(ArrayList<RobotPlate> plates, ArrayList<Spot> spots){
         for(RobotPlate plate : plates){
             for(Spot s : spots){
@@ -54,6 +58,7 @@ public class PatternMatcher {
         }
     }
 
+    //get parts of robots
     public static boolean isBotPart(ArrayList<RobotPlate> plates, Spot s){
         for(RobotPlate plate : plates){
             if(plate.isBotPart(s)) return true;

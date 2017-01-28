@@ -21,13 +21,14 @@ import static vision.tools.ImageTools.rgbToHsv;
 /**
  * Created by Simon Rovder
  */
+ //the actual analysis class
 public class RecursiveSpotAnalysis extends SpotAnalysisBase{
 
     private int[] rgb;
     private float[] hsv;
     private SDPColor[] found;
 
-
+    //constructor
     public RecursiveSpotAnalysis(){
         super();
         // Have arrays of 4 times the size for the inputs\
@@ -39,10 +40,12 @@ public class RecursiveSpotAnalysis extends SpotAnalysisBase{
         this.found = new SDPColor[Constants.INPUT_WIDTH*Constants.INPUT_HEIGHT];
     }
 
+    //index
     private int getIndex(int x, int y){
         return y*Constants.INPUT_WIDTH*3 + x*3;
     }
 
+    //actual image analysis
     private void processPixel(int x, int y, SDPColorInstance sdpColorInstance, XYCumulativeAverage average, int maxDepth){
         if(maxDepth <= 0 || x < 0 || x >= Constants.INPUT_WIDTH || y < 0 || y >= Constants.INPUT_HEIGHT) return;
         int i = getIndex(x, y);
@@ -63,6 +66,7 @@ public class RecursiveSpotAnalysis extends SpotAnalysisBase{
     }
 
 
+    //get next note
     @Override
     public void nextFrame(BufferedImage image, long time) {
 

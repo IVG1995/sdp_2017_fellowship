@@ -8,6 +8,7 @@ import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 /**
  * Created by Simon Rovder
  */
+ //interface
 public interface NextSpotsListener {
 	void nextSpots(HashMap<SDPColor, ArrayList<Spot>> spots, long time);
 }

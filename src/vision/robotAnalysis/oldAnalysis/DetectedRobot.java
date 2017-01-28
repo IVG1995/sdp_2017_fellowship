@@ -5,11 +5,12 @@ import vision.tools.DirectedPoint;
 /**
  * Created by Simon Rovder
  */
+ //pretty simple DetectedRobot
 public class DetectedRobot {
 	public final RobotType robotType;
 	public final DirectedPoint location;
-	
-	
+
+
 	public DetectedRobot(RobotType r, DirectedPoint location){
 		this.robotType = r;
 		this.location = location;

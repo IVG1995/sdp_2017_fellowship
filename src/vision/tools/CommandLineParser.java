@@ -8,19 +8,20 @@ import vision.settings.SettingsManager;
 /**
  * Created by Simon Rovder
  */
+ //Command line stuff for the console
 public class CommandLineParser {
-	
+
 	public static final CommandLineParser parser = new CommandLineParser();
 
-	
+
 	private static final String LOAD_ARG   = "--load";
 	private static final String CHANNEL_ARG   = "--videoChannel";
 	private static final String STREAM_ARG = "-stream";
 	private static final String NOGUI = "-noGUI";
 	private static final String TIMER = "-timer";
-	
+
 	private CommandLineParser(){}
-	
+
 	public void newParse(String args[], Vision vision){
 		for(int i = 0; i < args.length; i++){
 			switch(args[i]){
@@ -54,7 +55,7 @@ public class CommandLineParser {
 			}
 		}
 	}
-	
+
 //	public static void apply(String[] args, Vision vision){
 //		HashMap<String, String> arguments = new HashMap<String, String>();
 //		int i = 0;

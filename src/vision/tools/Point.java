@@ -3,7 +3,7 @@ package vision.tools;
 /**
  * Created by Simon Rovder
  */
-
+//I wonder
 public class Point {
 	public int x;
 	public int y;
@@ -12,4 +12,3 @@ public class Point {
 		this.y = y;
 	}
 }
-

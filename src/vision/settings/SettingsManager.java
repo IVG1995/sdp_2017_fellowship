@@ -17,6 +17,8 @@ import vision.gui.SDPConsole;
  * This class takes care of storing and loading settings. If you add any new features that need
  * callibration or take a long time to set up, edit this class to also save those settings.
  */
+ //This class is pretty much just in charge of writing the settings to a file
+ //and then loading them
 public class SettingsManager {
 
 
@@ -38,7 +40,7 @@ public class SettingsManager {
 			writer.close();
 		}
 	}
-	
+
 	public static void loadSettings(String fileName) throws Exception{
 		if(fileName != null){
 			BufferedReader r = new BufferedReader(new FileReader(new File(fileName)));
@@ -62,7 +64,7 @@ public class SettingsManager {
 			r.close();
 		}
 	}
-	
+
 	public static void loadSettings() throws Exception{
 		String fileName = SDPConsole.chooseFile();
 		if(fileName != null){

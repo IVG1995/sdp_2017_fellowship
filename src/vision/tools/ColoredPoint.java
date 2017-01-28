@@ -4,6 +4,7 @@ import java.awt.Color;
 /**
  * Created by Simon Rovder
  */
+ //point with colour
 public class ColoredPoint extends Point{
 
 	public final Color color;

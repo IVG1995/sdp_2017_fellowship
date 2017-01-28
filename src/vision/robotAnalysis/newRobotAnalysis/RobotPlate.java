@@ -14,9 +14,10 @@ import java.util.ArrayList;
 /**
  * Created by Simon Rovder
  */
+ //class for the plates (basically stores the information about bots)
 public class RobotPlate {
 
-
+    //What?
     private static double MAGIC_ANGLE_NUMBER_PLEASE_CHANGE_ME = 0.6;
 
 
@@ -28,6 +29,7 @@ public class RobotPlate {
     private VectorGeometry center = null;
     private ArrayList<Spot> spots = new ArrayList<Spot>();
 
+    //constructor plates have 3 spots which determine what the bots are
     public RobotPlate(Spot s1, Spot s2, Spot s3) {
         this.mainColor = s1.color;
         this.addSpot(s1);
@@ -51,6 +53,7 @@ public class RobotPlate {
         }
     }
 
+    //facing for the VectorGeometry
     private void findExpectedDeterminer(Spot s){
         VectorGeometry centre = new VectorGeometry(this.location.getXAverage(), this.location.getYAverage());
         VectorGeometry dir = VectorGeometry.fromTo(s, centre);
@@ -59,6 +62,7 @@ public class RobotPlate {
         this.expectedDeterminer = dir;
     }
 
+    //validate the spot
     public boolean validate(Spot s){
         if(s.color != this.mainColor){
             if(VectorGeometry.distance(this.expectedDeterminer, s) < 10){
@@ -71,6 +75,7 @@ public class RobotPlate {
         return false;
     }
 
+    //turn the plate data into a real robot
     public Robot toRobot(){
         Robot r = new Robot();
         r.type = RobotColorSettings.getRobotType(this.teamColor, this.mainColor);
@@ -79,27 +84,33 @@ public class RobotPlate {
         return r;
     }
 
+    //return a point
     private DirectedPoint toDirectedPoint(){
         return new DirectedPoint((int)this.center.x, (int)this.center.y, this.getHeading());
     }
 
+    //get heading of the plate
     private double getHeading(){
         return this.actualDeterminer.angle() - Math.PI + MAGIC_ANGLE_NUMBER_PLEASE_CHANGE_ME;
     }
 
+    //add a new spot
     private void addSpot(Spot s){
         this.spots.add(s);
         this.location.addPoint(s.x, s.y);
     }
 
+    //what does this do?
     public boolean isValid(){
         return this.actualDeterminer != null;
     }
 
+    //determine if plate has a team
     public boolean hasTeam(){
         return this.teamColor != null;
     }
 
+    //try to add the plate to a team
     public void tryAddTeam(Spot s){
         if(this.teamColor == null && VectorGeometry.distance(this.center, s) < 5){
             this.teamColor = s.color;
@@ -107,10 +118,12 @@ public class RobotPlate {
         }
     }
 
+    //manually set the team
     public void setTeam(SDPColor c){
         this.teamColor = c;
     }
 
+    //determine if the spot is part of a robot
     public boolean isBotPart(Spot spot){
         for(Spot s : this.spots){
             if(VectorGeometry.distance(s, spot) < 5){
