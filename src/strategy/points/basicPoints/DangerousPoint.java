@@ -41,6 +41,7 @@ public class DangerousPoint extends DynamicPointBase {
                     }
                 }
             }
+            // If our robot can't locate the ball or either of the opponents, move to position (-130, 0), which is in front of our goal.
             if(dangerous == null){
                 this.x = - Constants.PITCH_WIDTH/2 + 20;
                 this.y = 0;

@@ -101,7 +101,7 @@ public class MotionController extends ControllerBase {
 
             navigation.setDestination(new VectorGeometry(destination.x, destination.y));
 
-
+        // If no destination was specified, return (do nothing).
         } else {
             return;
         }
@@ -109,7 +109,9 @@ public class MotionController extends ControllerBase {
         if(this.heading != null){
             this.heading.recalculate();
             heading = new VectorGeometry(this.heading.getX(), this.heading.getY());
-        } else heading = VectorGeometry.fromAngular(us.location.direction, 10, null);
+        } else {
+            heading = VectorGeometry.fromAngular(us.location.direction, 10, null);
+        }
 
 
 

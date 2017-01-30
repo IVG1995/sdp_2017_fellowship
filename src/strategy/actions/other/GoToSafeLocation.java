@@ -51,6 +51,8 @@ public class GoToSafeLocation extends ActionBase {
         if(safe()){
             this.robot.MOTION_CONTROLLER.clearObstacles();
             throw new ActionException(true, false);
+        } else {
+            //TODO: Decide what to do if current state is deemed to be unsafe
         }
 
     }
@@ -58,8 +60,10 @@ public class GoToSafeLocation extends ActionBase {
     public static boolean safe(){
         Robot us  = Strategy.world.getRobot(RobotType.FRIEND_2);
         Ball ball = Strategy.world.getLastKnownBall();
+        // If we can't find our own robot (big error if that's the case) or can't find the ball, it is not safe
         if(us == null || ball == null) return false;
         VectorGeometry ourGoal = new VectorGeometry(-Constants.PITCH_WIDTH/2, 0);
+        // Otherwise, it is safe if we are closer to our goal than the ball is.
         return us.location.distance(ourGoal) < ball.location.distance(ourGoal);
     }
 }
