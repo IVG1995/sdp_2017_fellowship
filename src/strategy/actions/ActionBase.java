@@ -1,5 +1,6 @@
 package strategy.actions;
 
+import strategy.Strategy;
 import strategy.points.DynamicPoint;
 import strategy.robots.RobotBase;
 import vision.gui.SDPConsole;
@@ -61,14 +62,17 @@ public abstract class ActionBase implements ActionInterface {
         // Check the delay
         if(this.delayedUntil > System.currentTimeMillis()) return;
 
+        // If there is no active subaction, perform this action.
         if(this.action == null){
-            // If there is an active subaction, activate that action instead of this one.
             this.tok();
+
+        // If there is an active subaction, execute that and
         } else {
-            // Recalculate the relevant point
+            // Recalculate the relevant point, if applicable
             if(this.point != null) this.point.recalculate();
+
             try{
-                // Activate the current action's tik() method (nothing else to do)
+                // Activate the current subaction's tik() method (nothing else to do)
                 this.action.tik();
             } catch (ActionException e){
 

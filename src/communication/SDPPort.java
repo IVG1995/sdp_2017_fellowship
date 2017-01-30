@@ -85,7 +85,7 @@ public class SDPPort extends JFrame implements PortListener, ActionListener{
      *
      * The loop never ends, so you may mess around with the RF stick as much as you like.
      *
-     * All further communication goes through this pot.
+     * All further communication goes through this port.
      *
      * @param expectedPort If you know the name of the port, put it here. If this is null, scans all ports.
      * @param expectedResponse Put whatever your robot responds to "ping" with.

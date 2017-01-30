@@ -69,6 +69,7 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
     @Override
     protected BehaviourEnum getState() {
         Ball ball = Strategy.world.getBall();
+        // If our robot doesn't know where the ball is, go into defending mode.
         if(ball == null){
             this.nextState = BehaviourEnum.DEFEND;
         } else {
