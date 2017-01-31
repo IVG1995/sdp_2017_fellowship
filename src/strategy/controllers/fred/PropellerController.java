@@ -1,6 +1,6 @@
 package strategy.controllers.fred;
 
-import communication.ports.interfaces.PropellerEquipedRobotPort;
+import communication.ports.interfaces.PropellerEquippedRobotPort;
 import strategy.Strategy;
 import strategy.controllers.ControllerBase;
 import strategy.robots.RobotBase;
@@ -25,8 +25,8 @@ public class PropellerController extends ControllerBase {
         this.propellerTracker = 0;
     }
 
-    private void propell(int dir){
-        PropellerEquipedRobotPort port = (PropellerEquipedRobotPort) this.robot.port;
+    private void propel(int dir){
+        PropellerEquippedRobotPort port = (PropellerEquippedRobotPort) this.robot.port;
         if(dir < 0){
             if(this.propellerTracker < -4) return;
             this.propellerTracker--;
@@ -45,7 +45,7 @@ public class PropellerController extends ControllerBase {
 
     @Override
     public void perform(){
-        assert (this.robot.port instanceof PropellerEquipedRobotPort);
+        assert (this.robot.port instanceof PropellerEquippedRobotPort);
 
         Robot us = Strategy.world.getRobot(this.robot.robotType);
         if(us != null){
@@ -59,12 +59,12 @@ public class PropellerController extends ControllerBase {
                     }
                 }
                 if(danger){
-                    this.propell(0);
+                    this.propel(0);
                 } else {
                     VectorGeometry toEnemy = new VectorGeometry(Constants.PITCH_WIDTH/2, 0);
                     VectorGeometry direct = VectorGeometry.fromAngular(us.location.direction, 10, null);
                     int newDir = VectorGeometry.crossProductDirection(toEnemy, direct) ? 1 : -1;
-                    this.propell(newDir);
+                    this.propel(newDir);
                 }
             }
         }

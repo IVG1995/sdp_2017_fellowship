@@ -95,7 +95,7 @@ public class DynamicWorld {
         }
     }
 
-    //stes the probable holder of the ball
+    //sets the probable holder of the ball
     public void setProbableBallHolder(RobotType type){
         this.probableBallHolder = type;
     }

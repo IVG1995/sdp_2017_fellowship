@@ -2,12 +2,16 @@ package strategy.actions.offense;
 
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
+import strategy.controllers.essentials.MotionController;
 import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.EnemyGoal;
+import strategy.points.basicPoints.RobotPoint;
 import strategy.robots.Fred;
 import strategy.points.basicPoints.KickablePoint;
 import strategy.Strategy;
+import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
+import vision.Robot;
 import vision.RobotType;
 import vision.tools.VectorGeometry;
 
@@ -16,9 +20,10 @@ import vision.tools.VectorGeometry;
  */
 public class OffensiveKick extends ActionBase {
 
+    private final int NOT_FACING_GOAL  = 0;
+    private final int READY_TO_RELEASE = 1;
+    private final int READY_TO_SHOOT   = 2;
     // A KickablePoint always contains the location 7 (this number could change) cm in front of the ball.
-    private KickablePoint kickable = new KickablePoint(RobotType.FRIEND_2);
-    private BallPoint ball = new BallPoint();
 
     public OffensiveKick(RobotBase robot) {
         super(robot);
@@ -26,57 +31,48 @@ public class OffensiveKick extends ActionBase {
     }
     @Override
     public void enterState(int newState) {
-        if (newState == 0) {
-            this.robot.MOTION_CONTROLLER.setHeading(new BallPoint());
-            this.robot.MOTION_CONTROLLER.setDestination(new BallPoint());
-        } else if (newState == 1) {
-            ((Fred)this.robot).KICKER_CONTROLLER.kick();
+        if (newState == NOT_FACING_GOAL) {
+            //stay in place and rotate
+            System.out.println("not facing goal");
+            this.robot.MOTION_CONTROLLER.setHeading(new EnemyGoal());
+            this.robot.MOTION_CONTROLLER.setDestination(new RobotPoint(this.robot.robotType));
+            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.AIM);
+            this.robot.MOTION_CONTROLLER.setTolerance(-1);
+            this.robot.MOTION_CONTROLLER.setRotationTolerance(5);
+        } else if (newState == READY_TO_RELEASE) {
+            this.robot.MOTION_CONTROLLER.setDestination(null);
+            this.robot.MOTION_CONTROLLER.setHeading(null);
+            System.out.println("ready to release");
+            ((Frodo) this.robot).GRABBER_CONTROLLER.wantToRelease();
+        } else {
+            System.out.println("ready to kick");
+            ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick();
         }
 
-
-        // For first friendly we don't have a propeller, so this code is useless.
-        //if(newState == 0){
-        //    if(this.robot instanceof Fred){
-        //        ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(true);
-        //    }
-        //}
         this.state = newState;
     }
 
     @Override
     public void tok() throws ActionException {
-        // Two states:
-        // 0: ball is too far away; move towards ball
-        // 1: ball is within kicking distance; kick ball
-
-
-        // If the robot or ball can not be located, try again next timer cycle.
-        if (Strategy.world.getRobot(RobotType.FRIEND_2) == null || Strategy.world.getBall() == null) {
+        Robot us = Strategy.world.getRobot(this.robot.robotType);
+        if (us == null || Strategy.world.getBall() == null) {
             return;
         } else {
-
-            kickable.recalculate();
-            ball.recalculate();
-
-            VectorGeometry kickable_vector = new VectorGeometry(kickable.getX(), kickable.getY());
-            VectorGeometry ball_vector = new VectorGeometry(ball.getX(), ball.getY());
-
-            // contains vector pointing at enemy goal from the ball; used to ensure robot is facing enemy goal when kicking (NOT BEING USED CURRENTLY)
-            //VectorGeometry ball_to_goal = VectorGeometry.fromTo(ball_vector, new VectorGeometry(new EnemyGoal().getX(), new EnemyGoal().getY()));
-
-            // If the ball is too far away from the kicker (more than one cm), keep moving towards the ball. To do that, call this.enterState(0).
-            if (kickable_vector.distance(ball_vector) > 1) {
-                this.enterState(0);
+            VectorGeometry robotLocation = new VectorGeometry();
+            us.location.copyInto(robotLocation);
+            EnemyGoal target = new EnemyGoal();
+            VectorGeometry robotHeading = VectorGeometry.fromAngular(us.location.direction, 10, null);
+            if (VectorGeometry.isInGeneralDirection(robotLocation, robotHeading, target.toVectorGeometry())){
+                if(this.state == NOT_FACING_GOAL){
+                    enterState(READY_TO_RELEASE);
+                } else {
+                    enterState(READY_TO_SHOOT);
+                    this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.ON);
+                    throw new ActionException(true, true);
+                }
             } else {
-                // If this section is reached, the ball is within kicking range. Send the kick command by calling this.enterState(1).
-                this.enterState(1);
+                enterState(NOT_FACING_GOAL);
             }
-
-
-
         }
-
-
-
     }
 }

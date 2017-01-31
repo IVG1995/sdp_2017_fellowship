@@ -4,6 +4,7 @@ import strategy.Strategy;
 import strategy.controllers.ControllerBase;
 import strategy.navigation.NavigationInterface;
 import strategy.navigation.Obstacle;
+import strategy.navigation.aimSimpleNavigation.AimNavigation;
 import strategy.points.DynamicPoint;
 import strategy.navigation.aStarNavigation.AStarNavigation;
 import strategy.navigation.potentialFieldNavigation.PotentialFieldNavigation;
@@ -27,6 +28,10 @@ public class MotionController extends ControllerBase {
 
     private int tolerance;
 
+
+
+    private int rotationTolerance;
+
     private LinkedList<Obstacle> obstacles = new LinkedList<Obstacle>();
 
     public MotionController(RobotBase robot) {
@@ -34,7 +39,7 @@ public class MotionController extends ControllerBase {
     }
 
     public enum MotionMode{
-        ON, OFF
+        ON, OFF, AIM
     }
 
     public void setMode(MotionMode mode){
@@ -43,6 +48,10 @@ public class MotionController extends ControllerBase {
 
     public void setTolerance(int tolerance){
         this.tolerance = tolerance;
+    }
+
+    public void setRotationTolerance(int rotationTolerance) {
+        this.rotationTolerance = rotationTolerance;
     }
 
     public void setDestination(DynamicPoint destination){
@@ -67,14 +76,7 @@ public class MotionController extends ControllerBase {
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
         if(us == null)
         {
-            for(int i = 3; i > 0; i--) {
-                String path = "../../../vision/settings/data/opts";
-                String filename = path + Integer.toString(i) +".jpg"
-                SettingsManager.loadSettings(fileName); //to load a different config
-                if(us != null)
-                {
-                    break;
-                }
+           //TODO Angry yelling
             return;
         }
 
@@ -116,8 +118,11 @@ public class MotionController extends ControllerBase {
 
             navigation.setDestination(new VectorGeometry(destination.x, destination.y));
 
-        // If no destination was specified, return (do nothing).
-        } else {
+        // If no destination was specified, and we mean to aim, use aim navigation.
+        } else if (this.mode == MotionMode.AIM) {
+            navigation = new AimNavigation();
+            destination = new VectorGeometry(us.location.x, us.location.y);
+        } else {// do nothing.
             return;
         }
 
@@ -126,7 +131,7 @@ public class MotionController extends ControllerBase {
             this.heading.recalculate();
             heading = new VectorGeometry(this.heading.getX(), this.heading.getY());
         } else {
-            // If no direction was specified, go forward.
+            // If no direction was specified, do not turn as you move.
             // (heading contains a vector of length ten pointing in the direction our robot is currently facing)
             heading = VectorGeometry.fromAngular(us.location.direction, 10, null);
         }
@@ -161,13 +166,13 @@ public class MotionController extends ControllerBase {
 
         // If we are close enough to the destination, don't move anymore (tolerance denotes close-enoughness)
         // The lower the tolerance, the closer we have to be to the point before the robot stops moving.
-        if(this.destination != null && us.location.distance(destination) < tolerance){
+        if(this.destination != null && us.location.distance(destination) < tolerance && rotation < rotationTolerance){
             this.robot.port.stop();
             return;
         }
 
 
-//        strategy.navigationInterface.draw();
+        navigation.draw();// uncomment to get a JFrame of navigation info
 
         this.robot.drive.move(this.robot.port, us.location, force, rotation, factor);
 

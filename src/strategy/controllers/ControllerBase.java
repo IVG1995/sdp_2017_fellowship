@@ -24,4 +24,8 @@ public abstract class ControllerBase implements ControllerInterface {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    public void performIfActive() {
+        if(this.active) perform();
+    }
 }

@@ -16,6 +16,8 @@ import vision.constants.Constants;
 import vision.settings.SettingsManager;
 import vision.tools.VectorGeometry;
 
+import java.io.IOException;
+
 /**
  * Created by Simon Rovder
  */
@@ -28,7 +30,8 @@ enum BehaviourEnum{
  */
 public class Behave extends StatefulActionBase<BehaviourEnum> {
 
-
+    private int optNumber = 1;
+    private static final int NUMBER_OF_OPTS = 5;
     public static boolean RESET = true;
 
     //private Robot last_known_robot;
@@ -82,8 +85,17 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
             Robot us = Strategy.world.getRobot(this.robot.robotType);
             if(us == null){
                 // TODO: Angry yelling
+                System.out.println("ay ya get shit on");
+                try {
+                    String path = "../../../vision/settings/data/opts";
+                    if(optNumber == NUMBER_OF_OPTS) optNumber = 1; else optNumber++;
+                    String fileName = path + Integer.toString(optNumber);
+                    SettingsManager.loadSettings(fileName);
+                    System.out.println(fileName);
+                } catch (IOException io) {
+                    // if an exception is thrown settings stay the same and we continue to next timer cycle
+                }
             } else {
-
                 // If our robot is further away from our goal then the ball is, go into SAFE mode (execute sub-action GoToSafeLocation).
                 // This action rushes our robot back to right in front of our goal while also making sure not to accidentally
                 // knock the ball into our own goal in the process.

@@ -1,6 +1,8 @@
 package strategy;
 
+import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.Behave;
+import strategy.actions.offense.BallGrab;
 import strategy.actions.other.*;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
@@ -8,6 +10,7 @@ import communication.ports.robotPorts.FredRobotPort;
 import strategy.points.basicPoints.*;
 import strategy.robots.Fred;
 import communication.PortListener;
+import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.*;
 import vision.settings.SettingsManager;
@@ -31,8 +34,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
     private String action;
     private Vision vision;
     //counter mechanism for cycling vision setting files
-    private int optNumber = 1;
-    private static final int NUMBER_OF_OPTS = 3;
+
 
     /**
      * SDP2017NOTE
@@ -62,10 +64,13 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
          * navigation system and all its controllers will be launched every cycle.
          */
         // Our robot has RobotType "FRIEND_2"
-        this.robots = new RobotBase [] {new Fred(RobotType.FRIEND_2)};
+        this.robots = new RobotBase [] {new Frodo(RobotType.FRIEND_2)};
 
-        Fred fred = (Fred) this.robots[0];
-        FredRobotPort port = (FredRobotPort) fred.port;
+//        Fred fred = (Fred) this.robots[0];
+//        FredRobotPort port = (FredRobotPort) fred.port;
+
+        Frodo frodo = (Frodo) this.robots[0];
+        FrodoRobotPort port = (FrodoRobotPort) frodo.port;
 
         final Strategy semiStrategy = this;
         semiStrategy.vision = new Vision(args);
@@ -76,7 +81,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
 
         this.action = "";
         GUI.gui.doesNothingButIsNecessarySoDontDelete();
-        GUI.gui.setRobot(fred);
+        GUI.gui.setRobot(frodo);
         this.timer = new Timer(100, this);
         this.timer.start();
 
@@ -91,116 +96,122 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
             System.out.print(">> ");
             this.action = this.readLine();
             if(this.action.equals("exit")){
-                fred.PROPELLER_CONTROLLER.setActive(false);
-                port.propeller(0);
-                port.propeller(0);
-                port.propeller(0);
+//                frodo.PROPELLER_CONTROLLER.setActive(false);
+//                port.propeller(0);
+//                port.propeller(0);
+//                port.propeller(0);
                 break;
             }
             switch(this.action){
                 case "a":
-                    fred.setControllersActive(true);
+                    frodo.setControllersActive(true);
+                    break;
+                case "grab":
+                    frodo.ACTION_CONTROLLER.setAction(new BallGrab(frodo));
                     break;
                 case "stop":
-                    fred.ACTION_CONTROLLER.setAction(new Stop(fred));
+                    frodo.ACTION_CONTROLLER.setAction(new Stop(frodo));
                     break;
-                case "!":
-                    System.out.print("Action: ");
-                    System.out.print(fred.ACTION_CONTROLLER.isActive());
-                    System.out.print(" Motion: ");
-                    System.out.print(fred.MOTION_CONTROLLER.isActive());
-                    System.out.print(" Propeller: ");
-                    System.out.println(fred.PROPELLER_CONTROLLER.isActive());
-                    break;
+//                case "!":
+//                    System.out.print("Action: ");
+//                    System.out.print(frodo.ACTION_CONTROLLER.isActive());
+//                    System.out.print(" Motion: ");
+//                    System.out.print(frodo.MOTION_CONTROLLER.isActive());
+//                    System.out.print(" Propeller: ");
+//                    System.out.println(frodo.PROPELLER_CONTROLLER.isActive());
+//                    break;
                 case "?":
-                    fred.ACTION_CONTROLLER.printDescription();
+                    frodo.ACTION_CONTROLLER.printDescription();
                     break;
                 case "hold":
-                    fred.ACTION_CONTROLLER.setAction(new HoldPosition(fred, new MidFoePoint()));
+                    frodo.ACTION_CONTROLLER.setAction(new HoldPosition(frodo, new MidFoePoint()));
                     break;
                 case "kick":
-                    fred.ACTION_CONTROLLER.setAction(new OffensiveKick(fred));
+                    frodo.ACTION_CONTROLLER.setAction(new OffensiveKick(frodo));
                     break;
                 case "h":
-                    fred.ACTION_CONTROLLER.setAction(new Waiting(fred));
-                    fred.MOTION_CONTROLLER.setDestination(null);
-                    fred.MOTION_CONTROLLER.setHeading(null);
+                    frodo.ACTION_CONTROLLER.setAction(new Waiting(frodo));
+                    frodo.MOTION_CONTROLLER.setDestination(null);
+                    frodo.MOTION_CONTROLLER.setHeading(null);
                     port.halt();
                     port.halt();
                     port.halt();
-                    fred.PROPELLER_CONTROLLER.setActive(false);
-                    port.propeller(0);
-                    port.propeller(0);
-                    port.propeller(0);
+//                    frodo.PROPELLER_CONTROLLER.setActive(false);
+//                    port.propeller(0);
+//                    port.propeller(MOTION_CONTROLLER0);
+//                    port.propeller(0);
                     break;
                 case "reset":
-                    fred.ACTION_CONTROLLER.setAction(new Goto(fred, new ConstantPoint(0,0)));
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new ConstantPoint(0,0)));
                     break;
                 case "remote":
-                    System.out.println(fred.ACTION_CONTROLLER.isActive());
-                    fred.ACTION_CONTROLLER.setAction(new RemoteControl(fred));
+                    System.out.println(frodo.ACTION_CONTROLLER.isActive());
+                    frodo.ACTION_CONTROLLER.setAction(new RemoteControl(frodo));
                     break;
                 case "behave":
                     Status.fixedBehaviour = null;
-                    fred.ACTION_CONTROLLER.setAction(new Behave(fred));
+                    frodo.ACTION_CONTROLLER.setAction(new Behave(frodo));
                     break;
                 case "AUTO":
                     Status.fixedBehaviour = null;
                     break;
                 case "safe":
-                    fred.ACTION_CONTROLLER.setAction(new GoToSafeLocation(fred));
+                    frodo.ACTION_CONTROLLER.setAction(new GoToSafeLocation(frodo));
                     break;
                 case "shunt":
-                    fred.ACTION_CONTROLLER.setAction(new ShuntKick(fred));
+                    frodo.ACTION_CONTROLLER.setAction(new ShuntKick(frodo));
                     break;
                 case "demo":
-                    fred.ACTION_CONTROLLER.setAction(new Demo(fred));
+                    frodo.ACTION_CONTROLLER.setAction(new Demo(frodo));
                     break;
                 case "def":
-                    fred.ACTION_CONTROLLER.setAction(new DefendGoal(fred));
+                    frodo.ACTION_CONTROLLER.setAction(new DefendGoal(frodo));
                     break;
                 case "annoy":
-                    fred.ACTION_CONTROLLER.setAction(null);
-                    fred.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.FELIX));
-                    fred.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
+                    frodo.ACTION_CONTROLLER.setAction(null);
+                    frodo.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.FELIX));
+                    frodo.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
                     break;
-                case "rot":
-                    fred.PROPELLER_CONTROLLER.setActive(false);
-                    ((FredRobotPort) fred.port).propeller(0);
-                    ((FredRobotPort) fred.port).propeller(0);
-                    ((FredRobotPort) fred.port).propeller(0);
-                    fred.ACTION_CONTROLLER.setActive(false);
-                    fred.MOTION_CONTROLLER.setDestination(new Rotate());
-                    fred.MOTION_CONTROLLER.setHeading(new BallPoint());
-                    break;
-                case "p":
-                    boolean act = fred.PROPELLER_CONTROLLER.isActive();
-                    fred.PROPELLER_CONTROLLER.setActive(!act);
-                    if(!act){
-                        ((FredRobotPort) fred.port).propeller(0);
-                        ((FredRobotPort) fred.port).propeller(0);
-                        ((FredRobotPort) fred.port).propeller(0);
-                    }
-                    System.out.println(fred.PROPELLER_CONTROLLER.isActive());
-                    break;
+//                case "rot":
+//                    frodo.PROPELLER_CONTROLLER.setActive(false);
+//                    ((FredRobotPort) frodo.port).propeller(0);
+//                    ((FredRobotPort) frodo.port).propeller(0);
+//                    ((FredRobotPort) frodo.port).propeller(0);
+//                    frodo.ACTION_CONTROLLER.setActive(false);
+//                    frodo.MOTION_CONTROLLER.setDestination(new Rotate());
+//                    frodo.MOTION_CONTROLLER.setHeading(new BallPoint());
+//                    break;
+//                case "p":
+//                    boolean act = frodo.PROPELLER_CONTROLLER.isActive();
+//                    frodo.PROPELLER_CONTROLLER.setActive(!act);
+//                    if(!act){
+//                        ((FredRobotPort) frodo.port).propeller(0);
+//                        ((FredRobotPort) frodo.port).propeller(0);
+//                        ((FredRobotPort) frodo.port).propeller(0);
+//                    }
+//                    System.out.println(frodo.PROPELLER_CONTROLLER.isActive());
+//                    break;
                 case "test":
-                    fred.MOTION_CONTROLLER.setHeading(new EnemyGoal());
-                    fred.MOTION_CONTROLLER.setDestination(new EnemyGoal());
+                    frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
+                    frodo.MOTION_CONTROLLER.setDestination(new EnemyGoal());
                     break;
                 // Robot should go to ball then stop.
                 case "follow_ball":
-                    fred.ACTION_CONTROLLER.setAction(new Goto(fred, new BallPoint()));
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new BallPoint()));
                     break;
                 // Only if our goal is on the left-hand side of the pitch
                 case "go_to_friendly_goal":
-                    fred.ACTION_CONTROLLER.setAction(new Goto(fred, new ConstantPoint(-150, 0)));
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new ConstantPoint(-150, 0)));
                     break;
                 // Only if our goal is on the left-hand side of the pitch
                 case "go_to_opponent_goal":
-                    fred.ACTION_CONTROLLER.setAction(new Goto(fred, new ConstantPoint(150, 0)));
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new ConstantPoint(150, 0)));
                     break;
                 case "move_forward":
-                    fred.ACTION_CONTROLLER.setAction(new Goto(fred, new InFrontOfRobot(RobotType.FRIEND_2)));
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new InFrontOfRobot(RobotType.FRIEND_2)));
+                    break;
+                case "turn_to_enemy_goal":
+                    frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
                     break;
             }
         }
@@ -242,14 +253,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
             for(RobotBase robot : this.robots){
                 if(world.getRobot(robot.robotType) == null){
                     // Angry
-                    try {
-                        String path = "../../../vision/settings/data/opts";
-                        if(optNumber == NUMBER_OF_OPTS) optNumber = 1; else optNumber++;
-                        String fileName = path + Integer.toString(optNumber) +".jpg";
-                        SettingsManager.loadSettings(fileName);
-                    } catch (IOException io) {
-                        // if an exception is thrown settings stay the same and we continue to next timer cycle
-                    }
+
                     Toolkit.getDefaultToolkit().beep();
                 }
                 try{

@@ -16,27 +16,34 @@ public class FourWheelHolonomicDrive implements DriveInterface{
 
     public void move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation, double factor){
         assert(port instanceof FourWheelHolonomicRobotPort);
-        // hack to accommodate rotation of original Fred (facing towards front wheel) model
-        // and Frobo (facing towards angle between front and right wheel)
-        rotation = rotation - Math.PI / 4;
 
         VectorGeometry dir = new VectorGeometry();
         force.copyInto(dir).coordinateRotation(force.angle() - location.direction);
         factor = Math.min(1, factor);
 
-        double lim = this.MAX_MOTION - Math.abs(rotation* this.MAX_ROTATION *factor);
+        double lim = this.MAX_MOTION - Math.abs(rotation * this.MAX_ROTATION * factor);
+                    // 200 - 90
+        System.out.println("location: " + location.toString());
+        System.out.println("force: " + force.toString());
+        System.out.println("force.angle: " + force.angle());
+        System.out.println("dir: " + dir.toString());
 
-        double front = dir.y;
-        double left = -dir.x;
-        double back = -dir.y;
+        double front = -dir.y;
+        double left =  dir.x;
+        double back =  -dir.y;
         double right = dir.x;
         double normalizer = Math.max(Math.max(Math.abs(left), Math.abs(right)), Math.max(Math.abs(front), Math.abs(back)));
 
-        normalizer = lim/normalizer*factor;
-        front = front * normalizer + rotation * this.MAX_ROTATION;
-        back  = back  * normalizer + rotation * this.MAX_ROTATION;
-        left  = left  * normalizer + rotation * this.MAX_ROTATION;
-        right = right * normalizer + rotation * this.MAX_ROTATION;
+        double normalizer2 = (lim/normalizer)*factor;
+        front = front*normalizer2 + rotation * this.MAX_ROTATION;
+        back  = back*normalizer2 + rotation * this.MAX_ROTATION;
+        left  = left*normalizer2 + rotation * this.MAX_ROTATION;
+        right = right*normalizer2 + rotation * this.MAX_ROTATION;
+        System.out.println("front: " + front);
+        System.out.println("back: " + back);
+        System.out.println("left: " + left);
+        System.out.println("right: " + right);
+        System.out.println("=======================");
 
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
 

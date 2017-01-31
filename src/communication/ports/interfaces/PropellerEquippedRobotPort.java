@@ -3,6 +3,6 @@ package communication.ports.interfaces;
 /**
  * Created by Simon Rovder
  */
-public interface PropellerEquipedRobotPort {
+public interface PropellerEquippedRobotPort {
     public void propeller(int spin);
 }

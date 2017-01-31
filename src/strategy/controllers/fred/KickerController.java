@@ -1,32 +1,28 @@
 package strategy.controllers.fred;
 
-import communication.ports.robotPorts.FredRobotPort;
+import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.controllers.ControllerBase;
 import strategy.robots.RobotBase;
+
 /**
- * Created by cole on 1/30/17.
- * A simple wrapper class that sends the kick command through FRED's port.
- * This code is written assuming that the kicker retracts itself automatically after kicking.
- * Note: This class might be simple enough that we could scrap it entirely and just send the
- * command from wherever we would normally call kick().
+ * Contains the logic behind when to kick.
  */
 public class KickerController extends ControllerBase {
-    private static boolean kick_ball = false;
+    private static boolean wantToKick = false;
 
     public KickerController(RobotBase robot) {
         super(robot);
     }
 
-    public void kick() {
-        this.kick_ball = true;
+    public void setWantToKick() {
+        wantToKick = true;
     }
 
     public void perform() {
-        if (this.kick_ball) {
-            ((FredRobotPort)this.robot.port).sdpPort.commandSender("kick");
-            this.kick_ball = false;
+        FrodoRobotPort frodoRobotPort = ((FrodoRobotPort)this.robot.port);
+        if (wantToKick) {
+            frodoRobotPort.kick();
+            wantToKick = false;
         }
     }
-
-
 }

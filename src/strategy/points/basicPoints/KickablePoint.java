@@ -32,7 +32,7 @@ public class KickablePoint extends DynamicPointBase{
 
         if(r != null){
             VectorGeometry v = r.location.clone();
-            v.add((new VectorGeometry()).fromAngular(r.location.direction, DISTANCE_TO_KICKER));
+            v.add((new VectorGeometry()).fromAngular(r.location.direction + Math.PI / 4, DISTANCE_TO_KICKER));
             this.x = (int) v.x;
             this.y = (int) v.y;
 
