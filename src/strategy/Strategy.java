@@ -196,6 +196,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                 case "go_to_opponent_goal":
                     fred.ACTION_CONTROLLER.setAction(new Goto(fred, new ConstantPoint(150, 0)));
                     break;
+                case "move_forward":
+                    fred.ACTION_CONTROLLER.setAction(new Goto(fred, new InFrontOfRobot(RobotType.FRIEND_2)));
+                    break;
             }
         }
 
