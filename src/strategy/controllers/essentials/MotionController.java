@@ -12,6 +12,7 @@ import strategy.GUI;
 import vision.Robot;
 import vision.RobotType;
 import vision.tools.VectorGeometry;
+import vision.settings.SettingsManager;
 
 import java.util.LinkedList;
 
@@ -64,7 +65,23 @@ public class MotionController extends ControllerBase {
         if(this.mode == MotionMode.OFF) return;
 
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
-        if(us == null) return;
+        if(us == null)
+        {
+            for(int i = 3; i > 0; i--) {
+                try {
+                    String path = "../../../vision/settings/data/opts";
+                    String fileName = path + Integer.toString(i) +".jpg";
+                    SettingsManager.loadSettings(fileName);
+                    if(us != null)
+                    {
+                        break;
+                    }
+                } catch (Exception e) {
+                    //to load a different config
+                }
+            }
+            return;
+        }
 
         NavigationInterface navigation;
 
