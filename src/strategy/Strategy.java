@@ -184,12 +184,15 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     fred.MOTION_CONTROLLER.setHeading(new EnemyGoal());
                     fred.MOTION_CONTROLLER.setDestination(new EnemyGoal());
                     break;
+                // Robot should go to ball then stop.
                 case "follow_ball":
                     fred.ACTION_CONTROLLER.setAction(new Goto(fred, new BallPoint()));
                     break;
+                // Only if our goal is on the left-hand side of the pitch
                 case "go_to_friendly_goal":
                     fred.ACTION_CONTROLLER.setAction(new Goto(fred, new ConstantPoint(-150, 0)));
                     break;
+                // Only if our goal is on the left-hand side of the pitch
                 case "go_to_opponent_goal":
                     fred.ACTION_CONTROLLER.setAction(new Goto(fred, new ConstantPoint(150, 0)));
                     break;
