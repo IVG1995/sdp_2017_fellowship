@@ -6,6 +6,12 @@ import strategy.points.basicPoints.DangerousPoint;
 import strategy.points.basicPoints.MidDangerPoint;
 import strategy.robots.Fred;
 import strategy.robots.RobotBase;
+import vision.RobotType;
+import vision.tools.VectorGeometry;
+import vision.Ball;
+import strategy.Strategy;
+import vision.Robot;
+import vision.constants.Constants;
 
 /**
  * Created by Simon Rovder
@@ -36,9 +42,11 @@ public class DefendGoal extends ActionBase {
             //     -the foe if the ball isn't found
             //     -in front of our goal if neither is found
             robot.MOTION_CONTROLLER.setHeading(new DangerousPoint());
-            //
-            this.enterAction(new HoldPosition(this.robot, new MidDangerPoint(this.robot.robotType)), 0, 0);
+            // This tells fred to run in between the ball/foe and the goal to block the shot.
+            this.enterAction(new HoldPosition(this.robot, new MidDangerPoint(RobotType.FRIEND_2)), 0, 0);
             this.enterState(1);
+
+
         }
     }
 }

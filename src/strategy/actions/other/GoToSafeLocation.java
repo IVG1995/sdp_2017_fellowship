@@ -7,6 +7,7 @@ import strategy.points.basicPoints.BallPoint;
 import strategy.navigation.Obstacle;
 import strategy.points.basicPoints.ConstantPoint;
 import communication.ports.robotPorts.FredRobotPort;
+import strategy.points.basicPoints.MidDangerPoint;
 import strategy.robots.Fred;
 import strategy.robots.RobotBase;
 import vision.Ball;
@@ -14,6 +15,7 @@ import vision.Robot;
 import vision.RobotType;
 import vision.constants.Constants;
 import vision.tools.VectorGeometry;
+import strategy.points.basicPoints.KickablePoint;
 
 /**
  * Created by Simon Rovder
@@ -52,7 +54,15 @@ public class GoToSafeLocation extends ActionBase {
             this.robot.MOTION_CONTROLLER.clearObstacles();
             throw new ActionException(true, false);
         } else {
-            //TODO: Decide what to do if current state is deemed to be unsafe
+            // In this case, call this.enterState(0) to make the robot go stand in front of our goal. enterState also
+            // automatically avoids the ball so we don't accidentally end up shoving the ball into our own goal while
+            // running back to defend it. Before calling it, clear the motion controller's list of obstacles so our
+            // robot doesn't erroneously try to avoid where the ball was during past timer cycles.
+            this.robot.MOTION_CONTROLLER.clearObstacles();
+
+            this.enterState(0);
+
+
         }
 
     }

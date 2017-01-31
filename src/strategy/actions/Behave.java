@@ -86,6 +86,8 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
             } else {
 
                 // If our robot is further away from our goal then the ball is, go into SAFE mode (execute sub-action GoToSafeLocation).
+                // This action rushes our robot back to right in front of our goal while also making sure not to accidentally
+                // knock the ball into our own goal in the process.
                 VectorGeometry ourGoal = new VectorGeometry(-Constants.PITCH_WIDTH/2, 0);
                 if(us.location.distance(ourGoal) > ball.location.distance(ourGoal)){
                     this.nextState = BehaviourEnum.SAFE;
