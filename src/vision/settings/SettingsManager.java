@@ -1,9 +1,6 @@
 package vision.settings;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
+import java.io.*;
 
 import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColors;
@@ -41,7 +38,7 @@ public class SettingsManager {
 		}
 	}
 
-	public static void loadSettings(String fileName) throws Exception{
+	public static void loadSettings(String fileName) throws IOException{
 		if(fileName != null){
 			BufferedReader r = new BufferedReader(new FileReader(new File(fileName)));
 			String next = r.readLine();

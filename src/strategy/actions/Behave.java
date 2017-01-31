@@ -13,6 +13,7 @@ import vision.Ball;
 import vision.Robot;
 import vision.RobotType;
 import vision.constants.Constants;
+import vision.settings.SettingsManager;
 import vision.tools.VectorGeometry;
 
 /**
@@ -81,8 +82,6 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
             Robot us = Strategy.world.getRobot(this.robot.robotType);
             if(us == null){
                 // TODO: Angry yelling
-                // TODO: create variable that holds the last known location of our robot
-                System.out.println();
             } else {
 
                 // If our robot is further away from our goal then the ball is, go into SAFE mode (execute sub-action GoToSafeLocation).
@@ -93,7 +92,7 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                     this.nextState = BehaviourEnum.SAFE;
                 } else {
                     // If the ball is within 20 cm of any wall, go into SHUNT mode (execute sub-action ShuntKick).
-                    // SHUNT is yet to be implemented
+                    // I believe a "Shunt Kick" is just ramming into the ball instead of using the kicker.
                     if(Math.abs(ball.location.x) > Constants.PITCH_WIDTH/2 - 20 && Math.abs(ball.location.y) > Constants.PITCH_HEIGHT/2 - 20){
                         this.nextState = BehaviourEnum.SHUNT;
                     } else {

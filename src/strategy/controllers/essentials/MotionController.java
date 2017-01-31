@@ -65,21 +65,7 @@ public class MotionController extends ControllerBase {
         if(this.mode == MotionMode.OFF) return;
 
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
-        if(us == null)
-        {
-            for(int i = 3; i > 0; i--) {
-                try {
-                    String path = "../../../vision/settings/data/opts";
-                    String fileName = path + Integer.toString(i) +".jpg";
-                    SettingsManager.loadSettings(fileName);
-                    if(us != null)
-                    {
-                        break;
-                    }
-                } catch (Exception e) {
-                    //to load a different config
-                }
-            }
+        if (us == null) {
             return;
         }
 
