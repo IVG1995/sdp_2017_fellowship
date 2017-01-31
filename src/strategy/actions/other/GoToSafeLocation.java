@@ -60,7 +60,7 @@ public class GoToSafeLocation extends ActionBase {
     public static boolean safe(){
         Robot us  = Strategy.world.getRobot(RobotType.FRIEND_2);
         Ball ball = Strategy.world.getLastKnownBall();
-        // If we can't find our own robot (big error if that's the case) or can't find the ball, it is not safe
+        // If we can't find our own robot or can't find the ball, it is not safe
         if(us == null || ball == null) return false;
         VectorGeometry ourGoal = new VectorGeometry(-Constants.PITCH_WIDTH/2, 0);
         // Otherwise, it is safe if we are closer to our goal than the ball is.

@@ -115,6 +115,7 @@ public class MotionController extends ControllerBase {
             heading = new VectorGeometry(this.heading.getX(), this.heading.getY());
         } else {
             // If no direction was specified, go forward.
+            // (heading contains a vector of length ten pointing in the direction our robot is currently facing)
             heading = VectorGeometry.fromAngular(us.location.direction, 10, null);
         }
 
@@ -134,16 +135,20 @@ public class MotionController extends ControllerBase {
 
         // Contains a vector of length 10 pointing in the direction the robot is currently heading in.
         VectorGeometry robotHeading = VectorGeometry.fromAngular(us.location.direction, 10, null);
+        // Contains a vector pointing in the direction the motion controller was told to head in.
         VectorGeometry robotToPoint = VectorGeometry.fromTo(us.location, heading);
+        // factor denotes basically the speed of movement; factor = 1 means the robot travels at full speed, 0 means doesn't move, etc.
         double factor = 1;
+        // rotation contains the angle the robot has to turn to be facing the right direction
         double rotation = VectorGeometry.signedAngle(robotToPoint, robotHeading);
         // Can throw null without check because null check takes SourceGroup into consideration.
         if(destination.distance(us.location) < 30){
+            // If we are less than 30 cm away from our destination, move at 70% speed.
             factor = 0.7;
         }
 
-        // If we are already close enough to the destination, don't move anymore (tolerance denotes close-enoughness)
-        // The lower the tolerance, the closer we have to be to the point.
+        // If we are close enough to the destination, don't move anymore (tolerance denotes close-enoughness)
+        // The lower the tolerance, the closer we have to be to the point before the robot stops moving.
         if(this.destination != null && us.location.distance(destination) < tolerance){
             this.robot.port.stop();
             return;

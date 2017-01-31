@@ -58,6 +58,6 @@ public class ActionController extends ControllerBase {
     }
 
     public void printDescription(){
-        System.out.println(this.robot.robotType.toString() + "is performing " + this.action.description());
+        System.out.println(this.robot.robotType.toString() + "is performing top-level action " + this.action.description());
     }
 }
