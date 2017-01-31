@@ -70,6 +70,7 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
     protected BehaviourEnum getState() {
         Ball ball = Strategy.world.getBall();
         // If our robot doesn't know where the ball is, go into defending mode (execute sub-action DefendGoal).
+        // DefendGoal TBD...
         if(ball == null){
             this.nextState = BehaviourEnum.DEFEND;
         // Otherwise, think more about what state to go into.
@@ -83,8 +84,8 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                 if(us.location.distance(ourGoal) > ball.location.distance(ourGoal)){
                     this.nextState = BehaviourEnum.SAFE;
                 } else {
-                    // If the ball is anywhere but inside a 40cm x 40cm square centered on the center of the pitch, go into SHUNT mode (execute ShuntKick).
-                    // (???) don't quite understand this behaviour
+                    // If the ball is within 20 cm of any wall, go into SHUNT mode (execute sub-action ShuntKick).
+                    //
                     if(Math.abs(ball.location.x) > Constants.PITCH_WIDTH/2 - 20 && Math.abs(ball.location.y) > Constants.PITCH_HEIGHT/2 - 20){
                         this.nextState = BehaviourEnum.SHUNT;
                     } else {

@@ -80,21 +80,24 @@ public class MotionController extends ControllerBase {
 
             boolean intersects = false;
 
-
+            // Search through obstacles (not sure what that would be apart from other robots) and check if any will be in our way
             for(Obstacle o : this.obstacles){
                 intersects = intersects || o.intersects(us.location, destination);
             }
 
+            // Search through detected robots and check if they'll get in our way, too
             for(Robot r : Strategy.world.getRobots()){
                 if(r != null && r.type != RobotType.FRIEND_2){
                     intersects = intersects || VectorGeometry.vectorToClosestPointOnFiniteLine(us.location, destination, r.location).minus(r.location).length() < 30;
                 }
             }
 
+            // If anything is in our way or if robot isn't pretty much already at destination, set up A* navigation.
             if(intersects || us.location.distance(destination) > 30){
                 navigation = new AStarNavigation();
                 GUI.gui.searchType.setText("A*");
             } else {
+                // Otherwise set up "potential field navigation".
                 navigation = new PotentialFieldNavigation();
                 GUI.gui.searchType.setText("Potential Fields");
             }
@@ -107,9 +110,11 @@ public class MotionController extends ControllerBase {
         }
 
         if(this.heading != null){
+            // If a direction to head in was specified, use that.
             this.heading.recalculate();
             heading = new VectorGeometry(this.heading.getX(), this.heading.getY());
         } else {
+            // If no direction was specified, go forward.
             heading = VectorGeometry.fromAngular(us.location.direction, 10, null);
         }
 
@@ -127,6 +132,7 @@ public class MotionController extends ControllerBase {
             return;
         }
 
+        // Contains a vector of length 10 pointing in the direction the robot is currently heading in.
         VectorGeometry robotHeading = VectorGeometry.fromAngular(us.location.direction, 10, null);
         VectorGeometry robotToPoint = VectorGeometry.fromTo(us.location, heading);
         double factor = 1;
@@ -135,6 +141,9 @@ public class MotionController extends ControllerBase {
         if(destination.distance(us.location) < 30){
             factor = 0.7;
         }
+
+        // If we are already close enough to the destination, don't move anymore (tolerance denotes close-enoughness)
+        // The lower the tolerance, the closer we have to be to the point.
         if(this.destination != null && us.location.distance(destination) < tolerance){
             this.robot.port.stop();
             return;

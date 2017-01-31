@@ -93,6 +93,7 @@ public class VectorGeometry {
         return this;
     }
 
+    // d is in radians
     public VectorGeometry fromAngular(double d, double distance){
         this.x = distance*Math.cos(d);
         this.y = distance*Math.sin(d);
@@ -141,7 +142,7 @@ public class VectorGeometry {
     }
 
 
-
+    // d is in radians
     public static VectorGeometry fromAngular(double d, double distance, VectorGeometry vg){
         if(vg == null) vg = new VectorGeometry();
         return vg.fromAngular(d, distance);

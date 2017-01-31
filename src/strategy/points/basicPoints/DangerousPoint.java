@@ -19,6 +19,7 @@ public class DangerousPoint extends DynamicPointBase {
     @Override
     public void recalculate() {
         Ball ball = Strategy.world.getBall();
+        // If the robot can see the ball, the ball is the dangerous point.
         if(ball != null){
             this.x = (int)ball.location.x;
             this.y = (int)ball.location.y;
@@ -28,6 +29,7 @@ public class DangerousPoint extends DynamicPointBase {
             if(foe1 != null){
                 dangerous = foe1.location.clone();
             }
+            // Below if statement is irrelevant for 1v1
             Robot foe2 = Strategy.world.getRobot(RobotType.FOE_2);
             if(foe2 != null && (foe1 == null || Strategy.world.getProbableBallHolder() != foe1.type)){
                 VectorGeometry goal = new VectorGeometry(-Constants.PITCH_WIDTH, 0);
