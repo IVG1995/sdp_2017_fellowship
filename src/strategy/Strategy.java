@@ -10,6 +10,7 @@ import strategy.robots.Fred;
 import communication.PortListener;
 import strategy.robots.RobotBase;
 import vision.*;
+import vision.settings.SettingsManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +30,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
     private Timer timer;
     private String action;
     private Vision vision;
-
+    //counter mechanism for cycling vision setting files
+    private int optNumber = 1;
+    private static final int NUMBER_OF_OPTS = 3;
 
     /**
      * SDP2017NOTE
@@ -238,7 +241,15 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         if(world != null){
             for(RobotBase robot : this.robots){
                 if(world.getRobot(robot.robotType) == null){
-                    // Angry yelling.
+                    // Angry
+                    try {
+                        String path = "../../../vision/settings/data/opts";
+                        if(optNumber == NUMBER_OF_OPTS) optNumber = 1; else optNumber++;
+                        String fileName = path + Integer.toString(optNumber) +".jpg";
+                        SettingsManager.loadSettings(fileName);
+                    } catch (IOException io) {
+                        // if an exception is thrown settings stay the same and we continue to next timer cycle
+                    }
                     Toolkit.getDefaultToolkit().beep();
                 }
                 try{

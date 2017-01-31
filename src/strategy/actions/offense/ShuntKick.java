@@ -32,6 +32,7 @@ public class ShuntKick extends ActionBase {
 
     @Override
     public void tok() throws ActionException {
-
+        // back that ass up into the ball
+        this.enterState(0);
     }
 }

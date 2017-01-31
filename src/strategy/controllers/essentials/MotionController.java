@@ -12,6 +12,7 @@ import strategy.GUI;
 import vision.Robot;
 import vision.RobotType;
 import vision.tools.VectorGeometry;
+import vision.settings.SettingsManager;
 
 import java.util.LinkedList;
 
@@ -74,7 +75,6 @@ public class MotionController extends ControllerBase {
                 {
                     break;
                 }
-            }
             return;
         }
 
