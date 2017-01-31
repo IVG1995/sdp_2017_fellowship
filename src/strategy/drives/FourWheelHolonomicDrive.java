@@ -16,6 +16,9 @@ public class FourWheelHolonomicDrive implements DriveInterface{
 
     public void move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation, double factor){
         assert(port instanceof FourWheelHolonomicRobotPort);
+        // hack to accommodate rotation of original Fred (facing towards front wheel) model
+        // and Frobo (facing towards angle between front and right wheel)
+        rotation = rotation - Math.PI / 4;
 
         VectorGeometry dir = new VectorGeometry();
         force.copyInto(dir).coordinateRotation(force.angle() - location.direction);
@@ -30,10 +33,10 @@ public class FourWheelHolonomicDrive implements DriveInterface{
         double normalizer = Math.max(Math.max(Math.abs(left), Math.abs(right)), Math.max(Math.abs(front), Math.abs(back)));
 
         normalizer = lim/normalizer*factor;
-        front = front*normalizer + rotation * this.MAX_ROTATION;
-        back  = back*normalizer + rotation * this.MAX_ROTATION;
-        left  = left*normalizer + rotation * this.MAX_ROTATION;
-        right = right*normalizer + rotation * this.MAX_ROTATION;
+        front = front * normalizer + rotation * this.MAX_ROTATION;
+        back  = back  * normalizer + rotation * this.MAX_ROTATION;
+        left  = left  * normalizer + rotation * this.MAX_ROTATION;
+        right = right * normalizer + rotation * this.MAX_ROTATION;
 
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
 
