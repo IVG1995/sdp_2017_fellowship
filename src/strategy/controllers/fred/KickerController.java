@@ -1,5 +1,6 @@
 package strategy.controllers.fred;
 
+import communication.ports.robotPorts.FredRobotPort;
 import strategy.controllers.ControllerBase;
 import strategy.robots.RobotBase;
 /**
@@ -10,7 +11,6 @@ import strategy.robots.RobotBase;
  * command from wherever we would normally call kick().
  */
 public class KickerController extends ControllerBase {
-
     private static boolean kick_ball = false;
 
     public KickerController(RobotBase robot) {
@@ -23,7 +23,7 @@ public class KickerController extends ControllerBase {
 
     public void perform() {
         if (this.kick_ball) {
-            // Send kick command here
+            ((FredRobotPort)this.robot.port).sdpPort.commandSender("kick");
             this.kick_ball = false;
         }
     }
