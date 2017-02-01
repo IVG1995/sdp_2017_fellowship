@@ -7,14 +7,14 @@ import vision.tools.VectorGeometry;
 
 
 /**
- * Created by cole on 1/31/17.
+ *
  */
 public class KickablePoint extends DynamicPointBase{
 
 
     private RobotType type = null;
     private RobotAlias alias = null;
-
+    private static final int DISTANCE_TO_KICKER = 7;
     public KickablePoint(RobotType type){
         this.type = type;
     }
@@ -32,7 +32,7 @@ public class KickablePoint extends DynamicPointBase{
 
         if(r != null){
             VectorGeometry v = r.location.clone();
-            v.add((new VectorGeometry()).fromAngular(r.location.direction, 7));
+            v.add((new VectorGeometry()).fromAngular(r.location.direction, DISTANCE_TO_KICKER));
             this.x = (int) v.x;
             this.y = (int) v.y;
 
