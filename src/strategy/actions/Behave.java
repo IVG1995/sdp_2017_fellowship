@@ -7,7 +7,9 @@ import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
+import strategy.points.basicPoints.BallPoint;
 import strategy.robots.Fred;
+import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.Ball;
 import vision.Robot;
@@ -55,10 +57,10 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
     public void tok() throws ActionException {
 
         this.robot.MOTION_CONTROLLER.clearObstacles();
-        if(this.robot instanceof Fred) ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(true);
         this.lastState = this.nextState;
         switch (this.nextState){
             case DEFEND:
+                ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick(false);
                 this.enterAction(new DefendGoal(this.robot), 0, 0);
                 break;
             case KICK:
@@ -68,7 +70,10 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                 this.enterAction(new ShuntKick(this.robot), 0, 0);
                 break;
             case SAFE:
+                ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick(false);
                 this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
+                break;
+            case EMPTY:
                 break;
         }
     }
@@ -104,9 +109,12 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                     this.nextState = BehaviourEnum.SAFE;
                 } else {
                     // If the ball is within 20 cm of any wall, go into SHUNT mode (execute sub-action ShuntKick).
-                    // I believe a "Shunt Kick" is just ramming into the ball instead of using the kicker.
+                    // For now, this sub-action just moves towards the ball and continually kicks.
                     if(Math.abs(ball.location.x) > Constants.PITCH_WIDTH/2 - 20 && Math.abs(ball.location.y) > Constants.PITCH_HEIGHT/2 - 20){
-                        this.nextState = BehaviourEnum.SHUNT;
+                        // Ensure our robot doesn't enter enemy goalbox.
+                        if (!WorldTools.isPointInEnemyDefenceArea(ball.location)) {
+                            this.nextState = BehaviourEnum.SHUNT;
+                        }
                     } else {
                         boolean canKick = true;
                         // If all other robots aren't null, not moving (quickly at least), and at least 50 cm away from the ball,
@@ -116,14 +124,14 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                                 canKick = canKick && r.location.distance(ball.location) > 50;
                             }
                         }
-                        // can only kick if ball is in our half (???)
+                        // can only kick if ball isn't in enemy goalbox
                         canKick = canKick && !WorldTools.isPointInEnemyDefenceArea(ball.location);
-                        // If all the above conditions are met, plus
-                        // 1: we weren't defending last cycle,
-                        // 2: the angle between the ball's current direction and the direction towards the goal is not greater than 2 radians,
-                        // then go into KICK mode.
+                        // If all the above conditions are met, plus at least one of these two conditions:
+                        // 1: we weren't defending last cycle, or
+                        // 2: the angle between the ball's current direction and the direction towards our goal is greater than 2 radians,
+                        // then go into SHUNT mode.
                         if(canKick && (this.lastState != BehaviourEnum.DEFEND || VectorGeometry.angle(ball.velocity, VectorGeometry.fromTo(ball.location, new VectorGeometry(-Constants.PITCH_WIDTH/2, 0))) > 2)){
-                            this.nextState = BehaviourEnum.KICK;
+                            this.nextState = BehaviourEnum.SHUNT;
                         } else {
                             this.nextState = BehaviourEnum.DEFEND;
                         }

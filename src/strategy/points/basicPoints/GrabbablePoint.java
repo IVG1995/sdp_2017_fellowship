@@ -1,27 +1,29 @@
 package strategy.points.basicPoints;
 
-import strategy.points.*;
 import strategy.Strategy;
-import vision.*;
+import strategy.points.DynamicPointBase;
+import vision.Robot;
+import vision.RobotAlias;
+import vision.RobotType;
 import vision.tools.VectorGeometry;
 
-
 /**
- *
+ * Right now just a clone of KickablePoint.
  */
-public class KickablePoint extends DynamicPointBase{
-
+public class GrabbablePoint extends DynamicPointBase {
 
     private RobotType type = null;
     private RobotAlias alias = null;
-    private static final int DISTANCE_TO_KICKER = 7;
-    public KickablePoint(RobotType type){
+    private static final int DISTANCE_TO_GRABBER = 7;
+
+    public GrabbablePoint(RobotType type){
         this.type = type;
     }
 
-    public KickablePoint(RobotAlias alias){
+    public GrabbablePoint(RobotAlias alias){
         this.alias = alias;
     }
+
 
     @Override
     public void recalculate() {
@@ -32,10 +34,12 @@ public class KickablePoint extends DynamicPointBase{
 
         if(r != null){
             VectorGeometry v = r.location.clone();
-            v.add((new VectorGeometry()).fromAngular(r.location.direction + Math.PI / 4, DISTANCE_TO_KICKER));
+            v.add((new VectorGeometry()).fromAngular(r.location.direction + Math.PI / 4, DISTANCE_TO_GRABBER));
             this.x = (int) v.x;
             this.y = (int) v.y;
         }
+
+
     }
 
     @Override
@@ -45,9 +49,8 @@ public class KickablePoint extends DynamicPointBase{
 
     @Override
     public int getY() {
-        return this.y;
+       return this.y;
     }
-
 
 
 }

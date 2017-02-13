@@ -124,6 +124,10 @@ public class VectorGeometry {
         return this;
     }
 
+
+    public VectorGeometry normal(int length){
+        return this.multiply(length / this.length());
+    }
     /**
      * This function superimposes a tilted coordinate system on top of the existing one and changes the vector
      * to have the X and Y coordinates of wherever it was pointing in the superimposed coordinate system.
