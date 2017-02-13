@@ -3,16 +3,11 @@ package strategy.actions.offense;
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
 import strategy.controllers.essentials.MotionController;
-import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.EnemyGoal;
-import strategy.points.basicPoints.RobotPoint;
-import strategy.robots.Fred;
-import strategy.points.basicPoints.KickablePoint;
 import strategy.Strategy;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.Robot;
-import vision.RobotType;
 import vision.tools.VectorGeometry;
 
 /**
@@ -35,7 +30,7 @@ public class OffensiveKick extends ActionBase {
             //stay in place and rotate
             System.out.println("not facing goal");
             this.robot.MOTION_CONTROLLER.setHeading(new EnemyGoal());
-            this.robot.MOTION_CONTROLLER.setDestination(new RobotPoint(this.robot.robotType));
+            this.robot.MOTION_CONTROLLER.setDestination(null);
             this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.AIM);
             this.robot.MOTION_CONTROLLER.setTolerance(-1);
             this.robot.MOTION_CONTROLLER.setRotationTolerance(5);
@@ -67,7 +62,7 @@ public class OffensiveKick extends ActionBase {
                     enterState(READY_TO_RELEASE);
                 } else {
                     enterState(READY_TO_SHOOT);
-                    this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.ON);
+                    this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
                     throw new ActionException(true, true);
                 }
             } else {

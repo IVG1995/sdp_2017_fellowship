@@ -4,7 +4,6 @@ import strategy.Strategy;
 import strategy.controllers.ControllerBase;
 import strategy.navigation.NavigationInterface;
 import strategy.navigation.Obstacle;
-import strategy.navigation.aimSimpleNavigation.AimNavigation;
 import strategy.points.DynamicPoint;
 import strategy.navigation.aStarNavigation.AStarNavigation;
 import strategy.navigation.potentialFieldNavigation.PotentialFieldNavigation;
@@ -13,7 +12,6 @@ import strategy.GUI;
 import vision.Robot;
 import vision.RobotType;
 import vision.tools.VectorGeometry;
-import vision.settings.SettingsManager;
 
 import java.util.LinkedList;
 
@@ -39,7 +37,7 @@ public class MotionController extends ControllerBase {
     }
 
     public enum MotionMode{
-        ON, OFF, AIM
+        MOVE, AIM, OFF
     }
 
     public void setMode(MotionMode mode){
@@ -119,9 +117,6 @@ public class MotionController extends ControllerBase {
             navigation.setDestination(new VectorGeometry(destination.x, destination.y));
 
         // If no destination was specified, and we mean to aim, use aim navigation.
-        } else if (this.mode == MotionMode.AIM) {
-            navigation = new AimNavigation();
-            destination = new VectorGeometry(us.location.x, us.location.y);
         } else {// do nothing.
             return;
         }
@@ -174,7 +169,11 @@ public class MotionController extends ControllerBase {
 
         navigation.draw();// uncomment to get a JFrame of navigation info
 
-        this.robot.drive.move(this.robot.port, us.location, force, rotation, factor);
+        switch (this.mode) {
+            case MOVE: this.robot.drive.move(this.robot.port, us.location, force, rotation, factor); break;
+            case AIM: this.robot.drive.aim(this.robot.port, rotation); break;
+        }
+
 
     }
 }

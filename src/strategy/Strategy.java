@@ -137,6 +137,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.ACTION_CONTROLLER.setAction(new Waiting(frodo));
                     frodo.MOTION_CONTROLLER.setDestination(null);
                     frodo.MOTION_CONTROLLER.setHeading(null);
+                    //frodo.MOTION_CONTROLLER.setActive(false);
                     port.halt();
                     port.halt();
                     port.halt();
@@ -216,6 +217,13 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     break;
                 case "turn_to_enemy_goal":
                     frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
+                    break;
+                case "motion_debug":
+                    break;
+                case "face_enemy_goal":
+                    frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
+                    break;
+                case "face_friendly_goal":
                     break;
             }
         }
