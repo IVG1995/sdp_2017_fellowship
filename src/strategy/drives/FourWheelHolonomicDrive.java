@@ -28,12 +28,17 @@ public class FourWheelHolonomicDrive implements DriveInterface {
         double back = -dir.y;
         double right = dir.x;
         double normalizer = Math.max(Math.max(Math.abs(left), Math.abs(right)), Math.max(Math.abs(front), Math.abs(back)));
-
+        System.out.println("rotation: " + rotation);
         normalizer = (lim / normalizer) * factor;
         front = front * normalizer + rotation * this.MAX_ROTATION;
-        back = back * normalizer + rotation * this.MAX_ROTATION;
-        left = left * normalizer + rotation * this.MAX_ROTATION;
+        back = back * normalizer - rotation * this.MAX_ROTATION;
+        left = left * normalizer - rotation * this.MAX_ROTATION;
         right = right * normalizer + rotation * this.MAX_ROTATION;
+
+        System.out.println("front: " + front);
+        System.out.println("back: " + back);
+        System.out.println("left: " + left);
+        System.out.println("right: " + right);
 
 
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);

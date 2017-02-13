@@ -3,12 +3,14 @@ package strategy.actions.offense;
 import strategy.Strategy;
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
+import strategy.points.DynamicPoint;
 import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.BallDirection;
 import strategy.points.basicPoints.EnemyGoal;
 import strategy.points.basicPoints.ShootingPoint;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
+import vision.Robot;
 import vision.RobotType;
 import vision.tools.VectorGeometry;
 
@@ -25,19 +27,19 @@ public class ShuntKick extends ActionBase {
     public ShuntKick(RobotBase robot) {
         super(robot);
         this.rawDescription = "Shunt Kick";
+        this.point = new ShootingPoint();
     }
-
-
-    private VectorGeometry destination;
 
     @Override
     public void enterState(int newState) {
         if (newState == GET_INTO_POSITION) {
-            this.robot.MOTION_CONTROLLER.setDestination(new ShootingPoint());
+            this.robot.MOTION_CONTROLLER.setDestination(this.point);
             this.robot.MOTION_CONTROLLER.setHeading(new EnemyGoal());
             this.robot.MOTION_CONTROLLER.setTolerance(-1);
         } else if (newState == SHOOT) {
-            this.robot.MOTION_CONTROLLER.setDestination(new BallPoint());
+            BallPoint ballPoint = new BallPoint();
+            ballPoint.recalculate();
+            this.robot.MOTION_CONTROLLER.setDestination(ballPoint);
             this.robot.MOTION_CONTROLLER.setHeading(new EnemyGoal());
             this.robot.MOTION_CONTROLLER.setTolerance(-1);
             ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick(true);
@@ -47,17 +49,21 @@ public class ShuntKick extends ActionBase {
 
     @Override
     public void tok() throws ActionException {
-        VectorGeometry ballLoc = Strategy.world.getBall().location;
-        VectorGeometry ourLoc = Strategy.world.getRobot(RobotType.FRIEND_2).location;
+        Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
         // If the ball is in our half, just hit it forward without worrying too much about aiming.
-       
-        if (ourLoc.distance(new ShootingPoint().getX(), new ShootingPoint().getY()) < CLOSE_ENOUGH) {
-            // If the ball is in their half, aim at their goal before kicking.
-            this.enterState(SHOOT);
-        } else {
-            // Get into shooting position
-            this.enterState(GET_INTO_POSITION);
+
+        if(us != null){
+            System.out.println("ShootingPoint: " + this.point.getX() + " " + this.point.getY());
+            System.out.println("us: " + us.location.toString());
+            if (us.location.distance(this.point.getX(), this.point.getY()) < CLOSE_ENOUGH) {
+                // If the ball is in their half, aim at their goal before kicking.
+                this.enterState(SHOOT);
+            } else {
+                // Get into shooting position
+                this.enterState(GET_INTO_POSITION);
+            }
         }
+
 
 
     }

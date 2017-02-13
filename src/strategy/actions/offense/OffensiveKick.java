@@ -42,7 +42,7 @@ public class OffensiveKick extends ActionBase {
             ((Frodo) this.robot).GRABBER_CONTROLLER.wantToRelease();
         } else {
             System.out.println("ready to kick");
-            ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick();
+            ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick(true);
         }
 
         this.state = newState;
