@@ -62,7 +62,9 @@ public class VectorGeometry {
         return this.minus(vector.x, vector.y);
     }
 
-
+    public VectorGeometry reduceLinearlyTo(double target) {
+        return this.multiply(target / Math.max(Math.abs(this.x), Math.abs(this.y)));
+    }
 
     public VectorGeometry multiply(double factor){
         this.x = this.x * factor;
@@ -123,6 +125,11 @@ public class VectorGeometry {
         return this;
     }
 
+
+    public VectorGeometry normaliseToLength(double length){
+        if(this.length() == 0d) return this;
+        return this.multiply(length / this.length());
+    }
     /**
      * This function superimposes a tilted coordinate system on top of the existing one and changes the vector
      * to have the X and Y coordinates of wherever it was pointing in the superimposed coordinate system.
@@ -131,8 +138,9 @@ public class VectorGeometry {
      */
     public VectorGeometry coordinateRotation(double phi){
         double length = this.length();
-        this.x = Math.cos(phi)*length;
-        this.y = Math.sin(phi)*length;
+        double angle  = this.angle();
+        this.x = Math.cos(angle - phi)*length;
+        this.y = Math.sin(angle - phi)*length;
         return this;
     }
 
@@ -197,6 +205,14 @@ public class VectorGeometry {
         if(cos > 1) return 0;
         if(cos < -1) return Math.PI;
         return Math.acos(cos);
+    }
+
+    /**
+     * Implementation of a signed angle using atan2 : returns an angle in the range [PI, -PI]
+     * which is to be used for the shortest rotation Frodo has to do to get to a particular heading
+     */
+    public static double mySignedAngleAtan2FromTo(VectorGeometry from, VectorGeometry to){
+        return Math.atan2( from.x * to.y - from.y * to.x, from.x * to.x + from.y * to.y );
     }
 
     public static double angle(double x, double y){
@@ -357,7 +373,7 @@ public class VectorGeometry {
      * @return
      */
     public static double signedAngle(VectorGeometry a, VectorGeometry b){
-        double angle = VectorGeometry.angle(a,b);
+        double angle = VectorGeometry.angle(a, b);
         boolean sign = crossProductDirection(a, b);
         return angle * (sign ? 1 : -1);
     }
@@ -372,5 +388,10 @@ public class VectorGeometry {
 
     public static VectorGeometry fromTo(double x, double y, int x1, int y1) {
         return fromTo(new VectorGeometry(x, y), new VectorGeometry(x1, y1));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof VectorGeometry &&((VectorGeometry) o).x == this.x && ((VectorGeometry) o).y == this.y;
     }
 }

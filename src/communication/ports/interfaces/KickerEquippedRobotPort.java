@@ -5,4 +5,7 @@ package communication.ports.interfaces;
  */
 public interface KickerEquippedRobotPort {
     public void kick();
+    public void startKick();
+    public void stopKick();
+    public boolean isKicking();
 }

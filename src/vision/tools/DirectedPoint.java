@@ -8,6 +8,7 @@ public class DirectedPoint extends VectorGeometry{
 	
 	public DirectedPoint(double x, double y, double d) {
 		super(x,y);
+		// d is the angle measured from the right-hand side of the x-axis
 		this.direction = d;
 	}
 

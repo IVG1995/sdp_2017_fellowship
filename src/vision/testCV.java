@@ -16,15 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
-import static java.lang.Thread.sleep;
-
-
-/**
- * Created by nlfox on 2/4/17.
- */
 public class testCV extends JFrame {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);

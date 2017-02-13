@@ -10,33 +10,31 @@ import vision.tools.VectorGeometry;
  *
  */
 public class KickablePoint extends DynamicPointBase{
-
-
-    private RobotType type = null;
-    private RobotAlias alias = null;
-    private static final int DISTANCE_TO_KICKER = 7;
-    public KickablePoint(RobotType type){
-        this.type = type;
-    }
-
-    public KickablePoint(RobotAlias alias){
-        this.alias = alias;
-    }
+    private static final int DISTANCE_TO_KICKER = 25;
 
     @Override
     public void recalculate() {
-        Robot r;
+        Ball b = Strategy.world.getBall();
 
-        if(this.alias == null) r = Strategy.world.getRobot(this.type);
-        else r = Strategy.world.getRobot(this.alias);
-
-        if(r != null){
-            VectorGeometry v = r.location.clone();
-            v.add((new VectorGeometry()).fromAngular(r.location.direction + Math.PI / 4, DISTANCE_TO_KICKER));
-            this.x = (int) v.x;
-            this.y = (int) v.y;
-
+        if (b == null) {
+            //Angry yelling
+//            System.out.println("cant find ball assholes");
         }
+
+        if(b != null){
+            VectorGeometry ball = b.location.clone();
+            VectorGeometry goal = new EnemyGoal().toVectorGeometry();
+//            System.out.println("ball: " + ball.toString());
+
+            VectorGeometry ballToGoal = goal.minus(ball);
+
+            VectorGeometry kickablePoint = ball.plus(ballToGoal.normaliseToLength(-DISTANCE_TO_KICKER));
+//            System.out.println("kickablePoint: " + kickablePoint.toString());
+
+            this.x = (int) kickablePoint.x;
+            this.y = (int) kickablePoint.y;
+        }
+//        System.out.println(this.toVectorGeometry().toString());
     }
 
     @Override

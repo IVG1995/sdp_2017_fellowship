@@ -2,50 +2,61 @@ package strategy.drives;
 
 import communication.ports.interfaces.FourWheelHolonomicRobotPort;
 import communication.ports.interfaces.RobotPort;
+import strategy.drives.pid.ControlResult;
+import strategy.drives.pid.PIDDirectionControl;
+import strategy.drives.pid.PIDRotationControl;
+import strategy.drives.pid.error.DirectionControlError;
+import strategy.drives.pid.error.RotationControlError;
 import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
 
-/**
+/**`
  * Created by Simon Rovder
  */
 
-public class FourWheelHolonomicDrive implements DriveInterface{
+public class FourWheelHolonomicDrive implements DriveInterface {
+//                                                                    90  3   3
+    private PIDRotationControl  pidRotation  = new PIDRotationControl(45d, 3d, 3.7d);
+    private PIDDirectionControl pidDirection = new PIDDirectionControl(10d, 0d, 0d);
 
-    public int MAX_ROTATION = 30;
-    public int MAX_MOTION = 200;
+    public int MAX_ROTATION = 100; //deprecated
+    public int MAX_MOTION = 0; //deprecated
 
-    public void move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation, double factor){
+    public ControlResult move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation) {
         assert(port instanceof FourWheelHolonomicRobotPort);
 
-        VectorGeometry dir = new VectorGeometry();
-        force.copyInto(dir).coordinateRotation(force.angle() - location.direction);
-        factor = Math.min(1, factor);
+        VectorGeometry robotForce = new VectorGeometry();
 
-        double lim = this.MAX_MOTION - Math.abs(rotation * this.MAX_ROTATION * factor);
-                    // 200 - 90
-        System.out.println("location: " + location.toString());
-        System.out.println("force: " + force.toString());
-        System.out.println("force.angle: " + force.angle());
-        System.out.println("dir: " + dir.toString());
+        force.copyInto(robotForce).coordinateRotation(location.direction);
 
-        double front = -dir.y;
-        double left =  dir.x;
-        double back =  -dir.y;
-        double right = dir.x;
-        double normalizer = Math.max(Math.max(Math.abs(left), Math.abs(right)), Math.max(Math.abs(front), Math.abs(back)));
+//        rotation = 0;
+        robotForce = new VectorGeometry(0d, 0d);
 
-        double normalizer2 = (lim/normalizer)*factor;
-        front = front*normalizer2 + rotation * this.MAX_ROTATION;
-        back  = back*normalizer2 + rotation * this.MAX_ROTATION;
-        left  = left*normalizer2 + rotation * this.MAX_ROTATION;
-        right = right*normalizer2 + rotation * this.MAX_ROTATION;
-        System.out.println("front: " + front);
-        System.out.println("back: " + back);
-        System.out.println("left: " + left);
-        System.out.println("right: " + right);
-        System.out.println("=======================");
+        ControlResult rotationControl;
+        ControlResult directionControl = pidDirection.getActuatorInput(new DirectionControlError(robotForce));
+        if (Math.abs(rotation * 180d / Math.PI) < 5d) {
+            rotationControl = new ControlResult();
+            pidRotation.getHistory().setAccumulated(new RotationControlError());
+        } else {
+            rotationControl  = pidRotation.getActuatorInput(new RotationControlError(rotation));
+        }
+        ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(
+                directionControl.getFront() + rotationControl.getFront(),
+                directionControl.getBack()  + rotationControl.getBack(),
+                directionControl.getLeft()  + rotationControl.getLeft(),
+                directionControl.getRight() + rotationControl.getRight());
+
+        return directionControl;
+    }
+
+    //not completed
+    public void aim(RobotPort port, double rotation) {
+        double front = -rotation;
+        double back  = rotation;
+        double left  = -rotation;
+        double right = rotation;
 
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
-
     }
+
 }

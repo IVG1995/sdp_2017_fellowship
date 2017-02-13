@@ -38,10 +38,12 @@ public class GrabberController extends ControllerBase {
         FrodoRobotPort frodoRobotPort = (FrodoRobotPort)this.robot.port;
 
         if (wantToGrab) {
+            frodoRobotPort.halt();
             frodoRobotPort.grab();
             wantToGrab = false;
         }
         if (wantToRelease) {
+            frodoRobotPort.halt();
             frodoRobotPort.release();
             wantToRelease = false;
         }

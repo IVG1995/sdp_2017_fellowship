@@ -26,8 +26,9 @@ public class HoldPosition extends ActionBase {
     public void tok() throws ActionException {
         this.robot.MOTION_CONTROLLER.setDestination(this.point);
         // The tolerance is how close the robot must be to its destination point before it considers itself to be there.
-        // If you set tolerance = 0 or -1, it will go exactly to that point. If you set it 50, it will move until it
-        // is 50 cm (I believe its cm) before stopping.
+        // If you set tolerance = 0, it will go exactly to that point. If you set it 50, it will move until it
+        // is 50 cm (I believe its cm) before stopping. If you set the tolerance equal to -1, it will hold that position
+        // until interrupted.
         this.robot.MOTION_CONTROLLER.setTolerance(-1);
     }
 }

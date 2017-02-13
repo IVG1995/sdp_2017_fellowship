@@ -1,18 +1,17 @@
 package strategy.actions.offense;
 
+import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
 import strategy.controllers.essentials.MotionController;
+import strategy.navigation.Obstacle;
 import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.EnemyGoal;
-import strategy.points.basicPoints.RobotPoint;
-import strategy.robots.Fred;
-import strategy.points.basicPoints.KickablePoint;
 import strategy.Strategy;
+import strategy.points.basicPoints.KickablePoint;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.Robot;
-import vision.RobotType;
 import vision.tools.VectorGeometry;
 
 /**
@@ -20,58 +19,76 @@ import vision.tools.VectorGeometry;
  */
 public class OffensiveKick extends ActionBase {
 
-    private final int NOT_FACING_GOAL  = 0;
-    private final int READY_TO_RELEASE = 1;
-    private final int READY_TO_SHOOT   = 2;
-    // A KickablePoint always contains the location 7 (this number could change) cm in front of the ball.
-
+    private final int GOING_TO_KICKABLE  = 0;
+    private final int KICKING = 1;
+    private final int KICKED_EXIT = 2;
+    private final int STOP = 3;
+    // A GrabbablePoint always contains the location 7 (this number could change) cm in front of the ball.
+    private BallPoint ballPoint = new BallPoint();
+    private EnemyGoal goal = new EnemyGoal();
     public OffensiveKick(RobotBase robot) {
         super(robot);
         this.rawDescription = "OffensiveKick";
+        this.point = new KickablePoint();
     }
     @Override
     public void enterState(int newState) {
-        if (newState == NOT_FACING_GOAL) {
+        if (newState == GOING_TO_KICKABLE) {
+            System.out.println("GOING_TO_KICKABLE");
             //stay in place and rotate
-            System.out.println("not facing goal");
-            this.robot.MOTION_CONTROLLER.setHeading(new EnemyGoal());
-            this.robot.MOTION_CONTROLLER.setDestination(new RobotPoint(this.robot.robotType));
-            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.AIM);
+            this.robot.MOTION_CONTROLLER.setHeading(ballPoint);
+            this.robot.MOTION_CONTROLLER.setDestination(this.point);
+            this.robot.MOTION_CONTROLLER.clearObstacles();
+            if(ballPoint != null){
+                this.robot.MOTION_CONTROLLER.addObstacle(new Obstacle(ballPoint.getX(), ballPoint.getY(), 15));
+            }
+            ((FrodoRobotPort)(this.robot.port)).stopKick();
             this.robot.MOTION_CONTROLLER.setTolerance(-1);
-            this.robot.MOTION_CONTROLLER.setRotationTolerance(5);
-        } else if (newState == READY_TO_RELEASE) {
+        } else if (newState == KICKING) {
+            System.out.println("KICKING");
+            this.robot.MOTION_CONTROLLER.setDestination(ballPoint);
+            this.robot.MOTION_CONTROLLER.setHeading(goal);
+            this.robot.MOTION_CONTROLLER.clearObstacles();
+            ((FrodoRobotPort)(this.robot.port)).startKick();
+        } else if (newState == KICKED_EXIT) {
+            System.out.println("KICKED_EXIT");
             this.robot.MOTION_CONTROLLER.setDestination(null);
             this.robot.MOTION_CONTROLLER.setHeading(null);
-            System.out.println("ready to release");
-            ((Frodo) this.robot).GRABBER_CONTROLLER.wantToRelease();
-        } else {
-            System.out.println("ready to kick");
-            ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick();
+            ((FrodoRobotPort)(this.robot.port)).stopKick();
+        } else if (newState == STOP) {
+            System.out.println("STOP");
+            ((FrodoRobotPort) (this.robot.port)).stopKick();
+            ((this.robot.port)).stop();
         }
-
         this.state = newState;
     }
 
     @Override
     public void tok() throws ActionException {
+        ballPoint.recalculate();
+        goal.recalculate();
+        this.point.recalculate();
         Robot us = Strategy.world.getRobot(this.robot.robotType);
         if (us == null || Strategy.world.getBall() == null) {
-            return;
+            enterState(STOP);
         } else {
             VectorGeometry robotLocation = new VectorGeometry();
+            VectorGeometry robotHeading = new VectorGeometry().fromAngular(us.location.direction, 10d);
             us.location.copyInto(robotLocation);
-            EnemyGoal target = new EnemyGoal();
-            VectorGeometry robotHeading = VectorGeometry.fromAngular(us.location.direction, 10, null);
-            if (VectorGeometry.isInGeneralDirection(robotLocation, robotHeading, target.toVectorGeometry())){
-                if(this.state == NOT_FACING_GOAL){
-                    enterState(READY_TO_RELEASE);
-                } else {
-                    enterState(READY_TO_SHOOT);
-                    this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.ON);
-                    throw new ActionException(true, true);
-                }
+            double distanceToKickable = VectorGeometry.distance(robotLocation, new VectorGeometry(this.point.getX(), this.point.getY()));
+            double distanceToBall     = VectorGeometry.distance(robotLocation, new VectorGeometry(ballPoint.getX(), ballPoint.getY()));
+//            System.out.println("distance to kickable: " + distanceToKickable);
+//            System.out.println("distance to ball: " + distanceToBall);
+//            System.out.println("distance to target: " + VectorGeometry.distance(robotLocation, new VectorGeometry(this.point.getX(), this.point.getY())));
+//            System.out.println("us: " + us.location.toString());
+//            System.out.println("robotLocation: " + robotLocation);
+            VectorGeometry robotToPoint  = VectorGeometry.fromTo(robotLocation, ballPoint.toVectorGeometry());
+//            System.out.println("angle to target: " + Math.abs(VectorGeometry.signedAngle(robotToPoint, robotLocation)) * 180 / Math.PI);
+
+            if (distanceToKickable > 15 || Math.abs(VectorGeometry.signedAngle(robotHeading, robotToPoint)) > Math.PI / 3){
+                enterState(GOING_TO_KICKABLE);
             } else {
-                enterState(NOT_FACING_GOAL);
+                enterState(KICKING);
             }
         }
     }

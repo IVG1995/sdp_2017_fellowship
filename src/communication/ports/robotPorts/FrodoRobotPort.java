@@ -1,5 +1,6 @@
 package communication.ports.robotPorts;
 
+import communication.PortListener;
 import communication.ports.interfaces.FourWheelHolonomicRobotPort;
 import communication.ports.interfaces.GrabberEquippedRobotPort;
 import communication.ports.interfaces.KickerEquippedRobotPort;
@@ -8,8 +9,9 @@ import communication.ports.interfaces.RobotPort;
 /**
  * Created by Simon Rovder
  */
-public class FrodoRobotPort extends RobotPort implements GrabberEquippedRobotPort, FourWheelHolonomicRobotPort, KickerEquippedRobotPort {
+public class FrodoRobotPort extends RobotPort implements GrabberEquippedRobotPort, FourWheelHolonomicRobotPort, KickerEquippedRobotPort, PortListener{
 
+    private boolean isKicking = false;
     public FrodoRobotPort(){
         super("pang");
     }
@@ -38,9 +40,38 @@ public class FrodoRobotPort extends RobotPort implements GrabberEquippedRobotPor
     @Override
     public void kick(){
         this.sdpPort.commandSender("kick");
-        this.sdpPort.commandSender("kick");
-        this.sdpPort.commandSender("kick");
-        this.sdpPort.commandSender("kick");
+    }
+
+    @Override
+    public void startKick(){
+        if(!isKicking) {
+            this.sdpPort.commandSender("start_kicking");
+            this.sdpPort.commandSender("start_kicking");
+            this.sdpPort.commandSender("start_kicking");
+            this.sdpPort.commandSender("start_kicking");
+            this.isKicking = true;
+        }
+    }
+
+    @Override
+    public void stopKick(){
+        if(isKicking) {
+            this.sdpPort.commandSender("stop_kicking");
+            this.sdpPort.commandSender("stop_kicking");
+            this.sdpPort.commandSender("stop_kicking");
+            this.sdpPort.commandSender("stop_kicking");
+            this.isKicking = false;
+        }
+    }
+
+    @Override
+    public boolean isKicking(){
+        return this.isKicking;
+    }
+
+    @Override
+    public void receivedStringHandler(String string) {
+
     }
 
 

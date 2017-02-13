@@ -3,7 +3,6 @@ package vision.preProcessing.matProcessor;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractorMOG2;
-import vision.Vision;
 import vision.VisionSettings;
 import vision.preProcessing.BrightnessProcessor;
 import vision.preProcessing.OpenCVProcessor;
@@ -18,12 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import static vision.preProcessing.OpenCVProcessor.img2Mat;
 
-/**
- * Created by nlfox on 2/5/17.
- */
 public class BgSubtractor implements MatProcessor {
     public static ArrayList<ShapeObject> objects;
     public static BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 12, true);
@@ -44,7 +39,6 @@ public class BgSubtractor implements MatProcessor {
         double approxDistance = Imgproc.arcLength(thisContour2f, true) * 0.02;
 
         Imgproc.approxPolyDP(thisContour2f, approxContour2f, approxDistance, true);
-        //System.out.println(" contour size: " + thisContour.size() + " apprix size " + thisContour2f.size());
         approxContour2f.convertTo(approxContour, CvType.CV_32S);
 
         return Imgproc.minAreaRect(approxContour2f);

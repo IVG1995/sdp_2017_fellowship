@@ -2,15 +2,8 @@ package strategy.actions.offense;
 
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
-import strategy.points.basicPoints.BallPoint;
-import strategy.points.basicPoints.EnemyGoal;
-import strategy.robots.Fred;
-import strategy.points.basicPoints.KickablePoint;
-import strategy.Strategy;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
-import vision.RobotType;
-import vision.tools.VectorGeometry;
 
 /**
  * Action that grabs the ball.

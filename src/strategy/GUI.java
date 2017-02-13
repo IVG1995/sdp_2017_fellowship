@@ -133,7 +133,7 @@ public class GUI extends JFrame implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         if(e.getSource() == this.r){
-            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.ON);
+            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
             this.robot.MOTION_CONTROLLER.setHeading(null);
             this.robot.MOTION_CONTROLLER.setDestination(null);
             this.robot.MOTION_CONTROLLER.clearObstacles();

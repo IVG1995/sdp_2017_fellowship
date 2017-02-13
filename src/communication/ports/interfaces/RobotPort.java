@@ -42,5 +42,8 @@ public class RobotPort implements PortListener {
 
     public void halt() {
         sdpPort.commandSender("h");
+        sdpPort.commandSender("h");
+        sdpPort.commandSender("h");
+        sdpPort.commandSender("h");
     }
 }
