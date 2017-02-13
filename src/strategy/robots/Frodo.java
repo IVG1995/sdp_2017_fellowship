@@ -16,7 +16,6 @@ public class Frodo extends RobotBase {
 
     public final KickerController KICKER_CONTROLLER = new KickerController(this);
     public final GrabberController GRABBER_CONTROLLER = new GrabberController(this);
-    private DriveInterface aimDriver;
 
     public Frodo(RobotType robotType){
         super(robotType, new FrodoRobotPort(), new FourWheelHolonomicDrive());

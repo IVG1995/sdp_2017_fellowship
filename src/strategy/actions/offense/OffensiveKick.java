@@ -26,6 +26,8 @@ public class OffensiveKick extends ActionBase {
     }
     @Override
     public void enterState(int newState) {
+        Robot us = Strategy.world.getRobot(this.robot.robotType);
+
         if (newState == NOT_FACING_GOAL) {
             //stay in place and rotate
             System.out.println("not facing goal");
@@ -33,7 +35,6 @@ public class OffensiveKick extends ActionBase {
             this.robot.MOTION_CONTROLLER.setDestination(null);
             this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.AIM);
             this.robot.MOTION_CONTROLLER.setTolerance(-1);
-            this.robot.MOTION_CONTROLLER.setRotationTolerance(5);
         } else if (newState == READY_TO_RELEASE) {
             this.robot.MOTION_CONTROLLER.setDestination(null);
             this.robot.MOTION_CONTROLLER.setHeading(null);

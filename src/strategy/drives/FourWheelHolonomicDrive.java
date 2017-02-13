@@ -22,8 +22,6 @@ public class FourWheelHolonomicDrive implements DriveInterface {
         factor = Math.min(1, factor);
 
         double lim = this.MAX_MOTION - Math.abs(rotation * this.MAX_ROTATION * factor);
-        System.out.println("force: " + force.toString());
-        System.out.println("dir: " + dir.toString());
 
         double front = -dir.y;
         double left = dir.x;

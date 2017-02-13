@@ -7,6 +7,7 @@ import strategy.actions.other.*;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
 import communication.ports.robotPorts.FredRobotPort;
+import strategy.controllers.essentials.MotionController;
 import strategy.points.basicPoints.*;
 import strategy.robots.Fred;
 import communication.PortListener;
@@ -70,8 +71,6 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         // Our robot has RobotType "FRIEND_2"
         this.robots = new RobotBase [] {new Frodo(RobotType.FRIEND_2)};
 
-//        Fred fred = (Fred) this.robots[0];
-//        FredRobotPort port = (FredRobotPort) fred.port;
 
         Frodo frodo = (Frodo) this.robots[0];
         FrodoRobotPort port = (FrodoRobotPort) frodo.port;
@@ -81,7 +80,6 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         semiStrategy.vision.addVisionListener(semiStrategy);
 
 
-//        fred.PROPELLER_CONTROLLER.setActive(false);
 
         this.action = "";
         GUI.gui.doesNothingButIsNecessarySoDontDelete();
@@ -100,15 +98,12 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
             System.out.print(">> ");
             this.action = this.readLine();
             if(this.action.equals("exit")){
-//                frodo.PROPELLER_CONTROLLER.setActive(false);
-//                port.propeller(0);
-//                port.propeller(0);
-//                port.propeller(0);
                 break;
             }
             switch(this.action){
                 case "a":
                     frodo.setControllersActive(true);
+                    frodo.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
                     break;
                 case "grab":
                     frodo.ACTION_CONTROLLER.setAction(new BallGrab(frodo));
@@ -116,14 +111,16 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                 case "stop":
                     frodo.ACTION_CONTROLLER.setAction(new Stop(frodo));
                     break;
-//                case "!":
-//                    System.out.print("Action: ");
-//                    System.out.print(frodo.ACTION_CONTROLLER.isActive());
-//                    System.out.print(" Motion: ");
-//                    System.out.print(frodo.MOTION_CONTROLLER.isActive());
-//                    System.out.print(" Propeller: ");
-//                    System.out.println(frodo.PROPELLER_CONTROLLER.isActive());
-//                    break;
+                case "!":
+                    System.out.print("Action: ");
+                    System.out.print(frodo.ACTION_CONTROLLER.isActive());
+                    System.out.print(" Motion: ");
+                    System.out.print(frodo.MOTION_CONTROLLER.isActive());
+                    System.out.print(" Kicker: ");
+                    System.out.println(frodo.KICKER_CONTROLLER.isActive());
+                    System.out.print(" Grabber: ");
+                    System.out.println(frodo.GRABBER_CONTROLLER.isActive());
+                    break;
                 case "?":
                     frodo.ACTION_CONTROLLER.printDescription();
                     break;
@@ -137,14 +134,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.ACTION_CONTROLLER.setAction(new Waiting(frodo));
                     frodo.MOTION_CONTROLLER.setDestination(null);
                     frodo.MOTION_CONTROLLER.setHeading(null);
-                    //frodo.MOTION_CONTROLLER.setActive(false);
                     port.halt();
-                    port.halt();
-                    port.halt();
-//                    frodo.PROPELLER_CONTROLLER.setActive(false);
-//                    port.propeller(0);
-//                    port.propeller(MOTION_CONTROLLER0);
-//                    port.propeller(0);
                     break;
                 case "reset":
                     frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new ConstantPoint(0,0)));
@@ -177,25 +167,11 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.FELIX));
                     frodo.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
                     break;
-//                case "rot":
-//                    frodo.PROPELLER_CONTROLLER.setActive(false);
-//                    ((FredRobotPort) frodo.port).propeller(0);
-//                    ((FredRobotPort) frodo.port).propeller(0);
-//                    ((FredRobotPort) frodo.port).propeller(0);
-//                    frodo.ACTION_CONTROLLER.setActive(false);
-//                    frodo.MOTION_CONTROLLER.setDestination(new Rotate());
-//                    frodo.MOTION_CONTROLLER.setHeading(new BallPoint());
-//                    break;
-//                case "p":
-//                    boolean act = frodo.PROPELLER_CONTROLLER.isActive();
-//                    frodo.PROPELLER_CONTROLLER.setActive(!act);
-//                    if(!act){
-//                        ((FredRobotPort) frodo.port).propeller(0);
-//                        ((FredRobotPort) frodo.port).propeller(0);
-//                        ((FredRobotPort) frodo.port).propeller(0);
-//                    }
-//                    System.out.println(frodo.PROPELLER_CONTROLLER.isActive());
-//                    break;
+                case "rot":
+                    frodo.ACTION_CONTROLLER.setActive(false);
+                    frodo.MOTION_CONTROLLER.setDestination(new Rotate());
+                    frodo.MOTION_CONTROLLER.setHeading(new BallPoint());
+                    break;
                 case "test":
                     frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
                     frodo.MOTION_CONTROLLER.setDestination(new EnemyGoal());
@@ -218,12 +194,15 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                 case "turn_to_enemy_goal":
                     frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
                     break;
-                case "motion_debug":
+                case "go_to_kickable":
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new KickablePoint(RobotType.FRIEND_2)));
                     break;
-                case "face_enemy_goal":
-                    frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
+                case "send_kick_command":
+                    frodo.port.sdpPort.commandSender("kick");
                     break;
-                case "face_friendly_goal":
+                case "grab_and_release":
+                    frodo.port.sdpPort.commandSender("grab");
+                    frodo.port.sdpPort.commandSender("ungrab");
                     break;
             }
         }
