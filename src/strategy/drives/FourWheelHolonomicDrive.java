@@ -18,20 +18,39 @@ public class FourWheelHolonomicDrive implements DriveInterface {
         assert (port instanceof FourWheelHolonomicRobotPort);
 
         VectorGeometry dir = new VectorGeometry();
+        // "force" is a vector containing the location of where the robot needs to travel to (not face toward). This vector
+        // is in an absolute coordinate system, with the x and y axes aligning with the pitch walls.
+        // This method below takes "force" and converts it to a new coordinate system where the robot's current direction
+        // aligns with the x-axis.
         force.copyInto(dir).coordinateRotation(force.angle() - location.direction);
         factor = Math.min(1, factor);
 
+        // Used for normalization.
         double lim = this.MAX_MOTION - Math.abs(rotation * this.MAX_ROTATION * factor);
 
+        /** When the robot is facing RIGHT:
+         A positive value for:
+         -front: causes the front wheel to spin DOWN
+         -back: causes the back wheel to spin DOWN
+         -left: causes the left wheel to spin RIGHT
+         -right: causes the right wheel to spin RIGHT
+         **/
         double front = -dir.y;
-        double left = dir.x;
-        double back = -dir.y;
+        double back = dir.y;
+        double left = -dir.x;
         double right = dir.x;
+
+
+        // Used to normalize max wheel power to this.MAX_MOTION (=200).
         double normalizer = Math.max(Math.max(Math.abs(left), Math.abs(right)), Math.max(Math.abs(front), Math.abs(back)));
+        // "rotation" is a signed angle measured in radians.
         System.out.println("rotation: " + rotation);
+
         normalizer = (lim / normalizer) * factor;
-        front = front * normalizer + rotation * this.MAX_ROTATION;
-        back = back * normalizer - rotation * this.MAX_ROTATION;
+
+
+        front = front * normalizer - rotation * this.MAX_ROTATION;
+        back = back * normalizer + rotation * this.MAX_ROTATION;
         left = left * normalizer - rotation * this.MAX_ROTATION;
         right = right * normalizer + rotation * this.MAX_ROTATION;
 
