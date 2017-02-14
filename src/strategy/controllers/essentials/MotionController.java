@@ -82,7 +82,7 @@ public class MotionController extends ControllerBase {
 
 
         if(this.heading != null){
-            // If a direction to head in was specified, use that.
+            // If a direction to face was specified, use that.
             this.heading.recalculate();
             heading = new VectorGeometry(this.heading.getX(), this.heading.getY());
         } else {
@@ -108,7 +108,7 @@ public class MotionController extends ControllerBase {
 
             boolean intersects = false;
 
-            // Search through obstacles (not sure what that would be apart from other robots) and check if any will be in our way
+            // Search through obstacles and check if any will be in our way
             for(Obstacle o : this.obstacles){
                 intersects = intersects || o.intersects(us.location, destination);
             }

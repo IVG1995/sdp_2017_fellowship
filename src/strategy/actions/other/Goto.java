@@ -13,6 +13,11 @@ import vision.tools.VectorGeometry;
  * Created by Simon Rovder
  */
 public class Goto extends ActionBase {
+
+    private final int STATIONARY = 0;
+    private final int GOTO_POINT = 1;
+    private final int SUCCESS = 2;
+
     public Goto(RobotBase robot, DynamicPoint point) {
         super(robot, point);
         this.rawDescription = " GOTO";
@@ -20,7 +25,7 @@ public class Goto extends ActionBase {
 
     @Override
     public void enterState(int newState) {
-        if(newState == 1){
+        if(newState == GOTO_POINT){
             this.robot.MOTION_CONTROLLER.setDestination(this.point);
             this.robot.MOTION_CONTROLLER.setHeading(this.point);
         } else {
@@ -34,17 +39,17 @@ public class Goto extends ActionBase {
     public void tok() throws ActionException {
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
         if(us == null){
-            this.enterState(0);
+            this.enterState(this.STATIONARY);
             return;
         }
         if(VectorGeometry.distance(this.point.getX(), this.point.getY(), us.location.x, us.location.y) < 10){
-            this.enterState(2);
+            this.enterState(this.SUCCESS);
         } else {
-            if(this.state == 0){
-                this.enterState(1);
+            if(this.state == this.STATIONARY){
+                this.enterState(this.GOTO_POINT);
             }
         }
-        if(this.state == 2){
+        if(this.state == this.SUCCESS){
             throw new ActionException(true, false);
         }
     }

@@ -29,18 +29,19 @@ public class GoToSafeLocation extends ActionBase {
     @Override
     public void enterState(int newState) {
         if(newState == 0){
-            if(this.robot instanceof Fred) {
-                ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(false);
-                ((FredRobotPort)this.robot.port).propeller(0);
-                ((FredRobotPort)this.robot.port).propeller(0);
-                ((FredRobotPort)this.robot.port).propeller(0);
-            }
+            //if(this.robot instanceof Fred) {
+            //    ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(false);
+            //    ((FredRobotPort)this.robot.port).propeller(0);
+            //    ((FredRobotPort)this.robot.port).propeller(0);
+            //    ((FredRobotPort)this.robot.port).propeller(0);
+            //}
 
 
             Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
             Ball ball = Strategy.world.getBall();
             if(us == null || ball == null) return;
 
+            // Run in front of our goal and hold that position until further notice.
             this.robot.MOTION_CONTROLLER.addObstacle(new Obstacle((int)ball.location.x, (int)ball.location.y, 30));
             this.robot.MOTION_CONTROLLER.setDestination(new ConstantPoint(-Constants.PITCH_WIDTH/2, 0));
             this.robot.MOTION_CONTROLLER.setHeading(new BallPoint());

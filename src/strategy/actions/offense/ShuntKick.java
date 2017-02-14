@@ -35,7 +35,7 @@ public class ShuntKick extends ActionBase {
         if (newState == GET_INTO_POSITION) {
             this.robot.MOTION_CONTROLLER.setDestination(this.point);
             this.robot.MOTION_CONTROLLER.setHeading(new EnemyGoal());
-            this.robot.MOTION_CONTROLLER.setTolerance(-1);
+            this.robot.MOTION_CONTROLLER.setTolerance(0);
         } else if (newState == SHOOT) {
             BallPoint ballPoint = new BallPoint();
             ballPoint.recalculate();
@@ -50,16 +50,15 @@ public class ShuntKick extends ActionBase {
     @Override
     public void tok() throws ActionException {
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
-        // If the ball is in our half, just hit it forward without worrying too much about aiming.
 
         if(us != null){
             System.out.println("ShootingPoint: " + this.point.getX() + " " + this.point.getY());
             System.out.println("us: " + us.location.toString());
+            // Are we already in a good position to shoot toward the enemy goal?
             if (us.location.distance(this.point.getX(), this.point.getY()) < CLOSE_ENOUGH) {
-                // If the ball is in their half, aim at their goal before kicking.
                 this.enterState(SHOOT);
             } else {
-                // Get into shooting position
+                // If not, get into shooting position
                 this.enterState(GET_INTO_POSITION);
             }
         }
