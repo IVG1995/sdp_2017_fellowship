@@ -3,6 +3,7 @@ package strategy.actions;
 import strategy.GUI;
 import strategy.Strategy;
 import strategy.WorldTools;
+import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
 import strategy.actions.offense.OffensiveKick;
@@ -24,7 +25,7 @@ import java.io.IOException;
  * Created by Simon Rovder
  */
 enum BehaviourEnum{
-    DEFEND, SHUNT, KICK, SAFE, EMPTY
+    DEFEND, SHUNT, KICK, SAFE, EMPTY, WALL_KICK
 }
 
 /**
@@ -69,6 +70,9 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
             case SHUNT:
                 this.enterAction(new ShuntKick(this.robot), 0, 0);
                 break;
+            case WALL_KICK:
+                this.enterAction(new WallKick(this.robot), 0, 0);
+                break;
             case SAFE:
                 ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick(false);
                 this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
@@ -108,13 +112,10 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                 if(us.location.distance(ourGoal) > ball.location.distance(ourGoal)){
                     this.nextState = BehaviourEnum.SAFE;
                 } else {
-                    // If the ball is within 20 cm of any wall, go into SHUNT mode (execute sub-action ShuntKick).
+                    // If the ball is within 20 cm of any wall, go into WALL_KICK mode (execute sub-action WallKick).
                     // For now, this sub-action just moves towards the ball and continually kicks.
                     if(Math.abs(ball.location.x) > Constants.PITCH_WIDTH/2 - 20 && Math.abs(ball.location.y) > Constants.PITCH_HEIGHT/2 - 20){
-                        // Ensure our robot doesn't enter enemy goalbox.
-                        if (!WorldTools.isPointInEnemyDefenceArea(ball.location)) {
-                            this.nextState = BehaviourEnum.SHUNT;
-                        }
+                        this.nextState = BehaviourEnum.WALL_KICK;
                     } else {
                         boolean canKick = true;
                         // If all other robots aren't null, not moving (quickly at least), and at least 50 cm away from the ball,
@@ -129,7 +130,7 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                         // If all the above conditions are met, plus at least one of these two conditions:
                         // 1: we weren't defending last cycle, or
                         // 2: the angle between the ball's current direction and the direction towards our goal is greater than 2 radians,
-                        // then go into SHUNT mode.
+                        // then go into SHUNT mode, which is basically an offensive kick.
                         if(canKick && (this.lastState != BehaviourEnum.DEFEND || VectorGeometry.angle(ball.velocity, VectorGeometry.fromTo(ball.location, new VectorGeometry(-Constants.PITCH_WIDTH/2, 0))) > 2)){
                             this.nextState = BehaviourEnum.SHUNT;
                         } else {

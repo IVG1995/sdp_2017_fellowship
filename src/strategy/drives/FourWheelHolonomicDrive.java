@@ -34,18 +34,18 @@ public class FourWheelHolonomicDrive implements DriveInterface {
          -back: causes the back wheel to spin DOWN
          -left: causes the left wheel to spin RIGHT
          -right: causes the right wheel to spin RIGHT
-         **/
-        double front = -dir.y;
-        double back = dir.y;
-        double left = -dir.x;
-        double right = dir.x;
-
+         **/                    // so if dir.x and dir.y are both positive
+        double front = -dir.y;  // the front wheel spins up,
+        double back = dir.y;    // the back wheel spins down,
+        double left = -dir.x;   // the left wheel spins left,
+        double right = dir.x;   // and the right wheel spins right,
+                                // making the robot turn left as desired.
+        // This generalizes to all cases, as well.
 
         // Used to normalize max wheel power to this.MAX_MOTION (=200).
         double normalizer = Math.max(Math.max(Math.abs(left), Math.abs(right)), Math.max(Math.abs(front), Math.abs(back)));
         // "rotation" is a signed angle measured in radians.
         System.out.println("rotation: " + rotation);
-
         normalizer = (lim / normalizer) * factor;
 
 

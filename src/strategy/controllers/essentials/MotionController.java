@@ -146,7 +146,6 @@ public class MotionController extends ControllerBase {
         }
 
 
-
         VectorGeometry force = navigation.getForce();
         if(force == null){
             this.robot.port.stop();
