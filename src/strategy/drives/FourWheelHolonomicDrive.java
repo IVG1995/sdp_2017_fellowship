@@ -65,10 +65,10 @@ public class FourWheelHolonomicDrive implements DriveInterface {
     }
 
     public void aim(RobotPort port, double rotation) {
-        double front = rotation  * this.MAX_ROTATION;
-        double left  = rotation  * this.MAX_ROTATION;
-        double back  = -rotation * this.MAX_ROTATION;
-        double right = -rotation * this.MAX_ROTATION;
+        double front = -rotation  * this.MAX_ROTATION;
+        double back  = rotation * this.MAX_ROTATION;
+        double left  = -rotation  * this.MAX_ROTATION;
+        double right = rotation * this.MAX_ROTATION;
 
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
     }

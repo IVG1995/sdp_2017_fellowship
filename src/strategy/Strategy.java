@@ -204,6 +204,27 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.port.sdpPort.commandSender("grab");
                     frodo.port.sdpPort.commandSender("ungrab");
                     break;
+                case "rotate_left":
+                    frodo.port.sdpPort.commandSender("r", -200, 200, -200, 200);
+                    break;
+                case "rotate_right":
+                    frodo.port.sdpPort.commandSender("r", 200, -200, 200, -200);
+                    break;
+                case "spin_front_wheel_up":
+                    frodo.port.sdpPort.commandSender("r", -40, 0, 0, 0);
+                    break;
+                case "spin_back_wheel_down":
+                    frodo.port.sdpPort.commandSender("r", 0, 40, 0, 0);
+                    break;
+                case "spin_left_wheel_down":
+                    frodo.port.sdpPort.commandSender("r", 0, 0, -40, 0);
+                    break;
+                case "spin_right_wheel_up":
+                    frodo.port.sdpPort.commandSender("r", 0, 0, 0, 40);
+                    break;
+                case "forward_command":
+                    frodo.port.sdpPort.commandSender("r", 0, 0, 200, 200);
+                    break;
             }
         }
 
