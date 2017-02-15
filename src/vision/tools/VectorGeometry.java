@@ -136,8 +136,9 @@ public class VectorGeometry {
      */
     public VectorGeometry coordinateRotation(double phi){
         double length = this.length();
-        this.x = Math.cos(phi)*length;
-        this.y = Math.sin(phi)*length;
+        double angle  = this.angle();
+        this.x = Math.cos(angle - phi)*length;
+        this.y = Math.sin(angle - phi)*length;
         return this;
     }
 
@@ -380,5 +381,10 @@ public class VectorGeometry {
 
     public static VectorGeometry fromTo(double x, double y, int x1, int y1) {
         return fromTo(new VectorGeometry(x, y), new VectorGeometry(x1, y1));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof VectorGeometry &&((VectorGeometry) o).x == this.x && ((VectorGeometry) o).y == this.y;
     }
 }
