@@ -26,21 +26,16 @@ import vision.tools.ColoredPoint;
 
 /**
  * Created by Simon Rovder
- This class hurts me 300 lines is too much
  */
-
- //more gui things
 public class SDPColorInstance extends JFrame implements ActionListener, ChangeListener, PreviewSelectionListener, SaveLoadCapable {
 
-	//text fields
 	private JTextField minHueTextField;
 	private JTextField maxHueTextField;
 	private JTextField minSaturationTextField;
 	private JTextField maxSaturationTextField;
 	private JTextField minBrightnessTextField;
 	private JTextField maxBrightnessTextField;
-
-	//max and min floats for sliders
+		
 	private float maxHue        = 0;
 	private float minHue        = 0;
 	private float maxSaturation = 1;
@@ -48,40 +43,36 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 	private float maxBrightness = 1;
 	private float minBrightness = 1;
 
-	//sliders
 	private JSlider minHueSlider;
 	private JSlider maxHueSlider;
 	private JSlider minSaturationSlider;
 	private JSlider maxSaturationSlider;
 	private JSlider minBrightnessSlider;
 	private JSlider maxBrightnessSlider;
-
-	//panels
+	
 	private Panel minHuePanel;
 	private Panel maxHuePanel;
 	private Panel minSaturationPanel;
 	private Panel maxSaturationPanel;
 	private Panel minBrightnessPanel;
 	private Panel maxBrightnessPanel;
-
-	//others
 	public final SDPColor sdpColor;
-
+	
 	public final String name;
-
+	
 	private boolean respondToSliderChange;
 	private boolean calibrating;
 	private JButton done;
 	private JButton calibrate;
     public Color referenceColor;
     public Color negatedColor;
-
-  //check if something is a colour given hue, saturation and brightness values
+	
+    
 	public boolean isColor(float h, float s, float v){
 		if(this.maxHue > 1 && this.minHue > h){
 			h++;
 		}
-		return
+		return 
 				this.minHue <= h &&
 				this.maxHue >= h &&
 				this.minSaturation <= s &&
@@ -89,9 +80,9 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 				this.minBrightness <= v &&
 				this.maxBrightness >= v;
 	}
-
-
-	//constructor for SDPColorInstance
+	
+	
+	
 	public SDPColorInstance(String name, Color referenceColor, SDPColor sdpColor){
 		super();
 		this.name = name;
@@ -102,134 +93,132 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.sdpColor = sdpColor;
 		Preview.addSelectionListener(this);
 	}
-
-	//gui setup method
-	//mostly deals with layout and sliders. Nothing too complex
+	
 	private void setupGUI(){
 		setTitle(this.name);
 		setSize(640,480);
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
-
+		
 		minHueSlider = new JSlider();
 		minHueSlider.setBounds(183, 56, 200, 14);
 		panel.add(minHueSlider);
-
+		
 		minHuePanel = new Panel();
 		minHuePanel.setBounds(140, 56, 37, 14);
 		panel.add(minHuePanel);
-
+		
 		JLabel lblHue = new JLabel("Min Hue:");
 		lblHue.setBounds(10, 56, 120, 14);
 		panel.add(lblHue);
-
+		
 		minSaturationSlider = new JSlider();
 		minSaturationSlider.setBounds(183, 137, 200, 14);
 		panel.add(minSaturationSlider);
-
+		
 		minSaturationPanel = new Panel();
 		minSaturationPanel.setBounds(140, 137, 37, 14);
 		panel.add(minSaturationPanel);
-
+		
 		JLabel lblMinSaturation = new JLabel("Min Saturation:");
 		lblMinSaturation.setBounds(10, 137, 120, 14);
 		panel.add(lblMinSaturation);
-
+		
 		maxSaturationSlider = new JSlider();
 		maxSaturationSlider.setBounds(183, 176, 200, 14);
 		panel.add(maxSaturationSlider);
-
+		
 		maxSaturationPanel = new Panel();
 		maxSaturationPanel.setBounds(140, 176, 37, 14);
 		panel.add(maxSaturationPanel);
-
+		
 		JLabel lblMaxSaturation = new JLabel("Max Saturation:");
 		lblMaxSaturation.setBounds(10, 176, 120, 14);
 		panel.add(lblMaxSaturation);
-
+		
 		minBrightnessSlider = new JSlider();
 		minBrightnessSlider.setBounds(183, 215, 200, 14);
 		panel.add(minBrightnessSlider);
-
+		
 		minBrightnessPanel = new Panel();
 		minBrightnessPanel.setBounds(140, 215, 37, 14);
 		panel.add(minBrightnessPanel);
-
+		
 		JLabel lblMinValue = new JLabel("Min Brightness:");
 		lblMinValue.setBounds(10, 215, 120, 14);
 		panel.add(lblMinValue);
-
+		
 		maxBrightnessSlider = new JSlider();
 		maxBrightnessSlider.setBounds(183, 254, 200, 14);
 		panel.add(maxBrightnessSlider);
-
+		
 		maxBrightnessPanel = new Panel();
 		maxBrightnessPanel.setBounds(140, 254, 37, 14);
 		panel.add(maxBrightnessPanel);
-
+		
 		JLabel lblMaxValue = new JLabel("Max Brightness:");
 		lblMaxValue.setBounds(10, 254, 120, 14);
 		panel.add(lblMaxValue);
-
+		
 		minHueTextField = new JTextField();
 		minHueTextField.setEditable(false);
 		minHueTextField.setBounds(389, 39, 86, 26);
 		panel.add(minHueTextField);
 		minHueTextField.setColumns(10);
-
+		
 		minSaturationTextField = new JTextField();
 		minSaturationTextField.setEditable(false);
 		minSaturationTextField.setColumns(10);
 		minSaturationTextField.setBounds(389, 123, 86, 26);
 		panel.add(minSaturationTextField);
-
+		
 		maxSaturationTextField = new JTextField();
 		maxSaturationTextField.setEditable(false);
 		maxSaturationTextField.setColumns(10);
 		maxSaturationTextField.setBounds(389, 162, 86, 26);
 		panel.add(maxSaturationTextField);
-
+		
 		minBrightnessTextField = new JTextField();
 		minBrightnessTextField.setEditable(false);
 		minBrightnessTextField.setColumns(10);
 		minBrightnessTextField.setBounds(389, 201, 86, 26);
 		panel.add(minBrightnessTextField);
-
+		
 		maxBrightnessTextField = new JTextField();
 		maxBrightnessTextField.setEditable(false);
 		maxBrightnessTextField.setColumns(10);
 		maxBrightnessTextField.setBounds(389, 240, 86, 26);
 		panel.add(maxBrightnessTextField);
-
+		
 		JLabel lblEditBallColor = new JLabel(this.name);
 		lblEditBallColor.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblEditBallColor.setBounds(10, 11, 465, 26);
 		panel.add(lblEditBallColor);
-
+		
 		this.done = new JButton("Done");
 		done.setBounds(60, 314, 150, 23);
 		panel.add(done);
 		done.addActionListener(this);
-
+		
 
 		this.calibrate = new JButton("Calibrate");
 		this.calibrate.setBounds(10, 350, 250, 23);
 		panel.add(this.calibrate);
 		this.calibrate.addActionListener(this);
-
+		
 		JLabel lblMaxHue = new JLabel("Max Hue:");
 		lblMaxHue.setBounds(10, 98, 120, 14);
 		panel.add(lblMaxHue);
-
+		
 		maxHuePanel = new Panel();
 		maxHuePanel.setBounds(140, 98, 37, 14);
 		panel.add(maxHuePanel);
-
+		
 		maxHueSlider = new JSlider();
 		maxHueSlider.setBounds(183, 98, 200, 14);
 		panel.add(maxHueSlider);
-
+		
 		maxHueTextField = new JTextField();
 		maxHueTextField.setEditable(false);
 		maxHueTextField.setColumns(10);
@@ -258,16 +247,12 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.myRepaint();
 		this.setVisible(false);
 	}
-
-	//refreshed the colours based on the base values (two colours being the
-	//referenceColor and the negation of the colour)
+	
 	private void refreshColors(){
 		this.referenceColor = new Color(Color.HSBtoRGB((this.minHue + this.maxHue)/2, (this.maxSaturation + this.minSaturation)/2, (this.minBrightness + this.maxBrightness)/2));
 		this.negatedColor = new Color(255 - this.referenceColor.getRed(), 255 - this.referenceColor.getGreen(), 255 - this.referenceColor.getBlue());
 	}
-
-	//I have no idea why the slider values are bing taken to update this when the
-	//next method updates the slider values by these values... Just seems pointles
+	
 	private void recalculateValues(){
 		this.minHue        = ((float)this.minHueSlider.getValue())/100;
 		this.maxHue        = ((float)this.maxHueSlider.getValue())/100;
@@ -279,8 +264,7 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.maxBrightness = ((float)this.maxBrightnessSlider.getValue())/100;
 		this.minBrightness = ((float)this.minBrightnessSlider.getValue())/100;
 	}
-
-	//recalculates the slider values based on the corresponding values
+	
 	private void recalculateSliders(){
 		this.minHueSlider.setValue((int)(this.minHue*100));
 		this.maxHueSlider.setValue((int)(this.maxHue*100));
@@ -289,8 +273,7 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.maxBrightnessSlider.setValue((int)(this.maxBrightness*100));
 		this.minBrightnessSlider.setValue((int)(this.minBrightness*100));
 	}
-
-	//repaint the field
+	
 	public void myRepaint(){
 		this.minHueTextField.setText("" + this.minHue);
 		this.maxHueTextField.setText("" + this.maxHue);
@@ -305,8 +288,7 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.maxBrightnessPanel.setBackground(Color.getHSBColor((this.minHue + this.maxHue)/2, (this.maxSaturation + this.maxSaturation)/2, this.maxBrightness));
 		this.minBrightnessPanel.setBackground(Color.getHSBColor((this.minHue + this.maxHue)/2, (this.minSaturation + this.maxSaturation)/2, this.minBrightness));
 	}
-
-	//press button to calibrate
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.calibrate){
@@ -324,18 +306,17 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		}
 	}
 
-	//given a state change recalculate everything to relfect the new state
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		if(this.respondToSliderChange){
 			this.recalculateValues();
 			this.refreshColors();
-			this.myRepaint();
+			this.myRepaint();	
 		}
 	}
 
 
-	//preview?
+
 	@Override
 	public void previewClickHandler(ColoredPoint coloredPoint) {
 		if(this.calibrating && this.isVisible()){
@@ -363,8 +344,6 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		}
 	}
 
-	//saves the values a string so i assume you'd need a file writer seperately to
-	//actually save this
 	@Override
 	public String saveSettings() {
 		StringBuilder sb = new StringBuilder();
@@ -382,7 +361,6 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		return sb.toString();
 	}
 
-	//load settings from a STRING not a FILE
 	@Override
 	public void loadSettings(String settings) {
 		if(settings == null) return;
@@ -404,5 +382,5 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 			return;
 		}
 	}
-
+	
 }

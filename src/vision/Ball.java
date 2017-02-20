@@ -5,15 +5,11 @@ import vision.tools.VectorGeometry;
 /**
  * Created by Simon Rovder
  */
-
- //ball object using vector geometry class to describe location and velocity
 public class Ball {
     public VectorGeometry location;
     public VectorGeometry velocity;
     public Ball(){ }
 
-
-    //overides usual clone function to provide exact copy of the ball
     @Override
     public Ball clone(){
         Ball ball = new Ball();

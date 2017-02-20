@@ -1,6 +1,9 @@
 package vision.settings;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 
 import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColors;
@@ -14,8 +17,6 @@ import vision.gui.SDPConsole;
  * This class takes care of storing and loading settings. If you add any new features that need
  * callibration or take a long time to set up, edit this class to also save those settings.
  */
- //This class is pretty much just in charge of writing the settings to a file
- //and then loading them
 public class SettingsManager {
 
 
@@ -37,8 +38,8 @@ public class SettingsManager {
 			writer.close();
 		}
 	}
-
-	public static void loadSettings(String fileName) throws IOException{
+	
+	public static void loadSettings(String fileName) throws Exception{
 		if(fileName != null){
 			BufferedReader r = new BufferedReader(new FileReader(new File(fileName)));
 			String next = r.readLine();
@@ -61,7 +62,7 @@ public class SettingsManager {
 			r.close();
 		}
 	}
-
+	
 	public static void loadSettings() throws Exception{
 		String fileName = SDPConsole.chooseFile();
 		if(fileName != null){
