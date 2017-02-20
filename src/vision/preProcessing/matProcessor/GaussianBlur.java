@@ -5,6 +5,8 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import vision.VisionSettings;
 
+import java.awt.image.BufferedImage;
+
 /**
  * Created by nlfox on 2/6/17.
  */
