@@ -1,6 +1,7 @@
 package vision;
 
 import vision.gui.SDPConsole;
+import vision.preProcessing.matProcessor.BgSubtractor;
 import vision.tools.DirectedPoint;
 
 import java.security.KeyPair;
@@ -47,6 +48,11 @@ public class DynamicWorld {
         this.time = time;
         this.robots = new HashMap<RobotType, Robot>();
         this.aliases = new HashMap<RobotAlias, Robot>();
+    }
+
+    public ArrayList<ArrayList<Double>> getObjects(){
+        return BgSubtractor.objects;
+
     }
 
 
