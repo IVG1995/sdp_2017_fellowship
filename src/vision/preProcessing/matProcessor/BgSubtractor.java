@@ -11,11 +11,13 @@ import vision.preProcessing.PreProcessor;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.util.ArrayList;
 
 /**
  * Created by nlfox on 2/5/17.
  */
 public class BgSubtractor implements MatProcessor {
+    public static ArrayList<ArrayList<Double>> objects;
     BackgroundSubtractorMOG2 backgroundSubtractorMOG;
     public static long cnt = 0;
 
@@ -42,6 +44,7 @@ public class BgSubtractor implements MatProcessor {
         //update object list
 
         return output;
+
 
     }
 

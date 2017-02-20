@@ -234,7 +234,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
 
         if ((world.getRobots().contains(null)) || (world.getBall().equals(null))){
             for (ArrayList<Double> position: world,getObjects()){
-                
+
             }
             //perform obj rec
             //work out which objects are null
