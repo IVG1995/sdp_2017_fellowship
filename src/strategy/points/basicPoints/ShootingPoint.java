@@ -10,14 +10,15 @@ public class ShootingPoint extends DynamicPointBase {
     @Override
     public void recalculate() {
         VectorGeometry ballLocation = Strategy.world.getBall().location;
-        System.out.println("ball: " + ballLocation.toString());
+//        System.out.println("ball: " + ballLocation.toString());
         VectorGeometry ballToEnemyGoal = VectorGeometry.fromTo(ballLocation, new EnemyGoal().toVectorGeometry());
         System.out.println("ballToEnemyGoal: " + ballToEnemyGoal.toString());
         VectorGeometry kickingPoint = ballToEnemyGoal.normaliseToLength(-KICKING_DISTANCE);
 
+
         this.x = (int) Math.round(kickingPoint.x + ballLocation.x);
         this.y = (int) Math.round(kickingPoint.y + ballLocation.y);
-        System.out.println("kickingPoint: " + this.x + " " + this.y);
+//        System.out.println("kickingPoint: " + this.x + " " + this.y);
     }
 
     @Override

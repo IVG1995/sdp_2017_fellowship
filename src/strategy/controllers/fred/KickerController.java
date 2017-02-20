@@ -19,7 +19,7 @@ public class KickerController extends ControllerBase {
     }
 
     public void perform() {
-        FrodoRobotPort frodoRobotPort = ((FrodoRobotPort)this.robot.port);
-        if (wantToKick) frodoRobotPort.kick();
+//        FrodoRobotPort frodoRobotPort = ((FrodoRobotPort)this.robot.port);
+//        if (wantToKick) frodoRobotPort.kick();
     }
 }

@@ -71,7 +71,7 @@ public class ObstacleField {
         }
 
         Robot us = world.getRobot(RobotType.FRIEND_2);
-        field.addEnemyDefence();
+//        field.addEnemyDefence(); TODO uncomment for 2v2
         Robot friend = world.getRobot(RobotType.FRIEND_1);
         if(friend != null && WorldTools.isPointInFriendDefenceArea(friend.location) && us != null && !WorldTools.isPointInFriendDefenceArea(us.location) ){
             field.addFriendDefence();

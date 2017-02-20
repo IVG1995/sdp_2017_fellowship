@@ -128,6 +128,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.ACTION_CONTROLLER.setAction(new Waiting(frodo));
                     frodo.MOTION_CONTROLLER.setDestination(null);
                     frodo.MOTION_CONTROLLER.setHeading(null);
+                    frodo.KICKER_CONTROLLER.setWantToKick(false);
                     port.halt();
                     break;
                 case "reset":

@@ -13,6 +13,9 @@ public class FourWheelHolonomicDrive implements DriveInterface {
     private final int FORCE_WEIGHT    = 120;
     private final int ROTATION_WEIGHT = 120;
 
+    public int MAX_ROTATION = 0; //deprecated
+    public int MAX_MOTION = 0; //deprecated
+
     public void move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation, double factor) {
         assert(port instanceof FourWheelHolonomicRobotPort);
 

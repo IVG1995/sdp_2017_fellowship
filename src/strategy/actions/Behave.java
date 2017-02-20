@@ -94,16 +94,6 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
             Robot us = Strategy.world.getRobot(this.robot.robotType);
             if(us == null){
                 // TODO: Angry yelling
-                System.out.println("ay ya get shit on");
-                try {
-                    String path = "../../../vision/settings/data/opts";
-                    if(optNumber == NUMBER_OF_OPTS) optNumber = 1; else optNumber++;
-                    String fileName = path + Integer.toString(optNumber);
-                    SettingsManager.loadSettings(fileName);
-                    System.out.println(fileName);
-                } catch (IOException io) {
-                    // if an exception is thrown settings stay the same and we continue to next timer cycle
-                }
             } else {
                 // If our robot is further away from our goal then the ball is, go into SAFE mode (execute sub-action GoToSafeLocation).
                 // This action rushes our robot back to right in front of our goal while also making sure not to accidentally
@@ -125,8 +115,6 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                                 canKick = canKick && r.location.distance(ball.location) > 50;
                             }
                         }
-                        // can only kick if ball isn't in enemy goalbox
-                        canKick = canKick && !WorldTools.isPointInEnemyDefenceArea(ball.location);
                         // If all the above conditions are met, plus at least one of these two conditions:
                         // 1: we weren't defending last cycle, or
                         // 2: the angle between the ball's current direction and the direction towards our goal is greater than 2 radians,
