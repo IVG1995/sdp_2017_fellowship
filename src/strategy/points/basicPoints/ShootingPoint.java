@@ -13,7 +13,7 @@ public class ShootingPoint extends DynamicPointBase {
         System.out.println("ball: " + ballLocation.toString());
         VectorGeometry ballToEnemyGoal = VectorGeometry.fromTo(ballLocation, new EnemyGoal().toVectorGeometry());
         System.out.println("ballToEnemyGoal: " + ballToEnemyGoal.toString());
-        VectorGeometry kickingPoint = ballToEnemyGoal.normal(-KICKING_DISTANCE);
+        VectorGeometry kickingPoint = ballToEnemyGoal.normaliseToLength(-KICKING_DISTANCE);
 
         this.x = (int) Math.round(kickingPoint.x + ballLocation.x);
         this.y = (int) Math.round(kickingPoint.y + ballLocation.y);

@@ -125,7 +125,7 @@ public class VectorGeometry {
     }
 
 
-    public VectorGeometry normal(int length){
+    public VectorGeometry normaliseToLength(double length){
         return this.multiply(length / this.length());
     }
     /**
