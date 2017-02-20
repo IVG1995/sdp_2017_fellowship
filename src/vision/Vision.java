@@ -1,14 +1,14 @@
 package vision;
 
-//import from other libraries
 import java.awt.BorderLayout;
 import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
-//imports from vision
 import vision.colorAnalysis.ColorCalibration;
+import vision.preProcessing.OpenCVProcessor;
+import vision.preProcessing.BrightnessProcessor;
 import vision.tools.CommandLineParser;
 import vision.distortion.Distortion;
 import vision.distortion.DistortionPreview;
@@ -26,7 +26,7 @@ import vision.spotAnalysis.recursiveSpotAnalysis.RecursiveSpotAnalysis;
 
 /**
  * Created by Simon Rovder
- *
+ * <p>
  * SDP2017NOTE
  * This is the main Vision class. It creates the entire vision system. Run this file to see the magic. :)
  */
@@ -38,54 +38,56 @@ public class Vision extends JFrame implements DynamicWorldListener {
 	/**
 	 * Add a vision listener. The Listener will be notified whenever the
 	 * vision system has a new world.
+	 *
 	 * @param visionListener Your class
 	 */
-	public void addVisionListener(VisionListener visionListener){
+	public void addVisionListener(VisionListener visionListener) {
 		this.visionListeners.add(visionListener);
 	}
 
 	/**
 	 * Vision system constructor. Please please please only call this once, or else it goes haywire.
 	 */
-	public Vision(String[] args){
+	public Vision(String[] args) {
 		super("Vision");
 
-		//listener!
-		this.visionListeners   = new LinkedList<VisionListener>();
-		//gui things
+		this.visionListeners = new LinkedList<VisionListener>();
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
-		//spot analysers
-		SpotAnalysisBase recursiveSpotAnalysis   = new RecursiveSpotAnalysis();
+		SpotAnalysisBase recursiveSpotAnalysis = new RecursiveSpotAnalysis();
 		SpotAnalysisBase approximateSpotAnalysis = new ApproximatedSpotAnalysis();
-
+		BrightnessProcessor brightnessProcessor = new BrightnessProcessor();
+		OpenCVProcessor openCVProcessor = new OpenCVProcessor();
 
 		// SDP2017NOTE
 		// This part builds the vision system pipeline
-		//pretty much all the listeners
+		//TODO: Add preprocessor
+
+		RawInput.addPreProcessor(brightnessProcessor);
+		RawInput.addPreProcessor(openCVProcessor);
 		RawInput.addRawInputListener(recursiveSpotAnalysis);
 		RawInput.addRawInputListener(Preview.preview);
 		RawInput.addRawInputListener(Distortion.distortion);
 		recursiveSpotAnalysis.addSpotListener(Distortion.distortion);
 		DistortionPreview.addDistortionPreviewClickListener(Distortion.distortion);
 		Distortion.addDistortionListener(RobotPreview.preview);
-		//except this bit here which defines a new robot analyser...
+
 		RobotAnalysisBase robotAnalysis = new NewRobotAnalysis();
 		Distortion.addDistortionListener(robotAnalysis);
 		robotAnalysis.addDynamicWorldListener(RobotPreview.preview);
 		robotAnalysis.addDynamicWorldListener(this);
 
-		//more gui setup
+
 		tabbedPane.addTab("Input Selection", null, RawInput.rawInputMultiplexer, null);
 		tabbedPane.addTab("Color Calibration", null, ColorCalibration.colorCalibration, null);
 		tabbedPane.addTab("Distortion", null, Distortion.distortion, null);
 //		tabbedPane.addTab("Robots", null, RobotAnalysis.strategy.robots, null);
-		tabbedPane.addTab("Misc Settings", null,  MiscellaneousSettings.miscSettings, null);
+		tabbedPane.addTab("Misc Settings", null, MiscellaneousSettings.miscSettings, null);
 
 		SDPConsole.console.setVisible(true);
 
 		this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-		this.setSize(640,480);
+		this.setSize(640, 480);
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent evt) {
 				terminateVision();
@@ -99,19 +101,17 @@ public class Vision extends JFrame implements DynamicWorldListener {
 	/**
 	 * Call this function to safely turn off all the Vision stuff.
 	 */
-	public void terminateVision(){
+	public void terminateVision() {
 		RawInput.rawInputMultiplexer.stopAllInputs();
 	}
 
-	//MAIN IS BAE
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		new Vision(args);
 	}
 
-	//updates the DynamicWorld
 	@Override
 	public void nextDynamicWorld(DynamicWorld state) {
-		for(VisionListener visionListener : this.visionListeners){
+		for (VisionListener visionListener : this.visionListeners) {
 			visionListener.nextWorld(state);
 		}
 	}
