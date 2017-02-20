@@ -1,6 +1,6 @@
 package strategy.controllers.fred;
 
-import communication.ports.interfaces.PropellerEquippedRobotPort;
+import communication.ports.interfaces.PropellerEquipedRobotPort;
 import strategy.Strategy;
 import strategy.controllers.ControllerBase;
 import strategy.robots.RobotBase;
@@ -26,7 +26,7 @@ public class PropellerController extends ControllerBase {
     }
 
     private void propel(int dir){
-        PropellerEquippedRobotPort port = (PropellerEquippedRobotPort) this.robot.port;
+        PropellerEquipedRobotPort port = (PropellerEquipedRobotPort) this.robot.port;
         if(dir < 0){
             if(this.propellerTracker < -4) return;
             this.propellerTracker--;
@@ -45,7 +45,7 @@ public class PropellerController extends ControllerBase {
 
     @Override
     public void perform(){
-        assert (this.robot.port instanceof PropellerEquippedRobotPort);
+        assert (this.robot.port instanceof PropellerEquipedRobotPort);
 
         Robot us = Strategy.world.getRobot(this.robot.robotType);
         if(us != null){

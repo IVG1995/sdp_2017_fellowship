@@ -1,6 +1,5 @@
 package strategy;
 
-import communication.ports.interfaces.PropellerEquippedRobotPort;
 import strategy.actions.Behave;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
@@ -14,7 +13,7 @@ import communication.ports.robotPorts.FredRobotPort;
 import strategy.robots.Fred;
 import strategy.robots.RobotBase;
 import vision.RobotAlias;
-
+import communication.ports.interfaces.PropellerEquipedRobotPort;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -220,9 +219,9 @@ public class GUI extends JFrame implements KeyListener{
                     this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.OFF);
                     if(this.robot instanceof Fred){
                         ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(false);
-                        ((PropellerEquippedRobotPort) this.robot.port).propeller(0);
-                        ((PropellerEquippedRobotPort) this.robot.port).propeller(0);
-                        ((PropellerEquippedRobotPort) this.robot.port).propeller(0);
+                        ((PropellerEquipedRobotPort) this.robot.port).propeller(0);
+                        ((PropellerEquipedRobotPort) this.robot.port).propeller(0);
+                        ((PropellerEquipedRobotPort) this.robot.port).propeller(0);
                     }
                     this.robot.ACTION_CONTROLLER.setAction(new Waiting(this.robot));
                     break;
