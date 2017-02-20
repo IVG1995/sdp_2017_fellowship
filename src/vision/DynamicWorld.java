@@ -50,7 +50,7 @@ public class DynamicWorld {
         this.aliases = new HashMap<RobotAlias, Robot>();
     }
 
-    public ArrayList<ArrayList<Double>> getObjects(){
+    public ArrayList<ShapeObject> getObjects(){
         return BgSubtractor.objects;
 
     }

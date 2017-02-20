@@ -6,6 +6,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractorMOG;
 import org.opencv.video.BackgroundSubtractorMOG2;
+import vision.ShapeObject;
 import vision.VisionSettings;
 import vision.preProcessing.PreProcessor;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
  * Created by nlfox on 2/5/17.
  */
 public class BgSubtractor implements MatProcessor {
-    public static ArrayList<ArrayList<Double>> objects;
+    public static ArrayList<ShapeObject> objects;
     BackgroundSubtractorMOG2 backgroundSubtractorMOG;
     public static long cnt = 0;
 
