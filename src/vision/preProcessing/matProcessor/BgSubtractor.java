@@ -38,6 +38,9 @@ public class BgSubtractor implements MatProcessor {
         }
         Mat output = new Mat();
         mat.copyTo(output, fgMask);
+
+        //update object list
+
         return output;
 
     }

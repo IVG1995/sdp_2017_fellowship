@@ -13,6 +13,7 @@ import communication.PortListener;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.*;
+import vision.Robot;
 import vision.settings.SettingsManager;
 
 import javax.swing.*;
@@ -22,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 /**
  * Created by Simon Rovder
@@ -42,6 +44,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
      * It is accessible from anywhere in the project at any time as Strategy.world
      */
     public static DynamicWorld world = null;
+    public static DynamicWorld previous = null;
 
     public static Status status;
 
@@ -225,8 +228,19 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
 
     @Override
     public void nextWorld(DynamicWorld dynamicWorld) {
+        previous = world;
         world = dynamicWorld;
         status = new Status(world);
+
+        if ((world.getRobots().contains(null)) || (world.getBall().equals(null))){
+            for (ArrayList<Double> position: world,getObjects()){
+                
+            }
+            //perform obj rec
+            //work out which objects are null
+            //calculate probabilities
+            //assign point and direction to robot
+        }
     }
 
 

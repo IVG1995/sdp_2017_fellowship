@@ -3,6 +3,8 @@ package vision;
 import vision.gui.SDPConsole;
 import vision.tools.DirectedPoint;
 
+import java.security.KeyPair;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -17,6 +19,7 @@ public class DynamicWorld {
     // This HashMap contains the detected robots.
     private HashMap<RobotType, Robot> robots;
     private HashMap<RobotAlias, Robot> aliases;
+    private ArrayList<ArrayList<Double>> objects;
 
     // The location of the ball.
     private Ball ball;
