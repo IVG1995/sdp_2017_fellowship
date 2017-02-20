@@ -1,84 +1,77 @@
 package vision.rawInput;
 
-import vision.constants.Constants;
-import vision.gui.Preview;
-import vision.gui.SDPConsole;
+import vision.preProcessing.PreProcessor;
 
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 /**
  * Created by Simon Rovder
  */
- //displays the raw input
-public class RawInput extends JPanel{
+public class RawInput extends JPanel {
 
-	//tab pane
 	private JTabbedPane tabbedPane;
 
-	//this will be the raw image
 	public BufferedImage lastImage;
 
-	//get the raw inputs
 	private AbstractRawInput[] rawInputs = {
-		LiveCameraInput.liveCameraInput,
-		StaticImage.staticImage
+			LiveCameraInput.liveCameraInput,
+			StaticImage.staticImage
 	};
 
-	//more listeners...
 	private LinkedList<RawInputListener> imageListeners;
+	private LinkedList<PreProcessor> imageProcessors;
 
-	//raw input
 	public static final RawInput rawInputMultiplexer = new RawInput();
 
-	//constructor
-	private RawInput(){
 
+	private RawInput() {
 		super();
 		this.setLayout(new BorderLayout(0, 0));
 
-		this.tabbedPane     = new JTabbedPane(JTabbedPane.TOP);
-		this.imageListeners = new LinkedList<RawInputListener>();
+		this.tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		this.imageListeners = new LinkedList<>();
+		this.imageProcessors = new LinkedList<>();
 
 		this.add(this.tabbedPane);
 
-		//add a tab for every raw input?
-		for(AbstractRawInput rawInput : this.rawInputs){
+		for (AbstractRawInput rawInput : this.rawInputs) {
 			rawInput.setInputListener(this);
 			this.tabbedPane.addTab(rawInput.getTabName(), null, rawInput, null);
 		}
 	}
 
-	//lets add some listeners cause we can never have enough of those
-	public static void addRawInputListener(RawInputListener ril){
+	public static void addRawInputListener(RawInputListener ril) {
 		RawInput.rawInputMultiplexer.imageListeners.add(ril);
 	}
 
-	//get the next frame
-	public void nextFrame(BufferedImage image, long time){
+	public static void addPreProcessor(PreProcessor p) {
+		RawInput.rawInputMultiplexer.imageProcessors.add(p);
+	}
+
+	public void nextFrame(BufferedImage image, long time) {
+		for (PreProcessor p : this.imageProcessors) {
+			image = p.process(image);
+		}
 		this.lastImage = image;
-		for(RawInputListener ril : this.imageListeners){
+		for (RawInputListener ril : this.imageListeners) {
 			ril.nextFrame(image, time);
 		}
 	}
 
-	//THERE WILL BE NO INPUTS!
-	public void stopAllInputs(){
-		for(RawInputInterface input : this.rawInputs){
+	public void stopAllInputs() {
+		for (RawInputInterface input : this.rawInputs) {
 			input.stop();
 		}
 	}
 
-	//set video port
-	public void setVideoChannel(int port){
-		((LiveCameraInput)(this.rawInputs[0])).setVideoChannel(port);
+	public void setVideoChannel(int port) {
+		((LiveCameraInput) (this.rawInputs[0])).setVideoChannel(port);
 	}
 
-	//lets start a twitch stream
-	public void streamVideo(){
+	public void streamVideo() {
 		this.rawInputs[0].start();
 	}
 
