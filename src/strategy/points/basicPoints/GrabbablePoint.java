@@ -9,17 +9,17 @@ import vision.tools.VectorGeometry;
 /**
  *
  */
-public class KickablePoint extends DynamicPointBase{
+public class GrabbablePoint extends DynamicPointBase{
 
 
     private RobotType type = null;
     private RobotAlias alias = null;
     private static final int DISTANCE_TO_KICKER = 7;
-    public KickablePoint(RobotType type){
+    public GrabbablePoint(RobotType type){
         this.type = type;
     }
 
-    public KickablePoint(RobotAlias alias){
+    public GrabbablePoint(RobotAlias alias){
         this.alias = alias;
     }
 

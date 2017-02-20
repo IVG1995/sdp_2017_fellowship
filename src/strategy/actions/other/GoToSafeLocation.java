@@ -7,7 +7,6 @@ import strategy.points.basicPoints.BallPoint;
 import strategy.navigation.Obstacle;
 import strategy.points.basicPoints.ConstantPoint;
 import communication.ports.robotPorts.FredRobotPort;
-import strategy.points.basicPoints.MidDangerPoint;
 import strategy.robots.Fred;
 import strategy.robots.RobotBase;
 import vision.Ball;
@@ -15,7 +14,6 @@ import vision.Robot;
 import vision.RobotType;
 import vision.constants.Constants;
 import vision.tools.VectorGeometry;
-import strategy.points.basicPoints.KickablePoint;
 
 /**
  * Created by Simon Rovder

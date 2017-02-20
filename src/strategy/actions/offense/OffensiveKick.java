@@ -3,16 +3,12 @@ package strategy.actions.offense;
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
 import strategy.controllers.essentials.MotionController;
-import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.EnemyGoal;
 import strategy.points.basicPoints.RobotPoint;
-import strategy.robots.Fred;
-import strategy.points.basicPoints.KickablePoint;
 import strategy.Strategy;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.Robot;
-import vision.RobotType;
 import vision.tools.VectorGeometry;
 
 /**
@@ -23,7 +19,7 @@ public class OffensiveKick extends ActionBase {
     private final int NOT_FACING_GOAL  = 0;
     private final int READY_TO_RELEASE = 1;
     private final int READY_TO_SHOOT   = 2;
-    // A KickablePoint always contains the location 7 (this number could change) cm in front of the ball.
+    // A GrabbablePoint always contains the location 7 (this number could change) cm in front of the ball.
 
     public OffensiveKick(RobotBase robot) {
         super(robot);
