@@ -7,12 +7,10 @@ import java.awt.*;
 /**
  * Created by Simon Rovder
  */
- //more like "tool"
 public class ImageTools {
 
     private static float[] dummyHSV = {0,0,0,0};
 
-    //convert rgb to hsv for easier manipulation
     public static void rgbToHsv(int[] original, float[] target){
         for(int i = 0; i < Constants.INPUT_WIDTH*Constants.INPUT_HEIGHT; i++){
             Color.RGBtoHSB(original[3*i], original[3*i + 1], original[3*i + 2], dummyHSV);

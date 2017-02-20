@@ -16,7 +16,6 @@ public class RobotColorSettings {
     /* */ public static boolean ASSUME_YELLOW = true;
     /*    TO HERE WITHOUT REWRITING the MiscellaneousSettings class. */
 
-    //returns the colour of the robot given a type
     public static SDPColor getMainColor(RobotType type){
         if(type == RobotType.FRIEND_1 && FRIEND_1_IS_GREEN) return SDPColor.GREEN;
         if(type == RobotType.FRIEND_2 && !FRIEND_1_IS_GREEN) return SDPColor.GREEN;
@@ -25,13 +24,11 @@ public class RobotColorSettings {
         return SDPColor.PINK;
     }
 
-    //returns the colour of the robot type that is passed
     public static SDPColor getTeam(RobotType type){
         if(type == RobotType.FRIEND_1 || type == RobotType.FRIEND_2) return FRIEND_COLOR;
         return FOE_COLOR;
     }
 
-    //return the robot type given a team and a colour
     public static RobotType getRobotType(SDPColor team, SDPColor mainColor){
         StringBuilder builder = new StringBuilder();
 
