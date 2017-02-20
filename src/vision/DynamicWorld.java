@@ -1,8 +1,10 @@
 package vision;
 
 import vision.gui.SDPConsole;
+import vision.preProcessing.matProcessor.BgSubtractor;
 import vision.tools.DirectedPoint;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -46,6 +48,9 @@ public class DynamicWorld {
         this.aliases = new HashMap<RobotAlias, Robot>();
     }
 
+    public ArrayList<ArrayList<Double>> getObjects(){
+        return BgSubtractor.objects;
+    }
 
     //This is just a bunch of getters and setters
     //Robots can be searched for by either alias or type
