@@ -233,7 +233,13 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         status = new Status(world);
 
         if ((world.getRobots().contains(null)) || (world.getBall().equals(null))){
-            for (ArrayList<Double> position: world,getObjects()){
+            /*TODO:
+            For every object we want to work out (based on their previous positions)
+            which object it is most likely to be.
+            Do this by working out the probability that any object is any robot and then
+            assign the highest probability robot to be that object*/
+            //THE BALL WILL HAVE A DIFFERENT SHAPE SO WE CAN JUST UPDATE THAT FROM THE SHAPE
+            for (ShapeObject obj : world.getObjects()){
 
             }
             //perform obj rec
