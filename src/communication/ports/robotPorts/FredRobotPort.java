@@ -1,13 +1,13 @@
 package communication.ports.robotPorts;
 
 import communication.ports.interfaces.FourWheelHolonomicRobotPort;
-import communication.ports.interfaces.PropellerEquippedRobotPort;
+import communication.ports.interfaces.PropellerEquipedRobotPort;
 import communication.ports.interfaces.RobotPort;
 
 /**
  * Created by Simon Rovder
  */
-public class FredRobotPort extends RobotPort implements PropellerEquippedRobotPort, FourWheelHolonomicRobotPort {
+public class FredRobotPort extends RobotPort implements PropellerEquipedRobotPort, FourWheelHolonomicRobotPort {
 
     public FredRobotPort(){
         super("pang");
