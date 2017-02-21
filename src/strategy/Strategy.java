@@ -233,6 +233,10 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         status = new Status(world);
 
         if ((world.getRobots().contains(null)) || (world.getBall().equals(null))){
+            Double[][] probabilities = new Double[4][4];
+            double prob = 0;
+            int count_1 = 0;
+            int count_2 = 0;
             /*TODO:
             For every object we want to work out (based on their previous positions)
             which object it is most likely to be.
@@ -240,12 +244,22 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
             assign the highest probability robot to be that object*/
             //THE BALL WILL HAVE A DIFFERENT SHAPE SO WE CAN JUST UPDATE THAT FROM THE SHAPE
             for (ShapeObject obj : world.getObjects()){
-
+                for (Robot r : previous.getRobots()){
+                    //probabilities based on distance
+                    prob = 1/(Math.sqrt((r.velocity.x - obj.x)*(r.velocity.x - obj.x)) + Math.sqrt((r.velocity.y - obj.y)*(r.velocity.y - obj.y)));
+                    probabilities[count_1][count_2] = prob;
+                    count_2++;
+                }
+                count_2 = 0;
+                count_1++;
+                //Add determination of which robot is which here (using the probabilities)
+                //The issue here is the order in which the robots are stored in the two worlds must be the same
             }
             //perform obj rec
             //work out which objects are null
             //calculate probabilities
             //assign point and direction to robot
+
         }
     }
 

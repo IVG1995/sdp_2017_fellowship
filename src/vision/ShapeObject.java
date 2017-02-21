@@ -4,8 +4,8 @@ package vision;
  * Created by nlfox on 2/20/17.
  */
 public class ShapeObject {
-    Double x;
-    Double y;
+    public double x;
+    public double y;
     Integer shape;
     public static Integer SQUARE = 0;
     public static Integer CIRCLE = 1;
