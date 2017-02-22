@@ -5,7 +5,7 @@ import strategy.actions.ActionBase;
 import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.EnemyGoal;
 import strategy.robots.Fred;
-import strategy.points.basicPoints.KickablePoint;
+import strategy.points.basicPoints.GrabbablePoint;
 import strategy.Strategy;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;

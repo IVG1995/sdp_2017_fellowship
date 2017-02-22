@@ -15,10 +15,13 @@ public class AnnoyingDefendPoint extends DynamicPointBase {
 
     @Override
     public void recalculate() {
+        // Coordinates of points in front of our goal.
         VectorGeometry lower = new VectorGeometry(- Constants.PITCH_WIDTH/2 + 20, 20);
         VectorGeometry upper = new VectorGeometry(- Constants.PITCH_WIDTH/2 + 20, -20);
         Ball ball = Strategy.world.getBall();
         VectorGeometry closest = null;
+
+        // Get in between the ball and our goal.
         if(ball != null && ball.velocity.length() > 0.2){
             closest = VectorGeometry.vectorToClosestPointOnFiniteLine(lower, upper, ball.location);
             this.x = (int)closest.x;

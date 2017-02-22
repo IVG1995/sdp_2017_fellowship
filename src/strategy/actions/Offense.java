@@ -1,5 +1,9 @@
 package strategy.actions;
 
+import strategy.actions.defence.Annoy;
+import strategy.actions.offense.GetBall;
+import strategy.actions.other.DefendGoal;
+import strategy.actions.other.GoToSafeLocation;
 import strategy.robots.RobotBase;
 import vision.Ball;
 import strategy.Strategy;
@@ -14,6 +18,8 @@ import vision.tools.VectorGeometry;
  * GET_BALL: When the ball is free, run and get it.
  * SCORE:
  * GET_OPEN: When our ally has the ball, get open for a pass.
+ * CLEAR:
+ * SAFE:
  */
 enum OffenseEnum {
     ANNOY, DEFEND, GET_BALL, SCORE, GET_OPEN, CLEAR, SAFE
@@ -23,15 +29,6 @@ enum OffenseEnum {
  * A root action focused on offense and built for 2v2 matches.
  */
 public class Offense extends StatefulActionBase<OffenseEnum>{
-
-    private final int ANNOY = 0;
-    private final int DEFEND = 1;
-    private final int GET_BALL = 2;
-    private final int SCORE = 3;
-    private final int GET_OPEN = 4;
-    private final int CLEAR = 5;
-    private final int SAFE = 6;
-
 
 
     public Offense(RobotBase robot) {
@@ -93,6 +90,10 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
         // =============================================================================================
         } else {
 
+            if (ball_holder == RobotType.FOE_1 || ball_holder == RobotType.FOE_2) {
+                this.nextState = OffenseEnum.ANNOY;
+            }
+
 
 
 
@@ -108,13 +109,13 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
         this.lastState = this.nextState;
         switch (this.nextState) {
             case ANNOY:
-
+                this.enterAction(new Annoy(this.robot), 0, 0);
                 break;
             case DEFEND:
-
+                this.enterAction(new DefendGoal(this.robot), 0, 0);
                 break;
             case GET_BALL:
-
+                this.enterAction(new GetBall(this.robot), 0, 0);
                 break;
             case SCORE:
 
@@ -124,6 +125,9 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
                 break;
             case CLEAR:
 
+                break;
+            case SAFE:
+                this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
                 break;
 
         }
