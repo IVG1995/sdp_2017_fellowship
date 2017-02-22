@@ -13,8 +13,10 @@ public class ShapeObject {
     public ShapeObject(Double x, Double y, Integer shape) {
         this.x = x;
         this.y = y;
-        this.shape = SQUARE;
+        this.shape = shape;
     }
+
+
 
 
 
