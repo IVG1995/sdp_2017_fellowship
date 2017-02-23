@@ -163,9 +163,9 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
                 toUndistort.location.setLength(toUndistort.location.length() * (1 - 20.0/250));
             }
         }
-		
-		previous = this.lastKnownWorld;
-        if ((world.getRobots().contains(null)) || (world.getBall().equals(null))){
+        if (((world.getRobots().contains(null)) || (world.getBall().equals(null))) && this.lastKnownWorld != null){
+			
+			DynamicWorld previous = this.lastKnownWorld;
             //avoids multiple calls to the return method
             HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
             //contains the probability that every robot is every other robot
