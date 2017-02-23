@@ -52,20 +52,19 @@ public class BgSubtractor implements MatProcessor {
         cnt += 1;
         Mat fgMask = new Mat();
         if (cnt < 50) {
-            backgroundSubtractorMOG.apply(mat, fgMask, 0.5);
+            backgroundSubtractorMOG.apply(mat, fgMask, 0.8);
         } else {
             backgroundSubtractorMOG.apply(mat, fgMask, 0);
         }
         Mat output = new Mat();
         Mat thresh = new Mat();
-        // Maybe 128?
-        Imgproc.threshold(fgMask, thresh, 60, 255, Imgproc.THRESH_BINARY);
+        Imgproc.threshold(fgMask, thresh, 128, 255, Imgproc.THRESH_BINARY);
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hier = new Mat();
         mat.copyTo(output, fgMask);
         Imgproc.findContours(fgMask, contours, hier, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         for (int i = 0; i < contours.size(); i++) {
-            if (Imgproc.contourArea(contours.get(i)) > 150) {
+            if (Imgproc.contourArea(contours.get(i)) > 200) {
                 RotatedRect rotatedRect = getApproxContour(contours.get(i));
                 // double angle = rotatedRect.angle; // angle
                 Point[] rect_points = new Point[4];
