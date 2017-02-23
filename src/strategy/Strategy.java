@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Simon Rovder
@@ -233,27 +234,40 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         status = new Status(world);
 
         if ((world.getRobots().contains(null)) || (world.getBall().equals(null))){
-            Double[][] probabilities = new Double[4][4];
-            double prob = 0;
-            int count_1 = 0;
-            int count_2 = 0;
-            /*TODO:
-            For every object we want to work out (based on their previous positions)
-            which object it is most likely to be.
-            Do this by working out the probability that any object is any robot and then
-            assign the highest probability robot to be that object*/
-            //THE BALL WILL HAVE A DIFFERENT SHAPE SO WE CAN JUST UPDATE THAT FROM THE SHAPE
+            //avoids multiple calls to the return method
+            HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
+            //contains the probability that every robot is every other robot
+            ArrayList<HashMap<RobotType, Double>> probabilities = new  ArrayList<HashMap<RobotType, Double>>();
+            int count = 0;
+
+            //loop over every robot for every shape
             for (ShapeObject obj : world.getObjects()){
-                for (Robot r : previous.getRobots()){
+                HashMap<RobotType, Double> obj_prob = new HashMap<RobotType, Double>();
+                for (RobotType r : pre_rob.keySet()){
                     //probabilities based on distance
-                    prob = 1/(Math.sqrt((r.velocity.x - obj.x)*(r.velocity.x - obj.x)) + Math.sqrt((r.velocity.y - obj.y)*(r.velocity.y - obj.y)));
-                    probabilities[count_1][count_2] = prob;
-                    count_2++;
+                    obj_prob.put(r, 1 / (Math.sqrt((pre_rob.get(r).velocity.x - obj.x) * (pre_rob.get(r).velocity.x - obj.x)) + Math.sqrt((pre_rob.get(r).velocity.y - obj.y) * (pre_rob.get(r).velocity.y - obj.y))));
                 }
-                count_2 = 0;
-                count_1++;
-                //Add determination of which robot is which here (using the probabilities)
-                //The issue here is the order in which the robots are stored in the two worlds must be the same
+                probabilities.add(obj_prob);
+            }
+
+            //WORKS ON THE ASSUMPTION THAT NO ONE ROBOT WILL HAVE THE HIGHEST PROBABILITY FOR TWO SHAPES
+            
+
+            //do the actual position updating
+            for (ShapeObject obj : world.getObjects()){
+                //init to null
+                RobotType max_type = null;
+                double max_prob = 0;
+                //the robot with the highest probability is set to be the obj
+                for (RobotType r : probabilities.get(count).keySet()){
+                    if (probabilities.get(count).get(r) > max_prob){
+                        max_prob = probabilities.get(count).get(r);
+                        max_type = r;
+                    }
+                }
+
+                world.update_robot(max_type, pre_rob.get(max_type), obj.x, obj.y);
+                count++;
             }
             //perform obj rec
             //work out which objects are null

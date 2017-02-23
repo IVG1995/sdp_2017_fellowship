@@ -28,4 +28,9 @@ public class Robot {
         r.type = this.type;
         return r;
     }
+
+    public void update_point(double x, double y){
+        location.x = x;
+        location.y = y;
+    }
 }

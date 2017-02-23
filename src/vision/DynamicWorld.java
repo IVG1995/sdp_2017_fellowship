@@ -130,5 +130,15 @@ public class DynamicWorld {
         return this.robots.values();
     }
 
+    public HashMap<RobotType, Robot> returnRobots() {
+        return robots;
+    }
 
+    //update directed point using the shape detection stuff
+    public void update_robot(RobotType r, Robot rob, double x, double y){
+        if (!(robots.keySet().contains(r))){
+            setRobot(rob);
+        }
+        robots.get(r).update_point(x,y);
+    }
 }
