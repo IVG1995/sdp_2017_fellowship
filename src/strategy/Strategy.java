@@ -250,8 +250,15 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                 probabilities.add(obj_prob);
             }
 
-            //WORKS ON THE ASSUMPTION THAT NO ONE ROBOT WILL HAVE THE HIGHEST PROBABILITY FOR TWO SHAPES
-            
+            //IDEALLY THESE ARE REMOVED BEFORE THE PROBABILITY CALCULATIONS TO SAVE TIME BUT THIS IS EASIER
+            //remove any already found robots from consideration
+            for (Robot r : world.getRobots()){
+                if (!(r.equals(null))){
+                    for (HashMap<RobotType, Double> map : probabilities){
+                        map.remove(r.type);
+                    }
+                }
+            }
 
             //do the actual position updating
             for (ShapeObject obj : world.getObjects()){
@@ -266,13 +273,16 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     }
                 }
 
+                //update the position
                 world.update_robot(max_type, pre_rob.get(max_type), obj.x, obj.y);
+
+                //disallow any robot to be assigned twice
+                for (HashMap<RobotType, Double> map : probabilities){
+                    map.remove(max_type);
+                }
+
                 count++;
             }
-            //perform obj rec
-            //work out which objects are null
-            //calculate probabilities
-            //assign point and direction to robot
 
         }
     }
