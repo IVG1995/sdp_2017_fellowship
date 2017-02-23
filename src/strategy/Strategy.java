@@ -229,62 +229,8 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
 
     @Override
     public void nextWorld(DynamicWorld dynamicWorld) {
-        previous = world;
-        world = dynamicWorld;
-        status = new Status(world);
-
-        if ((world.getRobots().contains(null)) || (world.getBall().equals(null))){
-            //avoids multiple calls to the return method
-            HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
-            //contains the probability that every robot is every other robot
-            ArrayList<HashMap<RobotType, Double>> probabilities = new  ArrayList<HashMap<RobotType, Double>>();
-            int count = 0;
-
-            //loop over every robot for every shape
-            for (ShapeObject obj : world.getObjects()){
-                HashMap<RobotType, Double> obj_prob = new HashMap<RobotType, Double>();
-                for (RobotType r : pre_rob.keySet()){
-                    //probabilities based on distance
-                    obj_prob.put(r, 1 / (Math.sqrt((pre_rob.get(r).velocity.x - obj.x) * (pre_rob.get(r).velocity.x - obj.x)) + Math.sqrt((pre_rob.get(r).velocity.y - obj.y) * (pre_rob.get(r).velocity.y - obj.y))));
-                }
-                probabilities.add(obj_prob);
-            }
-
-            //IDEALLY THESE ARE REMOVED BEFORE THE PROBABILITY CALCULATIONS TO SAVE TIME BUT THIS IS EASIER
-            //remove any already found robots from consideration
-            for (Robot r : world.getRobots()){
-                if (!(r.equals(null))){
-                    for (HashMap<RobotType, Double> map : probabilities){
-                        map.remove(r.type);
-                    }
-                }
-            }
-
-            //do the actual position updating
-            for (ShapeObject obj : world.getObjects()){
-                //init to null
-                RobotType max_type = null;
-                double max_prob = 0;
-                //the robot with the highest probability is set to be the obj
-                for (RobotType r : probabilities.get(count).keySet()){
-                    if (probabilities.get(count).get(r) > max_prob){
-                        max_prob = probabilities.get(count).get(r);
-                        max_type = r;
-                    }
-                }
-
-                //update the position
-                world.update_robot(max_type, pre_rob.get(max_type), obj.x, obj.y);
-
-                //disallow any robot to be assigned twice
-                for (HashMap<RobotType, Double> map : probabilities){
-                    map.remove(max_type);
-                }
-
-                count++;
-            }
-
-        }
+		world = dynamicWorld;
+		status = new Status(world);
     }
 
 
