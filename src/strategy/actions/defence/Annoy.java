@@ -2,6 +2,7 @@ package strategy.actions.defence;
 
 import strategy.actions.ActionBase;
 import strategy.actions.other.HoldPosition;
+import strategy.points.basicPoints.AnnoyBallHolderPoint;
 import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.MidFoePoint;
 import strategy.robots.RobotBase;
@@ -25,6 +26,6 @@ public class Annoy extends ActionBase {
     public void tok() {
         this.point.recalculate();
         this.robot.MOTION_CONTROLLER.setHeading(this.point);
-        this.enterAction(new HoldPosition(this.robot, new MidFoePoint()), 0, 0);
+        this.enterAction(new HoldPosition(this.robot, new AnnoyBallHolderPoint()), 0, 0);
     }
 }

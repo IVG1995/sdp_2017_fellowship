@@ -11,6 +11,7 @@ import vision.tools.VectorGeometry;
 
 /**
  * Kicks the ball to a corner by the enemy goal.
+ * Called with the assumption that Frodo has the ball in the grabber.
  */
 public class Clear extends ActionBase {
 
@@ -36,11 +37,14 @@ public class Clear extends ActionBase {
             // Kick
             ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick(true);
         }
+
+        this.state = newState;
     }
 
     @Override
     public void tok() {
         this.us = Strategy.world.getRobot(RobotType.FRIEND_2);
+
         if (nothingInWay(leftOfGoal)) {
             this.chosenClearPoint = leftOfGoal;
         } else if (nothingInWay(rightOfGoal)){
