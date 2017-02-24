@@ -1,21 +1,17 @@
 package strategy;
 
+import communication.PortListener;
 import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.Behave;
 import strategy.actions.offense.BallGrab;
-import strategy.actions.other.*;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
-import communication.ports.robotPorts.FredRobotPort;
+import strategy.actions.other.*;
 import strategy.controllers.essentials.MotionController;
 import strategy.points.basicPoints.*;
-import strategy.robots.Fred;
-import communication.PortListener;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.*;
-import vision.Robot;
-import vision.settings.SettingsManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,8 +20,6 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Simon Rovder
@@ -195,7 +189,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.MOTION_CONTROLLER.setHeading(new EnemyGoal());
                     break;
                 case "go_to_kickable":
-                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new KickablePoint(RobotType.FRIEND_2)));
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new GrabbablePoint(RobotType.FRIEND_2)));
                     break;
                 case "send_kick_command":
                     frodo.port.sdpPort.commandSender("kick");

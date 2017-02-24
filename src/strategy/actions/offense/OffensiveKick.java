@@ -18,7 +18,7 @@ public class OffensiveKick extends ActionBase {
     private final int NOT_FACING_GOAL  = 0;
     private final int READY_TO_RELEASE = 1;
     private final int READY_TO_SHOOT   = 2;
-    // A KickablePoint always contains the location 7 (this number could change) cm in front of the ball.
+    // A GrabbablePoint always contains the location 7 (this number could change) cm in front of the ball.
 
     public OffensiveKick(RobotBase robot) {
         super(robot);

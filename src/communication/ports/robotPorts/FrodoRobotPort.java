@@ -1,5 +1,6 @@
 package communication.ports.robotPorts;
 
+import communication.PortListener;
 import communication.ports.interfaces.FourWheelHolonomicRobotPort;
 import communication.ports.interfaces.GrabberEquippedRobotPort;
 import communication.ports.interfaces.KickerEquippedRobotPort;
@@ -8,7 +9,7 @@ import communication.ports.interfaces.RobotPort;
 /**
  * Created by Simon Rovder
  */
-public class FrodoRobotPort extends RobotPort implements GrabberEquippedRobotPort, FourWheelHolonomicRobotPort, KickerEquippedRobotPort {
+public class FrodoRobotPort extends RobotPort implements GrabberEquippedRobotPort, FourWheelHolonomicRobotPort, KickerEquippedRobotPort, PortListener{
 
     public FrodoRobotPort(){
         super("pang");
@@ -41,6 +42,11 @@ public class FrodoRobotPort extends RobotPort implements GrabberEquippedRobotPor
         this.sdpPort.commandSender("kick");
         this.sdpPort.commandSender("kick");
         this.sdpPort.commandSender("kick");
+    }
+
+    @Override
+    public void receivedStringHandler(String string) {
+
     }
 
 
