@@ -1,9 +1,11 @@
 package strategy.actions;
 
 import strategy.actions.defence.Annoy;
+import strategy.actions.defence.Clear;
 import strategy.actions.offense.GetBall;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
+import strategy.points.basicPoints.EnemyGoal;
 import strategy.robots.RobotBase;
 import vision.Ball;
 import strategy.Strategy;
@@ -92,6 +94,8 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
 
             if (ball_holder == RobotType.FOE_1 || ball_holder == RobotType.FOE_2) {
                 this.nextState = OffenseEnum.ANNOY;
+            } else if (ball_holder == RobotType.FRIEND_2) {
+
             }
 
 
@@ -124,7 +128,7 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
 
                 break;
             case CLEAR:
-
+                this.enterAction(new Clear(this.robot), 0, 0);
                 break;
             case SAFE:
                 this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
@@ -138,17 +142,25 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
      * Determines whether Frodo has a clean shot at the enemy goal.
      * @return
      */
-    public boolean shot_on_goal() {
+    private boolean shot_on_goal() {
+        Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
+        VectorGeometry toGoal = VectorGeometry.fromTo(us.location, new VectorGeometry(Constants.PITCH_WIDTH / 2, 0));
 
+        boolean canKick = true;
+        for (Robot r : Strategy.world.getRobots()) {
+            if (r != null && r.type != RobotType.FRIEND_2 && r.type != RobotType.FRIEND_1) {
+                canKick = canKick && VectorGeometry.closestPointToLine(us.location, toGoal, r.location).length() > 20;
+            }
+        }
 
-        return false;
+        return canKick;
     }
 
     /**
      * Returns the RobotType of the closest robot to the ball, or null if ball and/or all robots are lost.
      * @return
      */
-    public static RobotType robot_closest_to_ball() {
+    private static RobotType robot_closest_to_ball() {
 
         if (Strategy.world.getBall() == null) return null;
 

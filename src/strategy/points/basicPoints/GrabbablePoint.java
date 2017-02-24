@@ -14,7 +14,7 @@ public class GrabbablePoint extends DynamicPointBase{
 
     private RobotType type = null;
     private RobotAlias alias = null;
-    private static final int DISTANCE_TO_KICKER = 7;
+    private static final int DISTANCE_TO_GRABBER = 7;
     public GrabbablePoint(RobotType type){
         this.type = type;
     }
@@ -32,7 +32,7 @@ public class GrabbablePoint extends DynamicPointBase{
 
         if(r != null){
             VectorGeometry v = r.location.clone();
-            v.add((new VectorGeometry()).fromAngular(r.location.direction + Math.PI / 4, DISTANCE_TO_KICKER));
+            v.add((new VectorGeometry()).fromAngular(r.location.direction, DISTANCE_TO_GRABBER));
             this.x = (int) v.x;
             this.y = (int) v.y;
         }
