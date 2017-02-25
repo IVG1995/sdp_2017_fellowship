@@ -61,7 +61,7 @@ public class GetOpen extends ActionBase {
      * Returns true if Frodo is open for a pass, false otherwise.
      * @return
      */
-    public boolean open() {
+    private boolean open() {
 
         Robot foeOne = Strategy.world.getRobot(RobotType.FOE_1);
         Robot foeTwo = Strategy.world.getRobot(RobotType.FOE_2);

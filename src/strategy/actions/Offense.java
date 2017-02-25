@@ -1,10 +1,12 @@
 package strategy.actions;
 
 import strategy.actions.defence.Annoy;
+import strategy.actions.defence.BlockPass;
 import strategy.actions.defence.Clear;
 import strategy.actions.offense.GetBall;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
+import strategy.actions.other.HoldPosition;
 import strategy.points.basicPoints.EnemyGoal;
 import strategy.robots.RobotBase;
 import vision.Ball;
@@ -24,7 +26,7 @@ import vision.tools.VectorGeometry;
  * SAFE:
  */
 enum OffenseEnum {
-    ANNOY, DEFEND, GET_BALL, SCORE, GET_OPEN, CLEAR, SAFE
+    ANNOY, DEFEND, GET_BALL, SCORE, GET_OPEN, CLEAR, SAFE, BLOCK_PASS
 }
 
 /**
@@ -58,24 +60,29 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
         if (ally == null) {
 
             if (this.lastState == OffenseEnum.DEFEND || ball_holder == RobotType.FOE_1 || ball_holder == RobotType.FOE_2 || ball == null) {
+                // Enemies have the ball, or ball is lost: defend/keep defending
                 this.nextState = OffenseEnum.DEFEND;
             } else {
 
-                // If we have the ball, decide whether to shoot or clear.
+                // We have the ball
                 if (ball_holder == RobotType.FRIEND_2) {
                     if (this.shot_on_goal()) {
+                        // If we have a shot, go try to score
                         this.nextState = OffenseEnum.SCORE;
                     } else {
+                        // No shot, just kick to a difficult-to-reach place
                         this.nextState = OffenseEnum.CLEAR;
                     }
                 } else {
-                    // If the ball is free, go get it or defend.
+                    // If the ball is free:
                     RobotType closest = robot_closest_to_ball();
 
                     if (closest == RobotType.FRIEND_2) {
+                        // If we're closest, go grab the ball.
                         this.nextState = OffenseEnum.GET_BALL;
                     } else {
 
+                        // If an enemy is closer, go defend.
                         VectorGeometry ourGoal = new VectorGeometry(-Constants.PITCH_WIDTH / 2, 0);
                         if (us.location.distance(ourGoal) > ball.location.distance(ourGoal)) {
                             this.nextState = OffenseEnum.SAFE;
@@ -93,9 +100,22 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
         } else {
 
             if (ball_holder == RobotType.FOE_1 || ball_holder == RobotType.FOE_2) {
-                this.nextState = OffenseEnum.ANNOY;
-            } else if (ball_holder == RobotType.FRIEND_2) {
+                // Enemies have ball:
+                if (ball.location.x > -(Constants.PITCH_WIDTH / 2) + 50) {
+                    // Ball is far away from our goal, so Frodo doesn't have to worry about getting in our friend's way
+                    this.nextState = OffenseEnum.ANNOY;
+                } else {
 
+                }
+            } else if (ball_holder == RobotType.FRIEND_1) {
+                // Friend has ball, get open for pass
+                this.nextState = OffenseEnum.GET_OPEN;
+            } else if (ball_holder == RobotType.FRIEND_2) {
+                // We have ball, go score
+                this.nextState = OffenseEnum.SCORE;
+            } else {
+                // Ball is free, go get it
+                this.nextState = OffenseEnum.GET_BALL;
             }
 
 
@@ -125,7 +145,7 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
 
                 break;
             case GET_OPEN:
-
+                this.enterAction(new GetOpen(this.robot), 0, 0);
                 break;
             case CLEAR:
                 this.enterAction(new Clear(this.robot), 0, 0);
@@ -133,6 +153,8 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
             case SAFE:
                 this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
                 break;
+            case BLOCK_PASS:
+                this.enterAction(new BlockPass(this.robot), 0, 0);
 
         }
 
