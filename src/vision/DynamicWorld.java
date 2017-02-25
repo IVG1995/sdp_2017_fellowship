@@ -2,6 +2,7 @@ package vision;
 
 import vision.gui.SDPConsole;
 import vision.preProcessing.matProcessor.BgSubtractor;
+import vision.shapeObject.ShapeObject;
 import vision.tools.DirectedPoint;
 
 import java.security.KeyPair;

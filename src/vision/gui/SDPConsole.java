@@ -109,11 +109,23 @@ public class SDPConsole extends JFrame{
 
 	public static String chooseFile(){
 		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		int result = fileChooser.showOpenDialog(SDPConsole.console);
 		if (result == JFileChooser.APPROVE_OPTION) {
-		    File selectedFile = fileChooser.getSelectedFile();
-		    return selectedFile.getAbsolutePath();
+			File selectedFile = fileChooser.getSelectedFile();
+			return selectedFile.getAbsolutePath();
+		}
+		return null;
+	}
+	public static String chooseFolder(){
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		int result = fileChooser.showOpenDialog(SDPConsole.console);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fileChooser.getSelectedFile();
+			return selectedFile.getAbsolutePath();
 		}
 		return null;
 	}

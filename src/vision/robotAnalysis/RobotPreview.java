@@ -3,8 +3,13 @@ package vision.robotAnalysis;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,11 +19,12 @@ import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
 import vision.distortion.DistortionListener;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
+
 /**
  * Created by Simon Rovder
  */
- //We love GUIs dont we
 public class RobotPreview extends JFrame implements DistortionListener, DynamicWorldListener {
 
 	public final JLabel previewLabel;
@@ -26,110 +32,124 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 	public static final RobotPreview preview = new RobotPreview();
 
 	private BufferedImage image;
+	private DynamicWorld last;
 
 	private final int bounds = 10;
 
-	//I wonder what this does? Does it reset the image?
-	private void resetImage(){
+	private void resetImage() {
 		Graphics g = this.image.getGraphics();
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, Constants.PITCH_WIDTH + 2*bounds, Constants.PITCH_HEIGHT + 2*bounds);
+		g.fillRect(0, 0, Constants.PITCH_WIDTH + 2 * bounds, Constants.PITCH_HEIGHT + 2 * bounds);
 		g.setColor(Color.WHITE);
 		g.drawRect(bounds, bounds, Constants.PITCH_WIDTH, Constants.PITCH_HEIGHT);
-		g.drawLine(bounds + Constants.PITCH_WIDTH/2, Constants.PITCH_HEIGHT + bounds, bounds + Constants.PITCH_WIDTH/2, bounds);
-		g.drawLine(bounds, Constants.PITCH_HEIGHT/2 + bounds, Constants.PITCH_WIDTH + bounds, Constants.PITCH_HEIGHT/2 + bounds);
+		g.drawLine(bounds + Constants.PITCH_WIDTH / 2, Constants.PITCH_HEIGHT + bounds, bounds + Constants.PITCH_WIDTH / 2, bounds);
+		g.drawLine(bounds, Constants.PITCH_HEIGHT / 2 + bounds, Constants.PITCH_WIDTH + bounds, Constants.PITCH_HEIGHT / 2 + bounds);
 	}
 
-	//constructor
-	private RobotPreview(){
+	private RobotPreview() {
 		super("Robot Preview");
-		this.image = new BufferedImage(Constants.PITCH_WIDTH + 2*bounds, Constants.PITCH_HEIGHT + 2*bounds, BufferedImage.TYPE_3BYTE_BGR);
+		this.image = new BufferedImage(Constants.PITCH_WIDTH + 2 * bounds, Constants.PITCH_HEIGHT + 2 * bounds, BufferedImage.TYPE_3BYTE_BGR);
 		this.resetImage();
-		this.setSize(Constants.PITCH_WIDTH + bounds + 10, Constants.PITCH_HEIGHT + 2*bounds + 40);
+		this.setSize(Constants.PITCH_WIDTH + bounds + 10, Constants.PITCH_HEIGHT + 2 * bounds + 40);
 		this.setResizable(false);
 		this.previewLabel = new JLabel();
 		this.getContentPane().add(this.previewLabel);
 		this.setVisible(true);
 	}
 
-	//Get the spots
 	@Override
-	public void nextUndistortedSpots(HashMap<SDPColor, ArrayList<Spot>> spots, long time) {
-		this.resetImage();
+	public void nextUndistortedSpots(ArrayList<ShapeObject> objs, long time) {
+
+		System.out.println( System.currentTimeMillis()+" I was resetted!!!!!!!");
+
 		Graphics g = this.image.getGraphics();
-		for(SDPColor color : spots.keySet()){
-			for(Spot spot :spots.get(color)){
-				g.setColor(SDPColors.colors.get(color).referenceColor);
-				g.drawArc((int)spot.x - 2 + Constants.PITCH_WIDTH/2 + bounds, - (int)spot.y - 2 + Constants.PITCH_HEIGHT/2 + bounds, 4, 4, 0, 360);
+		for (ShapeObject obj : objs) {
+
+			HashMap<SDPColor, ArrayList<Spot>> spots = obj.spots;
+			for (SDPColor color : spots.keySet()) {
+				for (Spot spot : spots.get(color)) {
+					g.setColor(SDPColors.colors.get(color).referenceColor);
+					g.drawArc((int) spot.x - 2 + Constants.PITCH_WIDTH / 2 + bounds, -(int) spot.y - 2 + Constants.PITCH_HEIGHT / 2 + bounds, 4, 4, 0, 360);
+				}
 			}
 		}
 		this.previewLabel.getGraphics().drawImage(this.image, 0, 0, null);
-	}
 
-	//Can draw an arc
-	public void drawArc(int x, int y, int radius, Color color){
-		Graphics g = this.previewLabel.getGraphics();
-		if(g != null){
-			g.setColor(color);
-			g.drawArc(x - radius/2 + Constants.PITCH_WIDTH/2 + bounds, - y - radius/2 + Constants.PITCH_HEIGHT/2 + bounds, radius, radius, 0, 360);
-		}
-	}
-
-	//can draw a rectangle
-	public void drawRect(int x, int y, int width, int height, Color color){
-		Graphics g = this.previewLabel.getGraphics();
-		if(g != null){
-			g.setColor(color);
-			g.drawRect(x + Constants.PITCH_WIDTH/2 + bounds - height/2, - y + Constants.PITCH_HEIGHT/2 + bounds - height/2, width, height);
-		}
-	}
-
-	//draws a line
-	public void drawLine(int x1, int y1, int x2, int y2, Color color){
-		Graphics g = this.previewLabel.getGraphics();
-		if(g != null){
-			g.setColor(color);
-			g.drawLine(x1 + Constants.PITCH_WIDTH/2 + bounds, - y1 + Constants.PITCH_HEIGHT/2 + bounds, x2 + Constants.PITCH_WIDTH/2 + bounds, -y2 + Constants.PITCH_HEIGHT/2 + bounds);
-		}
-	}
-
-	//draws a string
-	public void drawString(String string, int x, int y){
-		Graphics g = this.previewLabel.getGraphics();
-		if(g != null){
+		if (last != null) {
+			Robot dp;
+			g = this.previewLabel.getGraphics();
 			g.setColor(Color.WHITE);
-			g.drawString(string, x + Constants.PITCH_WIDTH/2 + bounds, - y + Constants.PITCH_HEIGHT/2 + bounds);
+			for (RobotType type : RobotType.values()) {
+
+				dp = last.getRobot(type);
+				if (dp != null) {
+					this.drawRect((int) dp.location.x, (int) dp.location.y, 20, 20, Color.WHITE);
+					if (dp.alias == RobotAlias.UNKNOWN)
+						this.drawString(type.toString(), (int) dp.location.x + 10, (int) dp.location.y + 10);
+					else this.drawString(dp.alias.toString(), (int) dp.location.x + 10, (int) dp.location.y + 10);
+					int x = (int) (Math.cos(dp.location.direction) * 50);
+					int y = (int) (Math.sin(dp.location.direction) * 50);
+					x = x + (int) dp.location.x;
+					y = y + (int) dp.location.y;
+					this.drawLine((int) dp.location.x, (int) dp.location.y, x, y, Color.WHITE);
+				}
+			}
+			Ball ball = last.getBall();
+			if (ball != null) {
+				this.drawArc((int) ball.location.x, (int) ball.location.y, 10, Color.RED);
+			}
+			RobotType prob = last.getProbableBallHolder();
+			if (prob != null) {
+				Robot pr = last.getRobot(prob);
+				if (pr != null) this.drawRect((int) pr.location.x, (int) pr.location.y, 30, 30, Color.RED);
+			}
+
+			System.out.println( System.currentTimeMillis()+" Stop Drawing!");
+		}
+
+
+	}
+
+	public void drawArc(int x, int y, int radius, Color color) {
+		Graphics g = this.previewLabel.getGraphics();
+		if (g != null) {
+			g.setColor(color);
+			g.drawArc(x - radius / 2 + Constants.PITCH_WIDTH / 2 + bounds, -y - radius / 2 + Constants.PITCH_HEIGHT / 2 + bounds, radius, radius, 0, 360);
 		}
 	}
 
-	//DRAWS EVERYTHING
+	public void drawRect(int x, int y, int width, int height, Color color) {
+		Graphics g = this.previewLabel.getGraphics();
+		if (g != null) {
+			g.setColor(color);
+			g.drawRect(x + Constants.PITCH_WIDTH / 2 + bounds - height / 2, -y + Constants.PITCH_HEIGHT / 2 + bounds - height / 2, width, height);
+		}
+	}
+
+	public void drawLine(int x1, int y1, int x2, int y2, Color color) {
+		Graphics g = this.previewLabel.getGraphics();
+		if (g != null) {
+			g.setColor(color);
+			g.drawLine(x1 + Constants.PITCH_WIDTH / 2 + bounds, -y1 + Constants.PITCH_HEIGHT / 2 + bounds, x2 + Constants.PITCH_WIDTH / 2 + bounds, -y2 + Constants.PITCH_HEIGHT / 2 + bounds);
+		}
+	}
+
+	public void drawString(String string, int x, int y) {
+		Graphics g = this.previewLabel.getGraphics();
+		if (g != null) {
+			g.setColor(Color.WHITE);
+			g.drawString(string, x + Constants.PITCH_WIDTH / 2 + bounds, -y + Constants.PITCH_HEIGHT / 2 + bounds);
+		}
+	}
+
 	@Override
 	public void nextDynamicWorld(DynamicWorld state) {
 		Robot dp;
-		Graphics g = this.previewLabel.getGraphics();
-		g.setColor(Color.WHITE);
-		for(RobotType type : RobotType.values()){
+		last = state;
 
-			dp = state.getRobot(type);
-			if (dp != null ){
-				this.drawRect((int)dp.location.x, (int)dp.location.y, 20, 20, Color.WHITE);
-				if(dp.alias == RobotAlias.UNKNOWN) this.drawString(type.toString(), (int)dp.location.x + 10, (int)dp.location.y + 10);
-				else this.drawString(dp.alias.toString(), (int)dp.location.x + 10, (int)dp.location.y + 10);
-				int x = (int) (Math.cos(dp.location.direction) * 50);
-				int y = (int) (Math.sin(dp.location.direction) * 50);
-				x = x + (int)dp.location.x;
-				y = y + (int)dp.location.y;
-				this.drawLine((int)dp.location.x, (int)dp.location.y, x, y, Color.WHITE);
-			}
-		}
-		Ball ball = state.getBall();
-		if(ball != null){
-			this.drawArc((int)ball.location.x, (int)ball.location.y, 10, Color.RED);
-		}
-		RobotType prob = state.getProbableBallHolder();
-		if(prob != null){
-			Robot pr = state.getRobot(prob);
-			if(pr != null) this.drawRect((int)pr.location.x, (int)pr.location.y, 30, 30, Color.RED);
-		}
 	}
 }
+
+
+
+

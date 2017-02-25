@@ -15,15 +15,17 @@ import javax.swing.Timer;
 import vision.constants.Constants;
 import vision.gui.Preview;
 import vision.gui.SDPConsole;
+
 /**
  * Created by Simon Rovder
  */
-public class StaticImage extends AbstractRawInput implements ActionListener{
+public class StaticImage extends AbstractRawInput implements ActionListener {
 	private Timer timer;
 	private BufferedImage img;
 
 	private JButton btnStartInput;
 	private JButton btnStopInput;
+	private JButton btnPauseInput;
 	private JButton btnBrowse;
 
 	private String filePath;
@@ -33,16 +35,15 @@ public class StaticImage extends AbstractRawInput implements ActionListener{
 
 	public static final StaticImage staticImage = new StaticImage();
 
-	private StaticImage(){
+	private StaticImage() {
 		super();
 		this.setLayout(null);
 		this.tabName = "Static Image";
-		this.timer = new Timer(300, this);
+		this.timer = new Timer(100, this);
 		this.initGUI();
 	}
 
-	//sets up the GUI (funnily enough)
-	private void initGUI(){
+	private void initGUI() {
 		// TODO: Refactor This
 		textField = new JTextField();
 		textField.setBounds(150, 25, 311, 20);
@@ -66,27 +67,46 @@ public class StaticImage extends AbstractRawInput implements ActionListener{
 		btnStopInput.setBounds(180, 56, 150, 23);
 		this.add(btnStopInput);
 
+		btnPauseInput = new JButton("Pause Input");
+		btnPauseInput.setBounds(20, 86, 150, 23);
+		this.add(btnPauseInput);
+
+
 		this.btnStartInput.addActionListener(this);
 		this.btnStopInput.addActionListener(this);
 		this.btnBrowse.addActionListener(this);
+		this.btnPauseInput.addActionListener(this);
 	}
 
-
-	//Chooses actions based on button presses (button listener)
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == this.timer){
+		if (e.getSource() == this.timer) {
+			if (cnt > 150) {
+				cnt = 1;
+				System.out.println(cnt);
+			} else {
+				if (pause) {
+					cnt += 1;
+				}
+			}
+			try {
+				this.img = ImageIO.read(new File(filePath + String.format("/00000%1$03d.jpg", cnt)));
+			} catch (Exception e1) {
+				SDPConsole.message("Could not open the image. Something went wrong. Try JPG and JPEG images of size 640 by 480.", this);
+			}
 			this.listener.nextFrame(this.img, System.currentTimeMillis());
-		}else if(e.getSource() == this.btnStartInput){
+		} else if (e.getSource() == this.btnStartInput) {
 			this.start();
-		}else if(e.getSource() == this.btnStopInput){
+		} else if (e.getSource() == this.btnStopInput) {
 			this.stop();
-		}else if(e.getSource() == this.btnBrowse){
-			String newFilePath = SDPConsole.chooseFile();
-			if(newFilePath != null){
+		} else if (e.getSource() == this.btnBrowse) {
+			String newFilePath = SDPConsole.chooseFolder();
+			if (newFilePath != null) {
 				this.filePath = newFilePath;
 				this.textField.setText(this.filePath);
 			}
+		} else if (e.getSource() == this.btnPauseInput) {
+			pause = !pause;
 		}
 	}
 
@@ -94,16 +114,21 @@ public class StaticImage extends AbstractRawInput implements ActionListener{
 	public void stop() {
 		this.timer.stop();
 		this.btnBrowse.setEnabled(true);
+		cnt = 1;
 	}
+
+	public static Integer cnt = 1;
+	public static boolean pause = true;
 
 	@Override
 	public void start() {
 		try {
-		    this.img = ImageIO.read(new File(filePath));
-		    if(this.img.getWidth() != Constants.INPUT_WIDTH || this.img.getHeight() != Constants.INPUT_HEIGHT){
-		    	SDPConsole.message("The image you tried to open is not the correct dimensions. The dimensions are supposed to be " + Constants.INPUT_WIDTH + " by " + Constants.INPUT_HEIGHT + "!", this);
-		    	return;
-		    }
+			this.img = ImageIO.read(new File(filePath + String.format("/00000%1$03d.jpg", cnt)));
+			if (this.img.getWidth() != Constants.INPUT_WIDTH || this.img.getHeight() != Constants.INPUT_HEIGHT) {
+				SDPConsole.message("The image you tried to open is not the correct dimensions. The dimensions are supposed to be " + Constants.INPUT_WIDTH + " by " + Constants.INPUT_HEIGHT + "!", this);
+				return;
+			}
+
 			this.timer.start();
 			this.btnBrowse.setEnabled(false);
 			Preview.preview.setVisible(true);

@@ -1,6 +1,5 @@
 package vision.distortion;
 
-//other imports
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -21,31 +20,29 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-//vision imports
 import vision.colorAnalysis.SDPColor;
 import vision.constants.Constants;
 import vision.rawInput.RawInputListener;
 import vision.settings.SaveLoadCapable;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.NextSpotsListener;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.tools.Point;
 import vision.tools.VectorGeometry;
+
 /**
  * Created by Simon Rovder
  */
- //jpanel for distortion things
-public class Distortion extends JPanel implements SaveLoadCapable, RawInputListener, ActionListener, ChangeListener, NextSpotsListener, DistortionPreviewClickListener{
+public class Distortion extends JPanel implements SaveLoadCapable, RawInputListener, ActionListener, ChangeListener, NextSpotsListener, DistortionPreviewClickListener {
 
 	public static final Distortion distortion = new Distortion();
 
-	//list for distortion listeners
 	private LinkedList<DistortionListener> distortionListeners;
 
-	//images
 	private BufferedImage previewImage = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
 	private BufferedImage savedImage;
 
-	//buttons for gui
+
 	private JButton topLeftButton;
 	private JButton bottomRightButton;
 	private boolean calibratingTopLeft = false;
@@ -53,7 +50,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 	private boolean calibratingBottomRight = false;
 	private Point bottomRightPoint;
 
-	//spinners for gui
+
 	private JSpinner barrelSpinner;
 	private JSpinner rotationSpinner;
 	private JSpinner xShiftSpinner;
@@ -62,7 +59,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 	private JSpinner yTiltSpinner;
 	private JSpinner zoomSpinner;
 
-	//vars for distortion
+
 	private double barrel;
 	private double rotation;
 	private int xShift;
@@ -73,31 +70,30 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 
 	public static boolean ROTATE_PITCH = true;
 
-	//uodate distortion based on user selected values from the spinners etc
-	private void updateDistortion(){
-		if(this.savedImage != null){
+	private void updateDistortion() {
+		if (this.savedImage != null) {
 			DistortionPreview.preview.setVisible(true);
 			VectorGeometry pg = new VectorGeometry();
-			barrel   = ((double)((Integer)this.barrelSpinner.getValue()))/20000000;
-			rotation = ((double)((Integer)this.rotationSpinner.getValue()))/300;
-			xShift   = (Integer)this.xShiftSpinner.getValue();
-			yShift   = (Integer)this.yShiftSpinner.getValue();
-			xTilt    = ((double)((Integer)this.xTiltSpinner.getValue()))/30000;
-			yTilt    = ((double)((Integer)this.yTiltSpinner.getValue()))/30000;
-			zoom     = ((double)((Integer)this.zoomSpinner.getValue()))/10;
+			barrel = ((double) ((Integer) this.barrelSpinner.getValue())) / 20000000;
+			rotation = ((double) ((Integer) this.rotationSpinner.getValue())) / 300;
+			xShift = (Integer) this.xShiftSpinner.getValue();
+			yShift = (Integer) this.yShiftSpinner.getValue();
+			xTilt = ((double) ((Integer) this.xTiltSpinner.getValue())) / 30000;
+			yTilt = ((double) ((Integer) this.yTiltSpinner.getValue())) / 30000;
+			zoom = ((double) ((Integer) this.zoomSpinner.getValue())) / 10;
 //		if(zoom < 0) zoom = -1/zoom;
-			for(int y = 0; y < this.savedImage.getHeight(); y++){
-				for(int x = 0; x < this.savedImage.getWidth(); x++){
+			for (int y = 0; y < this.savedImage.getHeight(); y++) {
+				for (int x = 0; x < this.savedImage.getWidth(); x++) {
 					pg.x = x;
 					pg.y = y;
-					pg.transpose(-Constants.INPUT_WIDTH/2, -Constants.INPUT_HEIGHT/2);
+					pg.transpose(-Constants.INPUT_WIDTH / 2, -Constants.INPUT_HEIGHT / 2);
 //				distortPoint(pg);
 					undistortPoint(pg);
-					pg.transpose(Constants.INPUT_WIDTH/2, Constants.INPUT_HEIGHT/2);
+					pg.transpose(Constants.INPUT_WIDTH / 2, Constants.INPUT_HEIGHT / 2);
 
 
-					if(pg.x < this.savedImage.getWidth() && pg.x >= 0 && pg.y < this.savedImage.getHeight() && pg.y >= 0){
-						this.previewImage.setRGB((int)pg.x, (int)pg.y, this.savedImage.getRGB(x, y));
+					if (pg.x < this.savedImage.getWidth() && pg.x >= 0 && pg.y < this.savedImage.getHeight() && pg.y >= 0) {
+						this.previewImage.setRGB((int) pg.x, (int) pg.y, this.savedImage.getRGB(x, y));
 					}
 				}
 			}
@@ -110,18 +106,16 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		}
 	}
 
-	//does what it says
-	public static void addDistortionListener(DistortionListener listener){
+	public static void addDistortionListener(DistortionListener listener) {
 		Distortion.distortion.distortionListeners.add(listener);
 	}
 
-	//get next image
 	@Override
 	public void nextFrame(BufferedImage image, long time) {
-		if(this.savedImage == null){
+		if (this.savedImage == null) {
 			this.savedImage = image;
 			this.updateDistortion();
-		}else{
+		} else {
 			this.savedImage = image;
 		}
 	}
@@ -133,8 +127,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 //		pg.barrelDistort(barrel);
 //	}
 
-	//undistort the image
-	private void undistortPoint(VectorGeometry pg){
+	private void undistortPoint(VectorGeometry pg) {
 		pg.barrelUndistort(barrel);
 		pg.factor(this.zoom);
 		pg.tilt3D(-xTilt, -yTilt);
@@ -142,35 +135,35 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		pg.transpose(-xShift, -yShift);
 	}
 
-	//normalisation of something
-	private void normalizePoint(VectorGeometry pg){
+	private void normalizePoint(VectorGeometry pg) {
 
-		pg.x = (pg.x - this.topLeftPoint.x) * Constants.PITCH_WIDTH  / (this.bottomRightPoint.x - this.topLeftPoint.x) - Constants.PITCH_WIDTH/2;
-		pg.y = -((pg.y - this.topLeftPoint.y) * Constants.PITCH_HEIGHT / (this.bottomRightPoint.y - this.topLeftPoint.y) - Constants.PITCH_HEIGHT/2);
+		pg.x = (pg.x - this.topLeftPoint.x) * Constants.PITCH_WIDTH / (this.bottomRightPoint.x - this.topLeftPoint.x) - Constants.PITCH_WIDTH / 2;
+		pg.y = -((pg.y - this.topLeftPoint.y) * Constants.PITCH_HEIGHT / (this.bottomRightPoint.y - this.topLeftPoint.y) - Constants.PITCH_HEIGHT / 2);
 	}
 
-	//constructor
-	private Distortion(){
+	private Distortion() {
 		super();
-		//gui and listener setup
+
 		this.distortionListeners = new LinkedList<DistortionListener>();
 		this.setLayout(null);
 		this.addFocusListener(new FocusListener() {
 
 			@Override
-			public void focusLost(FocusEvent e) {}
+			public void focusLost(FocusEvent e) {
+			}
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				DistortionPreview.preview.setVisible(Constants.GUI);
 			}
 		});
 
-		this.topLeftPoint     = new Point(10, 10);
+		this.topLeftPoint = new Point(10, 10);
 		this.bottomRightPoint = new Point(Constants.INPUT_WIDTH - 10, Constants.INPUT_HEIGHT - 10);
 
 		barrelSpinner = new JSpinner();
 		barrelSpinner.setBounds(185, 11, 158, 20);
-		this.barrelSpinner.setModel(new SpinnerNumberModel(0,-100,100,1));
+		this.barrelSpinner.setModel(new SpinnerNumberModel(0, -100, 100, 1));
 		this.add(barrelSpinner);
 
 		JLabel lblBarrelCorrectionConstant = new JLabel("Barrel Correction Constant:");
@@ -184,7 +177,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		rotationSpinner = new JSpinner();
 		rotationSpinner.setBounds(185, 36, 158, 20);
 		this.add(rotationSpinner);
-		this.rotationSpinner.setModel(new SpinnerNumberModel(0,-700,700,1));
+		this.rotationSpinner.setModel(new SpinnerNumberModel(0, -700, 700, 1));
 
 
 		JLabel lblXShift = new JLabel("X Shift:");
@@ -204,7 +197,6 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		this.add(yShiftSpinner);
 
 
-
 		JLabel lblXTilt = new JLabel("X Tilt:");
 		lblXTilt.setBounds(10, 120, 158, 14);
 		this.add(lblXTilt);
@@ -212,7 +204,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		xTiltSpinner = new JSpinner();
 		xTiltSpinner.setBounds(185, 120, 158, 20);
 		this.add(xTiltSpinner);
-		this.xTiltSpinner.setModel(new SpinnerNumberModel(0,-700,700,1));
+		this.xTiltSpinner.setModel(new SpinnerNumberModel(0, -700, 700, 1));
 
 		JLabel lblYTilt = new JLabel("Y Tilt:");
 		lblYTilt.setBounds(10, 150, 158, 14);
@@ -221,7 +213,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		yTiltSpinner = new JSpinner();
 		yTiltSpinner.setBounds(185, 150, 158, 20);
 		this.add(yTiltSpinner);
-		this.yTiltSpinner.setModel(new SpinnerNumberModel(0,-700,700,1));
+		this.yTiltSpinner.setModel(new SpinnerNumberModel(0, -700, 700, 1));
 
 
 		lblYTilt = new JLabel("Zoom:");
@@ -231,7 +223,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		zoomSpinner = new JSpinner();
 		zoomSpinner.setBounds(185, 180, 158, 20);
 		this.add(zoomSpinner);
-		this.zoomSpinner.setModel(new SpinnerNumberModel(0,-700,700,1));
+		this.zoomSpinner.setModel(new SpinnerNumberModel(0, -700, 700, 1));
 
 
 		JLabel lblCornerCalibration = new JLabel("Corner Calibration:");
@@ -259,83 +251,81 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		this.zoomSpinner.addChangeListener(this);
 	}
 
-	//define what button presses and spinners do
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == this.topLeftButton){
-			if(this.calibratingTopLeft){
+		if (e.getSource() == this.topLeftButton) {
+			if (this.calibratingTopLeft) {
 				this.topLeftButton.setText("TOP LEFT");
-			}else{
+			} else {
 				this.topLeftButton.setText("Calibrating...");
 			}
 			this.calibratingTopLeft = !this.calibratingTopLeft;
 		}
-		if(e.getSource() == this.bottomRightButton){
-			if(this.calibratingBottomRight){
+		if (e.getSource() == this.bottomRightButton) {
+			if (this.calibratingBottomRight) {
 				this.bottomRightButton.setText("BOTTOM RIGHT");
-			}else{
+			} else {
 				this.bottomRightButton.setText("Calibrating...");
 			}
 			this.calibratingBottomRight = !this.calibratingBottomRight;
 		}
 	}
 
-	//update distortion if something has changed
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		if(this.savedImage != null) this.updateDistortion();
+		if (this.savedImage != null) this.updateDistortion();
 	}
 
-	//not sure
+
 	@Override
 	public void distortionPreviewClickHandler(int x, int y) {
-		if(this.calibratingBottomRight){
-			this.bottomRightPoint = new Point(x,y);
+		if (this.calibratingBottomRight) {
+			this.bottomRightPoint = new Point(x, y);
 			this.updateDistortion();
-		} else if (this.calibratingTopLeft){
-			this.topLeftPoint = new Point(x,y);
+		} else if (this.calibratingTopLeft) {
+			this.topLeftPoint = new Point(x, y);
 			this.updateDistortion();
 		}
 	}
 
-	//updates where the spots are on the undistorted image
 	@Override
-	public void nextSpots(HashMap<SDPColor, ArrayList<Spot>> spots, long time){
-		for(SDPColor color : spots.keySet()){
-			for(Spot spot : spots.get(color)){
-				spot.transpose(-Constants.INPUT_WIDTH/2, -Constants.INPUT_HEIGHT/2);
-				this.undistortPoint(spot);
-				spot.transpose(Constants.INPUT_WIDTH/2, Constants.INPUT_HEIGHT/2);
-				this.normalizePoint(spot);
-				if(ROTATE_PITCH){
-					spot.multiply(-1);
+	public void nextSpots(ArrayList<ShapeObject> objects, long time) {
+		HashMap<SDPColor, ArrayList<Spot>> spots;
+		for (ShapeObject i : objects) {
+			spots = i.spots;
+			for (SDPColor color : spots.keySet()) {
+				for (Spot spot : spots.get(color)) {
+					spot.transpose(-Constants.INPUT_WIDTH / 2, -Constants.INPUT_HEIGHT / 2);
+					this.undistortPoint(spot);
+					spot.transpose(Constants.INPUT_WIDTH / 2, Constants.INPUT_HEIGHT / 2);
+					this.normalizePoint(spot);
+					if (ROTATE_PITCH) {
+						spot.multiply(-1);
+					}
 				}
 			}
 		}
-		for(DistortionListener dl : this.distortionListeners){
-			dl.nextUndistortedSpots(spots, time);
+		for (DistortionListener dl : this.distortionListeners) {
+			dl.nextUndistortedSpots(objects, time);
 		}
 	}
-	//NOTE: the next two fuunctions dont write the settings to file they only
-	//write them to a string which will probably be written to a file somewhere
-	//down the line
-	//guess what this does
+
 	@Override
 	public String saveSettings() {
 		StringBuilder sb = new StringBuilder();
-		sb.append((Integer)this.barrelSpinner.getValue());
+		sb.append((Integer) this.barrelSpinner.getValue());
 		sb.append(";");
-		sb.append((Integer)this.rotationSpinner.getValue());
+		sb.append((Integer) this.rotationSpinner.getValue());
 		sb.append(";");
-		sb.append((Integer)this.xShiftSpinner.getValue());
+		sb.append((Integer) this.xShiftSpinner.getValue());
 		sb.append(";");
-		sb.append((Integer)this.yShiftSpinner.getValue());
+		sb.append((Integer) this.yShiftSpinner.getValue());
 		sb.append(";");
-		sb.append((Integer)this.xTiltSpinner.getValue());
+		sb.append((Integer) this.xTiltSpinner.getValue());
 		sb.append(";");
-		sb.append((Integer)this.yTiltSpinner.getValue());
+		sb.append((Integer) this.yTiltSpinner.getValue());
 		sb.append(";");
-		sb.append((Integer)this.zoomSpinner.getValue());
+		sb.append((Integer) this.zoomSpinner.getValue());
 		sb.append(";");
 		sb.append(this.topLeftPoint.x);
 		sb.append(":");
@@ -348,7 +338,6 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		return sb.toString();
 	}
 
-	//you'll never guess
 	@Override
 	public void loadSettings(String settings) {
 		String[] values = settings.split(";");
@@ -359,7 +348,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 		this.xTiltSpinner.setValue(Integer.parseInt(values[4]));
 		this.yTiltSpinner.setValue(Integer.parseInt(values[5]));
 		this.zoomSpinner.setValue(Integer.parseInt(values[6]));
-		String [] points = values[7].split(":");
+		String[] points = values[7].split(":");
 		this.topLeftPoint.x = Integer.parseInt(points[0]);
 		this.topLeftPoint.y = Integer.parseInt(points[1]);
 		points = values[8].split(":");

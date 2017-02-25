@@ -105,7 +105,7 @@ public class RecursiveSpotAnalysis extends SpotAnalysisBase{
             }
             Collections.sort(spots.get(color));
         }
-        this.informListeners(spots, time);
+        //this.informListeners(spots, time);
         Preview.flushToLabel();
 
     }
