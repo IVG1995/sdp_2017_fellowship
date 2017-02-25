@@ -1,6 +1,7 @@
 package vision.robotAnalysis.newRobotAnalysis;
 
 import vision.Ball;
+import vision.ShapeObject;
 import vision.DynamicWorld;
 import vision.Robot;
 import vision.colorAnalysis.SDPColor;
@@ -163,9 +164,11 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
                 toUndistort.location.setLength(toUndistort.location.length() * (1 - 20.0/250));
             }
         }
-        if (((world.getRobots().contains(null)) || (world.getBall().equals(null))) && this.lastKnownWorld != null){
+
+        if (world.getRobots().contains(null) && this.lastKnownWorld != null){
 			
 			DynamicWorld previous = this.lastKnownWorld;
+            System.out.println("At least one robot not found");
             //avoids multiple calls to the return method
             HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
             //contains the probability that every robot is every other robot
@@ -175,19 +178,19 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
             //loop over every robot for every shape
             for (ShapeObject obj : world.getObjects()){
                 HashMap<RobotType, Double> obj_prob = new HashMap<RobotType, Double>();
-                for (RobotType r : pre_rob.keySet()){
+                for (RobotType rType : pre_rob.keySet()){
                     //probabilities based on distance
-                    obj_prob.put(r, 1 / (Math.sqrt((pre_rob.get(r).velocity.x - obj.x) * (pre_rob.get(r).velocity.x - obj.x)) + Math.sqrt((pre_rob.get(r).velocity.y - obj.y) * (pre_rob.get(r).velocity.y - obj.y))));
+                    obj_prob.put(rType, 1 / (Math.sqrt((pre_rob.get(rType).velocity.x - obj.x) * (pre_rob.get(rType).velocity.x - obj.x)) + Math.sqrt((pre_rob.get(rType).velocity.y - obj.y) * (pre_rob.get(rType).velocity.y - obj.y))));
                 }
                 probabilities.add(obj_prob);
             }
 
             //IDEALLY THESE ARE REMOVED BEFORE THE PROBABILITY CALCULATIONS TO SAVE TIME BUT THIS IS EASIER
             //remove any already found robots from consideration
-            for (Robot r : world.getRobots()){
-                if (!(r.equals(null))){
+            for (Robot rType : world.getRobots()){
+                if (!(rType.equals(null))){
                     for (HashMap<RobotType, Double> map : probabilities){
-                        map.remove(r.type);
+                        map.remove(rType.type);
                     }
                 }
             }
@@ -198,10 +201,10 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
                 RobotType max_type = null;
                 double max_prob = 0;
                 //the robot with the highest probability is set to be the obj
-                for (RobotType r : probabilities.get(count).keySet()){
-                    if (probabilities.get(count).get(r) > max_prob){
-                        max_prob = probabilities.get(count).get(r);
-                        max_type = r;
+                for (RobotType rType : probabilities.get(count).keySet()){
+                    if (probabilities.get(count).get(rType) > max_prob){
+                        max_prob = probabilities.get(count).get(rType);
+                        max_type = rType;
                     }
                 }
 

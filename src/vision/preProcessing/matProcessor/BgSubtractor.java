@@ -14,6 +14,7 @@ import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by nlfox on 2/5/17.
  */
@@ -24,6 +25,7 @@ public class BgSubtractor implements MatProcessor {
 
     public BgSubtractor() {
         backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 26, true);
+        objects = new ArrayList<>();
     }
 
     public static RotatedRect getApproxContour(MatOfPoint thisContour) {
@@ -72,7 +74,7 @@ public class BgSubtractor implements MatProcessor {
                 // read center of rotated rect
                 Point center = rotatedRect.center; // center
                 // add plate
-                objects.add(new ShapeObject(center.x,center.y, ShapeObject.SQUARE));
+                objects.add(new ShapeObject(center.x, center.y, ShapeObject.SQUARE));
 
 //                Core.circle(mat,center,5,new Scalar(255,0,0));
 //                // draw rotated rect
