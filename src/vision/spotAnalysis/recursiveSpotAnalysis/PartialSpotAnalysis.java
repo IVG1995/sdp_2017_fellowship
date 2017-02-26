@@ -61,7 +61,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
             this.processPixel(x - 1, y, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x + 1, y, sdpColorInstance, average, maxDepth - 1);
             Graphics g = Preview.getImageGraphics();
-            if (g != null && sdpColorInstance.isVisible()) {
+            if (g != null /*&& sdpColorInstance.isVisible()*/) {
                 g.setColor(Color.WHITE);
                 g.drawRect(x, y, 1, 1);
             }
@@ -123,7 +123,10 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
             if (color_count > 2) {
                 objs.add(i);
-            } else if (color_count == 1 && (i instanceof CircleObject)) {
+            } else if (
+                    ((i.spots.get(SDPColor._BALL).size() >= 1) || (i.spots.get(SDPColor.PINK).size() >= 1))
+                            && (i instanceof CircleObject)
+                    ) {
                 objs.add(i);
             }
 

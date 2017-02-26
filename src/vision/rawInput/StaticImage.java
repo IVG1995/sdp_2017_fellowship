@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -27,13 +28,16 @@ public class StaticImage extends AbstractRawInput implements ActionListener {
 	private JButton btnStopInput;
 	private JButton btnPauseInput;
 	private JButton btnBrowse;
-
+	private Integer breakPoint = 0;
+	private boolean enableBreak = false;
 	private String filePath;
 
 	JLabel lblImageSource;
 	JTextField textField;
 
 	public static final StaticImage staticImage = new StaticImage();
+	private JButton btnBreak;
+	private JTextField breakFrame;
 
 	private StaticImage() {
 		super();
@@ -71,21 +75,29 @@ public class StaticImage extends AbstractRawInput implements ActionListener {
 		btnPauseInput.setBounds(20, 86, 150, 23);
 		this.add(btnPauseInput);
 
+		btnBreak = new JButton("Set breakpoint");
+		btnBreak.setBounds(20, 116, 150, 23);
+		this.add(btnBreak);
+
+		breakFrame = new JTextField();
+		breakFrame.setBounds(180, 116, 150, 23);
+		this.add(breakFrame);
 
 		this.btnStartInput.addActionListener(this);
 		this.btnStopInput.addActionListener(this);
 		this.btnBrowse.addActionListener(this);
 		this.btnPauseInput.addActionListener(this);
+		this.btnBreak.addActionListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.timer) {
-			if (cnt > 150) {
+			if (cnt > 250) {
 				cnt = 1;
 				System.out.println(cnt);
 			} else {
-				if (pause) {
+				if (!pause && !(breakPoint.equals(cnt) && enableBreak)) {
 					cnt += 1;
 				}
 			}
@@ -107,6 +119,21 @@ public class StaticImage extends AbstractRawInput implements ActionListener {
 			}
 		} else if (e.getSource() == this.btnPauseInput) {
 			pause = !pause;
+			if (!pause) {
+				btnPauseInput.setText("Play");
+			}
+			else {
+				btnPauseInput.setText("Pause");
+			}
+		}else if (e.getSource() == this.btnBreak){
+			breakPoint = Integer.parseInt(this.breakFrame.getText());
+			enableBreak = !enableBreak;
+			if (!enableBreak) {
+				btnBreak.setText("start break");
+			}
+			else {
+				btnBreak.setText("stop break");
+			}
 		}
 	}
 
@@ -118,7 +145,7 @@ public class StaticImage extends AbstractRawInput implements ActionListener {
 	}
 
 	public static Integer cnt = 1;
-	public static boolean pause = true;
+	public static boolean pause = false;
 
 	@Override
 	public void start() {
