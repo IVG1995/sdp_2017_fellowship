@@ -40,7 +40,7 @@ public class BgSubtractor implements MatProcessor {
         double approxDistance = Imgproc.arcLength(thisContour2f, true) * 0.02;
 
         Imgproc.approxPolyDP(thisContour2f, approxContour2f, approxDistance, true);
-        System.out.println(" contour size: " + thisContour.size() + " apprix size " + thisContour2f.size());
+//        System.out.println(" contour size: " + thisContour.size() + " apprix size " + thisContour2f.size());
         approxContour2f.convertTo(approxContour, CvType.CV_32S);
 
         return Imgproc.minAreaRect(approxContour2f);

@@ -10,8 +10,8 @@ import vision.tools.VectorGeometry;
  */
 
 public class FourWheelHolonomicDrive implements DriveInterface {
-    private final int FORCE_WEIGHT    = 120;
-    private final int ROTATION_WEIGHT = 120;
+    private final int ROTATION_WEIGHT = 90;
+    private final int FORCE_WEIGHT    = 200 - ROTATION_WEIGHT;
     private final double RECTANGULAR_DRIVE_FACTOR = 0.8;
 
     public int MAX_ROTATION = 0; //deprecated

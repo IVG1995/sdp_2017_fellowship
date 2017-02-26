@@ -1,10 +1,13 @@
 package strategy.actions.offense;
 
+import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
 import strategy.controllers.essentials.MotionController;
+import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.EnemyGoal;
 import strategy.Strategy;
+import strategy.points.basicPoints.KickablePoint;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.Robot;
@@ -15,9 +18,8 @@ import vision.tools.VectorGeometry;
  */
 public class OffensiveKick extends ActionBase {
 
-    private final int NOT_FACING_GOAL  = 0;
-    private final int READY_TO_RELEASE = 1;
-    private final int READY_TO_SHOOT   = 2;
+    private final int GOING_TO_KICKABLE  = 0;
+    private final int KICKING = 1;
     // A GrabbablePoint always contains the location 7 (this number could change) cm in front of the ball.
 
     public OffensiveKick(RobotBase robot) {
@@ -26,23 +28,15 @@ public class OffensiveKick extends ActionBase {
     }
     @Override
     public void enterState(int newState) {
-        Robot us = Strategy.world.getRobot(this.robot.robotType);
-
-        if (newState == NOT_FACING_GOAL) {
+        if (newState == GOING_TO_KICKABLE) {
             //stay in place and rotate
-            System.out.println("not facing goal");
-            this.robot.MOTION_CONTROLLER.setHeading(new EnemyGoal());
-            this.robot.MOTION_CONTROLLER.setDestination(null);
-            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.AIM);
+            this.robot.MOTION_CONTROLLER.setHeading(new KickablePoint());
+            this.robot.MOTION_CONTROLLER.setDestination(new KickablePoint());
             this.robot.MOTION_CONTROLLER.setTolerance(-1);
-        } else if (newState == READY_TO_RELEASE) {
-            this.robot.MOTION_CONTROLLER.setDestination(null);
-            this.robot.MOTION_CONTROLLER.setHeading(null);
-            System.out.println("ready to release");
-            ((Frodo) this.robot).GRABBER_CONTROLLER.wantToRelease();
-        } else {
-            System.out.println("ready to kick");
-            ((Frodo)this.robot).KICKER_CONTROLLER.setWantToKick(true);
+        } else if (newState == KICKING) {
+            this.robot.MOTION_CONTROLLER.setDestination(new BallPoint());
+            this.robot.MOTION_CONTROLLER.setHeading(new BallPoint());
+            ((FrodoRobotPort)(this.robot.port)).kick();
         }
 
         this.state = newState;
@@ -56,18 +50,10 @@ public class OffensiveKick extends ActionBase {
         } else {
             VectorGeometry robotLocation = new VectorGeometry();
             us.location.copyInto(robotLocation);
-            EnemyGoal target = new EnemyGoal();
-            VectorGeometry robotHeading = VectorGeometry.fromAngular(us.location.direction, 10, null);
-            if (VectorGeometry.isInGeneralDirection(robotLocation, robotHeading, target.toVectorGeometry())){
-                if(this.state == NOT_FACING_GOAL){
-                    enterState(READY_TO_RELEASE);
-                } else {
-                    enterState(READY_TO_SHOOT);
-                    this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
-                    throw new ActionException(true, true);
-                }
+            if (VectorGeometry.distance(robotLocation, new KickablePoint().toVectorGeometry()) < 10){
+                enterState(GOING_TO_KICKABLE);
             } else {
-                enterState(NOT_FACING_GOAL);
+                enterState(KICKING);
             }
         }
     }

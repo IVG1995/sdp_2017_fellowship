@@ -124,6 +124,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                 case "kick":
                     frodo.ACTION_CONTROLLER.setAction(new OffensiveKick(frodo));
                     break;
+                case "go_kick":
+                    frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new KickablePoint()));
+                    break;
                 case "h":
                     frodo.ACTION_CONTROLLER.setAction(new Waiting(frodo));
                     frodo.MOTION_CONTROLLER.setDestination(null);

@@ -39,9 +39,6 @@ public class FrodoRobotPort extends RobotPort implements GrabberEquippedRobotPor
     @Override
     public void kick(){
         this.sdpPort.commandSender("kick");
-        this.sdpPort.commandSender("kick");
-        this.sdpPort.commandSender("kick");
-        this.sdpPort.commandSender("kick");
     }
 
     @Override
