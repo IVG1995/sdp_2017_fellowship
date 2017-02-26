@@ -9,6 +9,8 @@ import javax.swing.JTabbedPane;
 import vision.colorAnalysis.ColorCalibration;
 import vision.preProcessing.OpenCVProcessor;
 import vision.preProcessing.BrightnessProcessor;
+import vision.robotAnalysis.newRobotAnalysis.BgRobotAnalysis;
+import vision.spotAnalysis.recursiveSpotAnalysis.PartialSpotAnalysis;
 import vision.tools.CommandLineParser;
 import vision.distortion.Distortion;
 import vision.distortion.DistortionPreview;
@@ -55,24 +57,26 @@ public class Vision extends JFrame implements DynamicWorldListener {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
 		SpotAnalysisBase recursiveSpotAnalysis = new RecursiveSpotAnalysis();
+		SpotAnalysisBase partialSpotAnalysis = new PartialSpotAnalysis();
 		SpotAnalysisBase approximateSpotAnalysis = new ApproximatedSpotAnalysis();
+
 		BrightnessProcessor brightnessProcessor = new BrightnessProcessor();
 		OpenCVProcessor openCVProcessor = new OpenCVProcessor();
 
 		// SDP2017NOTE
 		// This part builds the vision system pipeline
-		//TODO: Add preprocessor
+		//
 
 		RawInput.addPreProcessor(brightnessProcessor);
 		RawInput.addPreProcessor(openCVProcessor);
-		RawInput.addRawInputListener(recursiveSpotAnalysis);
+		RawInput.addRawInputListener(partialSpotAnalysis);
 		RawInput.addRawInputListener(Preview.preview);
 		RawInput.addRawInputListener(Distortion.distortion);
-		recursiveSpotAnalysis.addSpotListener(Distortion.distortion);
+		partialSpotAnalysis.addSpotListener(Distortion.distortion);
 		DistortionPreview.addDistortionPreviewClickListener(Distortion.distortion);
 		Distortion.addDistortionListener(RobotPreview.preview);
 
-		RobotAnalysisBase robotAnalysis = new NewRobotAnalysis();
+		RobotAnalysisBase robotAnalysis = new BgRobotAnalysis();
 		Distortion.addDistortionListener(robotAnalysis);
 		robotAnalysis.addDynamicWorldListener(RobotPreview.preview);
 		robotAnalysis.addDynamicWorldListener(this);

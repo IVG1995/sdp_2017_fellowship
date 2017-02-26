@@ -8,6 +8,7 @@ import vision.colorAnalysis.SDPColor;
 import vision.robotAnalysis.RobotAnalysisBase;
 import vision.RobotType;
 import vision.robotAnalysis.RobotColorSettings;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
@@ -31,7 +32,7 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
     }
 
     //analyses the undistorted spots and is literally the only thing here
-    @Override
+    //@Override
     public void nextUndistortedSpots(HashMap<SDPColor, ArrayList<Spot>> spots, long time) {
         ArrayList<Spot> spotList;
         ArrayList<RobotPlate> plates = new ArrayList<RobotPlate>();
@@ -221,5 +222,10 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
 
         }
         this.informListeners(world);
+    }
+
+    @Override
+    public void nextUndistortedSpots(ArrayList<ShapeObject> objects, long time) {
+
     }
 }

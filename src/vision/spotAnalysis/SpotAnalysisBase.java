@@ -2,11 +2,13 @@ package vision.spotAnalysis;
 
 import vision.colorAnalysis.SDPColor;
 import vision.rawInput.RawInputListener;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * Created by Simon Rovder
@@ -28,9 +30,9 @@ public abstract class SpotAnalysisBase implements RawInputListener{
     }
 
     //update listeners
-    protected void informListeners(HashMap<SDPColor, ArrayList<Spot>> spots, long time){
+    protected void informListeners(ArrayList<ShapeObject> objs, long time){
         for(NextSpotsListener listener : this.listeners){
-            listener.nextSpots(spots, time);
+            listener.nextSpots(objs, time);
         }
     }
 }
