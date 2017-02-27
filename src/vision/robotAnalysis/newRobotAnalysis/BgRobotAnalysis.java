@@ -173,6 +173,63 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                 toUndistort.location.setLength(toUndistort.location.length() * (1 - 20.0 / 250));
             }
         }
+
+        if ( /*world.getRobots().contains(null) &&*/ world.getRobots().size() < (objects.size() - 1) && this.lastKnownWorld != null) {
+
+            DynamicWorld previous = this.lastKnownWorld;
+            System.out.println("At least one robot not found");
+            //avoids multiple calls to the return method
+            HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
+            //contains the probability that every robot is every other robot
+            ArrayList<HashMap<RobotType, Double>> probabilities = new ArrayList<HashMap<RobotType, Double>>();
+            int count = 0;
+
+            //loop over every robot for every shape
+            for (ShapeObject obj : objects) {
+                HashMap<RobotType, Double> obj_prob = new HashMap<RobotType, Double>();
+                for (RobotType rType : pre_rob.keySet()) {
+                    //probabilities based on distance
+                    obj_prob.put(rType, 1 / (Math.sqrt((pre_rob.get(rType).velocity.x - obj.pos.x) * (pre_rob.get(rType).velocity.x - obj.pos.x)) + Math.sqrt((pre_rob.get(rType).velocity.y - obj.pos.y) * (pre_rob.get(rType).velocity.y - obj.pos.y))));
+                }
+                probabilities.add(obj_prob);
+            }
+
+            //IDEALLY THESE ARE REMOVED BEFORE THE PROBABILITY CALCULATIONS TO SAVE TIME BUT THIS IS EASIER
+            //remove any already found robots from consideration
+            for (Robot rType : world.getRobots()) {
+                if (!(rType.equals(null))) {
+                    for (HashMap<RobotType, Double> map : probabilities) {
+                        map.remove(rType.type);
+                    }
+                }
+            }
+
+            //do the actual position updating
+            for (ShapeObject obj : objects) {
+                //init to null
+                RobotType max_type = null;
+                double max_prob = 0;
+                //the robot with the highest probability is set to be the obj
+                for (RobotType rType : probabilities.get(count).keySet()) {
+                    if (probabilities.get(count).get(rType) > max_prob) {
+                        max_prob = probabilities.get(count).get(rType);
+                        max_type = rType;
+                    }
+                }
+
+                //update the position
+                if (max_type != null) {
+                    world.update_robot(max_type, pre_rob.get(max_type), obj.pos.x, obj.pos.y);
+                }
+                //disallow any robot to be assigned twice
+                for (HashMap<RobotType, Double> map : probabilities) {
+                    map.remove(max_type);
+                }
+
+                count++;
+            }
+
+        }
         this.informListeners(world);
     }
 }

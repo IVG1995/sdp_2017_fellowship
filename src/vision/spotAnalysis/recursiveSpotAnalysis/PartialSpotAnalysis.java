@@ -61,7 +61,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
             this.processPixel(x - 1, y, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x + 1, y, sdpColorInstance, average, maxDepth - 1);
             Graphics g = Preview.getImageGraphics();
-            if (g != null /*&& sdpColorInstance.isVisible()*/) {
+            if (g != null && sdpColorInstance.isVisible()) {
                 g.setColor(Color.WHITE);
                 g.drawRect(x, y, 1, 1);
             }
@@ -100,6 +100,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
                 }
             }
             Integer color_count = 0;
+            Integer spot_count = 0;
             for (SDPColor color : SDPColor.values()) {
                 colorInstance = SDPColors.colors.get(color);
                 Boolean flag_color = false;
@@ -107,6 +108,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
                     for (int x = i.boundingRect.x; x < i.boundingRect.x + i.boundingRect.width; x++) {
                         this.processPixel(x, y, colorInstance, average, 200);
                         if (average.getCount() > 5) {
+                            spot_count += 1;
                             i.spots.get(color).add(new Spot(average.getXAverage(), average.getYAverage(), average.getCount(), color));
                             flag_color = true;
                         }
@@ -121,7 +123,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
             }
 
-            if (color_count > 2) {
+            if (color_count > 1 || spot_count > 1) {
                 objs.add(i);
             } else if (
                     ((i.spots.get(SDPColor._BALL).size() >= 1) || (i.spots.get(SDPColor.PINK).size() >= 1))
@@ -132,7 +134,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
 
         }
-
+        BgSubtractor.objects = objs;
         this.informListeners(objs, time);
         Preview.flushToLabel();
 
