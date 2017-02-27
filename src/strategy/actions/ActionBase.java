@@ -69,7 +69,8 @@ public abstract class ActionBase implements ActionInterface {
         // If there is an active subaction, execute that and
         } else {
             // Recalculate the relevant point, if applicable
-            if(this.point != null) this.point.recalculate();
+            if (this.point != null) this.point.recalculate();
+            if (this.action.point != null) this.action.point.recalculate();
 
             try{
                 // Activate the current subaction's tik() method (nothing else to do)
