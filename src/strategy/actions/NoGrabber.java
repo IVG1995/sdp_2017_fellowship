@@ -7,7 +7,9 @@ import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
+import strategy.actions.other.Goto;
 import strategy.actions.other.Waiting;
+import strategy.points.basicPoints.BallPoint;
 import strategy.robots.RobotBase;
 import vision.Ball;
 import strategy.Strategy;
@@ -23,11 +25,14 @@ import java.util.HashMap;
  */
 
 enum NoGrabberEnum {
-    DEFEND, SAFE, SCORE, CLEAR, ANNOY, GET_OPEN, BLOCK_PASS, WAIT, WALL
+    DEFEND, SAFE, SCORE, CLEAR, ANNOY, GET_OPEN, BLOCK_PASS, WAIT, WALL, GO_TO_BALL
 }
 
 public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
 
+    // Contains info about which robot is closest to ball, how far away
+    // each robot is from the ball, etc.
+    private ClosestRobotInfo closestRobotInfo = new ClosestRobotInfo();
 
     public NoGrabber(RobotBase robot) {
         super(robot, null);
@@ -42,6 +47,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         Robot ally = Strategy.world.getRobot(RobotType.FRIEND_1);
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
         RobotType ballHolder = Strategy.world.getProbableBallHolder();
+        this.closestRobotInfo.calculate_closest();
 
 
         if (us == null) {
@@ -56,7 +62,8 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         if (ally == null) {
 
             // Enemies have the ball OR ball is lost ==> DEFEND
-            if (ballHolder == RobotType.FOE_1 || ballHolder == RobotType.FOE_2 || ball == null) {
+            if (ballHolder == RobotType.FOE_1 || ballHolder == RobotType.FOE_2 || ball == null ||
+                    this.closestRobotInfo.enemyPossession()) {
                 this.nextState = NoGrabberEnum.DEFEND;
                 return this.nextState;
             }
@@ -69,8 +76,8 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
             }
 
             // The ball is close to a wall ==> DEFEND
-            if (Math.abs(ball.location.y) > Constants.PITCH_HEIGHT - 13 ||
-                    Math.abs(ball.location.x) > Constants.PITCH_WIDTH - 13) {
+            if (Math.abs(ball.location.y) > Constants.PITCH_HEIGHT - 20 ||
+                    Math.abs(ball.location.x) > Constants.PITCH_WIDTH - 20) {
                 this.nextState = NoGrabberEnum.DEFEND;
                 return this.nextState;
             }
@@ -82,11 +89,9 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
             }
 
             // We are closest to the ball by far AND could have a shot ==> SCORE
-            ClosestRobotInfo closestInfo = new ClosestRobotInfo();
-            closestInfo.calculate_closest();
-            if (closestInfo.closest == RobotType.FRIEND_2 && shot_on_goal(us, ball.location) &&
-                    (closestInfo.getClosestEnemyDist() / closestInfo.getDist(RobotType.FRIEND_2)) >= 2 &&
-                    closestInfo.getClosestEnemyDist() > 50) {
+            if (this.closestRobotInfo.closest == RobotType.FRIEND_2 && shot_on_goal(us, ball.location) &&
+                    (this.closestRobotInfo.getClosestEnemyDist() / this.closestRobotInfo.getDist(RobotType.FRIEND_2)) >= 2 &&
+                    this.closestRobotInfo.getClosestEnemyDist() > 50) {
                 this.nextState = NoGrabberEnum.SCORE;
                 return this.nextState;
             }
@@ -96,6 +101,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
 
             // None of the above conditions hold ==> DEFEND
             this.nextState = NoGrabberEnum.DEFEND;
+            return this.nextState;
 
         }
         // =============================================================================================
@@ -103,6 +109,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         // =============================================================================================
 
         Robot holderRobot = Strategy.world.getRobot(ballHolder);
+
 
         // We need to defend (see method for details) ==> DEFEND
         // (basically if the defender is out of position)
@@ -116,7 +123,8 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         // Enemies have ball AND ball is near our goal ==> BLOCK_PASS
         //      (stay in between the 2 enemies)
         //      (to keep out of friendly defender's way)
-        if (ballHolder == RobotType.FOE_1 || ballHolder == RobotType.FOE_2) {
+        if (ballHolder == RobotType.FOE_1 || ballHolder == RobotType.FOE_2 ||
+                this.closestRobotInfo.enemyPossession()) {
             if (holderRobot.location.x > -(Constants.PITCH_WIDTH / 2) + 50) {
                 this.nextState = NoGrabberEnum.ANNOY;
             } else {
@@ -128,7 +136,8 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         // Friend has the ball ==> GET_OPEN
         // TODO: Figure this out
         if (ballHolder == RobotType.FRIEND_1) {
-
+            this.nextState = NoGrabberEnum.WAIT;
+            return this.nextState;
         }
 
         // Ball is lost ==> WAIT
@@ -138,18 +147,29 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         }
 
         // Ball is near a wall ==> WALL
-        // TODO: Should we just wait? Going near the wall never goes well
-        if (Math.abs(ball.location.x) > (Constants.PITCH_WIDTH / 2) - 10 ||
-                Math.abs(ball.location.y) > (Constants.PITCH_HEIGHT / 2) - 10) {
+        // TODO: Should we just wait? Going near a wall never goes well
+        if (Math.abs(ball.location.x) > (Constants.PITCH_WIDTH / 2) - 20 ||
+                Math.abs(ball.location.y) > (Constants.PITCH_HEIGHT / 2) - 20) {
             this.nextState = NoGrabberEnum.WALL;
         }
 
+        // Ball is close to our goal ==> GET_OPEN
+        // TODO: figure this out
+        if (ball.location.x < -60) {
+            this.nextState = NoGrabberEnum.WAIT;
+            return this.nextState;
+        }
 
+        // Frodo has the ball ==> SCORE
+        // Frodo is closest and could have a shot on goal ==> SCORE
+        if (ballHolder == RobotType.FRIEND_2 ||
+                (this.closestRobotInfo.closest == RobotType.FRIEND_2 && shot_on_goal(us, ball.location))) {
+            this.nextState = NoGrabberEnum.SCORE;
+            return this.nextState;
+        }
 
-
-
-
-
+        // Ball is free, no other conditions apply ==> GO_TO_BALL
+        this.nextState = NoGrabberEnum.GO_TO_BALL;
         return this.nextState;
     }
 
@@ -182,8 +202,9 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
             case CLEAR:
                 this.enterAction(new Clear(this.robot), 0, 0);
                 break;
-
-
+            case GO_TO_BALL:
+                this.enterAction(new Goto(this.robot, new BallPoint()), 0, 0);
+                break;
         }
 
     }
@@ -216,6 +237,8 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
     private class ClosestRobotInfo {
         private RobotType closest;
         private HashMap<RobotType, Integer> distances;
+
+        private final Integer POSSESSION_RANGE = 8;
 
         public void calculate_closest() {
             this.closest = null;
@@ -251,6 +274,18 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
             } else if (two != null) { return two; }
 
             return null;
+        }
+
+        /**
+         * Checks if the closest robot is actually close enough to be considered to have
+         * possession of the ball, and that that robot is an enemy.
+         * @return
+         */
+        public boolean enemyPossession() {
+            Integer closestDist = this.getDist(this.closest);
+            if (closestDist == null) { return false; }
+
+            return (closestDist <= POSSESSION_RANGE && (closest == RobotType.FOE_1 || closest == RobotType.FOE_2));
         }
     }
 
