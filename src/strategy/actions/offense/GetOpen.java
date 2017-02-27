@@ -1,6 +1,7 @@
-package strategy.actions;
+package strategy.actions.offense;
 
 import strategy.Strategy;
+import strategy.actions.ActionBase;
 import strategy.points.basicPoints.RobotPoint;
 import strategy.robots.RobotBase;
 import vision.Robot;
