@@ -2,6 +2,7 @@ package vision.robotAnalysis.newRobotAnalysis;
 
 import vision.Ball;
 import vision.Robot;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.tools.VectorGeometry;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
  * Created by Simon Rovder
  */
 public class PatternMatcher {
-    public static void patternMatch(ArrayList<Spot> spots, ArrayList<RobotPlate> plates){
+    public static void patternMatch(ArrayList<Spot> spots, ArrayList<RobotPlate> plates, ShapeObject obj){
         /*
          * SDP2017NOTE
          * This is a brute-force plate finder. Yes, it looks slow, but it turns out it is the
@@ -22,15 +23,16 @@ public class PatternMatcher {
                     if( VectorGeometry.distance(spots.get(i), spots.get(j)) < 15 &&
                         VectorGeometry.distance(spots.get(i), spots.get(k)) < 15 &&
                         VectorGeometry.distance(spots.get(k), spots.get(j)) < 15){
-                        plates.add(new RobotPlate(spots.get(i), spots.get(j), spots.get(k)));
+                        plates.add(new RobotPlate(spots.get(i), spots.get(j), spots.get(k),obj));
                     }
                 }
             }
         }
     }
 
-    public static void singularValidate(ArrayList<Spot> spots, ArrayList<RobotPlate> plates){
+    public static void singularValidate(ArrayList<Spot> spots, ArrayList<RobotPlate> plates,Spot marker){
         for(RobotPlate plate : plates){
+            plate.setMarker(marker);
             for(Spot s : spots){
                 if(plate.validate(s)) break;
             }

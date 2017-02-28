@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.function.Predicate;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,6 +23,7 @@ import vision.gui.Preview;
 import vision.gui.PreviewSelectionListener;
 import vision.settings.SaveLoadCapable;
 import vision.tools.ColoredPoint;
+import vision.tools.VectorGeometry;
 
 
 /**
@@ -35,6 +37,8 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 	private JTextField maxSaturationTextField;
 	private JTextField minBrightnessTextField;
 	private JTextField maxBrightnessTextField;
+	private JTextField minColorField;
+	private JTextField maxColorField;
 		
 	private float maxHue        = 0;
 	private float minHue        = 0;
@@ -56,51 +60,83 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 	private Panel maxSaturationPanel;
 	private Panel minBrightnessPanel;
 	private Panel maxBrightnessPanel;
+	private Panel minColorPanel;
+	private Panel maxColorPanel;
+
 	public final SDPColor sdpColor;
 	
 	public final String name;
 	
 	private boolean respondToSliderChange;
 	private boolean calibrating;
-	private JButton done;
+	private boolean calibratingMin;
+	private boolean calibratingMax;
+	private boolean calibratingMinMax;
+	private boolean minCalibrated;
+	private boolean maxCalibrated;
 	private JButton calibrate;
+	private JButton calibrateMin;
+	private JButton calibrateMax;
+	private JButton calibrateMinMax;
+	private JButton done;
+
+	private Color minColor;
+	private Color maxColor;
     public Color referenceColor;
     public Color negatedColor;
 	
-    
-	public boolean isColor(float h, float s, float v){
-		if(this.maxHue > 1 && this.minHue > h){
-			h++;
-		}
-		return 
-				this.minHue <= h &&
-				this.maxHue >= h &&
-				this.minSaturation <= s &&
-				this.maxSaturation >= s &&
-				this.minBrightness <= v &&
-				this.maxBrightness >= v;
+    Predicate<VectorGeometry> locationConstraint;
+
+	public boolean isColor(float h, float s, float v, int x, int y){
+		return isColor(h, s, v) && this.locationConstraint.test(new VectorGeometry(x,y));
+
 	}
+    public boolean isColor(float h, float s, float v){
+        if(this.maxHue > 1 && this.minHue > h){
+            h++;
+        }
+        return
+                this.minHue <= h &&
+                        this.maxHue >= h &&
+                        this.minSaturation <= s &&
+                        this.maxSaturation >= s &&
+                        this.minBrightness <= v &&
+                        this.maxBrightness >= v;
+    }
 	
 	
 	
-	public SDPColorInstance(String name, Color referenceColor, SDPColor sdpColor){
+	public SDPColorInstance(String name, Color referenceColor, SDPColor sdpColor, Predicate<VectorGeometry> locationConstraint){
 		super();
 		this.name = name;
 		this.setupGUI();
 		this.referenceColor = referenceColor;
+		this.minColor = referenceColor;
+		this.maxColor = referenceColor;
 		this.respondToSliderChange = true;
 		this.calibrating = false;
+		this.calibratingMinMax = false;
 		this.sdpColor = sdpColor;
+		this.locationConstraint = locationConstraint;
 		Preview.addSelectionListener(this);
 	}
 	
 	private void setupGUI(){
+		// .setBounds(TOP, LEFT, LENGTH, WIDTH)
+
 		setTitle(this.name);
 		setSize(640,480);
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
-		
+
+		// Ball color title
+		JLabel lblEditBallColor = new JLabel(this.name);
+		lblEditBallColor.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblEditBallColor.setBounds(10, 11, 465, 26);
+		panel.add(lblEditBallColor);
+
+		// Sliders
 		minHueSlider = new JSlider();
 		minHueSlider.setBounds(183, 56, 200, 14);
 		panel.add(minHueSlider);
@@ -120,7 +156,19 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		minSaturationPanel = new Panel();
 		minSaturationPanel.setBounds(140, 137, 37, 14);
 		panel.add(minSaturationPanel);
-		
+
+		JLabel lblMaxHue = new JLabel("Max Hue:");
+		lblMaxHue.setBounds(10, 98, 120, 14);
+		panel.add(lblMaxHue);
+
+		maxHuePanel = new Panel();
+		maxHuePanel.setBounds(140, 98, 37, 14);
+		panel.add(maxHuePanel);
+
+		maxHueSlider = new JSlider();
+		maxHueSlider.setBounds(183, 98, 200, 14);
+		panel.add(maxHueSlider);
+
 		JLabel lblMinSaturation = new JLabel("Min Saturation:");
 		lblMinSaturation.setBounds(10, 137, 120, 14);
 		panel.add(lblMinSaturation);
@@ -166,6 +214,12 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		minHueTextField.setBounds(389, 39, 86, 26);
 		panel.add(minHueTextField);
 		minHueTextField.setColumns(10);
+
+		maxHueTextField = new JTextField();
+		maxHueTextField.setEditable(false);
+		maxHueTextField.setColumns(10);
+		maxHueTextField.setBounds(389, 81, 86, 26);
+		panel.add(maxHueTextField);
 		
 		minSaturationTextField = new JTextField();
 		minSaturationTextField.setEditable(false);
@@ -190,40 +244,44 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		maxBrightnessTextField.setColumns(10);
 		maxBrightnessTextField.setBounds(389, 240, 86, 26);
 		panel.add(maxBrightnessTextField);
-		
-		JLabel lblEditBallColor = new JLabel(this.name);
-		lblEditBallColor.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblEditBallColor.setBounds(10, 11, 465, 26);
-		panel.add(lblEditBallColor);
-		
-		this.done = new JButton("Done");
-		done.setBounds(60, 314, 150, 23);
-		panel.add(done);
-		done.addActionListener(this);
-		
 
+		// Original buttons
 		this.calibrate = new JButton("Calibrate");
-		this.calibrate.setBounds(10, 350, 250, 23);
+		this.calibrate.setBounds(10, 290, 250, 35);
 		panel.add(this.calibrate);
 		this.calibrate.addActionListener(this);
-		
-		JLabel lblMaxHue = new JLabel("Max Hue:");
-		lblMaxHue.setBounds(10, 98, 120, 14);
-		panel.add(lblMaxHue);
-		
-		maxHuePanel = new Panel();
-		maxHuePanel.setBounds(140, 98, 37, 14);
-		panel.add(maxHuePanel);
-		
-		maxHueSlider = new JSlider();
-		maxHueSlider.setBounds(183, 98, 200, 14);
-		panel.add(maxHueSlider);
-		
-		maxHueTextField = new JTextField();
-		maxHueTextField.setEditable(false);
-		maxHueTextField.setColumns(10);
-		maxHueTextField.setBounds(389, 81, 86, 26);
-		panel.add(maxHueTextField);
+
+		this.done = new JButton("Done");
+		done.setBounds(10, 335, 180, 25);
+		panel.add(done);
+		done.addActionListener(this);
+
+		// Min max calibration
+		this.calibrateMin = new JButton("Choose min");
+		this.calibrateMin.setBounds(300, 340, 140, 20);
+		this.calibrateMin.setEnabled(false);
+		panel.add(this.calibrateMin);
+		this.calibrateMin.addActionListener(this);
+
+		minColorPanel = new Panel();
+		minColorPanel.setBounds(300, 380, 60, 60);
+		panel.add(minColorPanel);
+
+		this.calibrateMax = new JButton("Choose max");
+		this.calibrateMax.setBounds(450, 340, 140, 20);
+		this.calibrateMax.setEnabled(false);
+		panel.add(this.calibrateMax);
+		this.calibrateMax.addActionListener(this);
+
+		maxColorPanel = new Panel();
+		maxColorPanel.setBounds(450, 380, 60, 60);
+		panel.add(maxColorPanel);
+
+		this.calibrateMinMax = new JButton("Calibrate (Min Max)");
+		this.calibrateMinMax.setBounds(300, 290, 290, 35);
+		panel.add(this.calibrateMinMax);
+		this.calibrateMinMax.addActionListener(this);
+
 		this.minHueSlider.setMaximum(100);
 		this.minHueSlider.setMinimum(0);
 		this.maxHueSlider.setMaximum(100);
@@ -287,6 +345,9 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.minSaturationPanel.setBackground(Color.getHSBColor((this.minHue + this.maxHue)/2, this.minSaturation, (this.minBrightness + this.maxBrightness)/2));
 		this.maxBrightnessPanel.setBackground(Color.getHSBColor((this.minHue + this.maxHue)/2, (this.maxSaturation + this.maxSaturation)/2, this.maxBrightness));
 		this.minBrightnessPanel.setBackground(Color.getHSBColor((this.minHue + this.maxHue)/2, (this.minSaturation + this.maxSaturation)/2, this.minBrightness));
+
+		this.minColorPanel.setBackground(minColor);
+		this.maxColorPanel.setBackground(maxColor);
 	}
 	
 	@Override
@@ -294,14 +355,56 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		if(e.getSource() == this.calibrate){
 			if(this.calibrating){
 				this.done.setEnabled(true);
+				this.calibrateMinMax.setEnabled(true);
 				this.calibrate.setText("Calibrate");
 			} else {
 				this.done.setEnabled(false);
-				this.calibrate.setText("Calibrating.. Click to end.");
+				this.calibrateMinMax.setEnabled(false);
+				this.calibrate.setText("Calibrating.. Click to end");
 				Preview.preview.transferFocus();
 			}
 			this.calibrating = !this.calibrating;
-		}else{
+		} else if (e.getSource() == this.calibrateMinMax) {
+			if (this.calibratingMinMax) {
+				this.done.setEnabled(true);
+				this.calibrate.setEnabled(true);
+				this.calibrateMin.setEnabled(false);
+				this.calibrateMax.setEnabled(false);
+				this.minCalibrated = false;
+				this.maxCalibrated = false;
+				this.calibrateMinMax.setText("Calibrate Min Max");
+			} else {
+				this.done.setEnabled(false);
+				this.calibrate.setEnabled(false);
+				this.calibrateMinMax.setText("Calibrating Min Max.. Click to end");
+				this.calibrateMin.setEnabled(true);
+				this.calibrateMax.setEnabled(true);
+				Preview.preview.transferFocus();
+			}
+			this.calibratingMinMax = !this.calibratingMinMax;
+		} else if (e.getSource() == this.calibrateMin) {
+			if (this.calibratingMin) {
+				this.calibrateMax.setEnabled(true);
+				this.calibrateMin.setText("Choose min");
+				this.minCalibrated = true;
+			} else {
+				this.calibrateMax.setEnabled(false);
+				this.calibrateMin.setText("End min");
+				Preview.preview.transferFocus();
+			}
+			this.calibratingMin = !this.calibratingMin;
+		} else if (e.getSource() == this.calibrateMax) {
+			if (this.calibratingMax) {
+				this.calibrateMin.setEnabled(true);
+				this.calibrateMax.setText("Choose max");
+				this.maxCalibrated = true;
+			} else {
+				this.calibrateMin.setEnabled(false);
+				this.calibrateMax.setText("End max");
+				Preview.preview.transferFocus();
+			}
+			this.calibratingMax = !this.calibratingMax;
+		} else {
 			this.setVisible(false);
 		}
 	}
@@ -341,6 +444,44 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 			this.respondToSliderChange = true;
 			this.refreshColors();
 			this.myRepaint();
+		}else if(this.calibratingMinMax && this.isVisible()) {
+			if (this.calibratingMin) {
+				this.minColor = coloredPoint.color;
+				float[] f = Color.RGBtoHSB(coloredPoint.color.getRed(), coloredPoint.color.getGreen(), coloredPoint.color.getBlue(), null);
+				this.minHue        = (float) (f[0] - 0.05);
+				if(this.minHue < 0){
+					this.minHue = this.minHue + 1;
+				}
+				if(this.maxHue < this.minHue){
+					this.maxHue = this.maxHue + 1;
+				}
+				this.minSaturation = (float) (f[1]-0.05);
+				this.minBrightness = (float) (f[2]-0.05);
+
+				this.respondToSliderChange = false;
+				this.recalculateSliders();
+				this.respondToSliderChange = true;
+				this.refreshColors();
+				this.myRepaint();
+			} else if (this.calibratingMax) {
+				this.maxColor = coloredPoint.color;
+				float[] f = Color.RGBtoHSB(coloredPoint.color.getRed(), coloredPoint.color.getGreen(), coloredPoint.color.getBlue(), null);
+				this.maxHue        = (float) (f[0] + 0.05);
+				if(this.maxHue > 1){
+					this.maxHue = this.maxHue - 1;
+				}
+				if(this.maxHue < this.minHue){
+					this.maxHue = this.maxHue + 1;
+				}
+				this.maxSaturation = (float) (f[1]-0.05);
+				this.maxBrightness = (float) (f[2]-0.05);
+
+				this.respondToSliderChange = false;
+				this.recalculateSliders();
+				this.respondToSliderChange = true;
+				this.refreshColors();
+				this.myRepaint();
+			}
 		}
 	}
 

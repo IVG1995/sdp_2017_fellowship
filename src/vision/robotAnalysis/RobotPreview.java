@@ -29,6 +29,8 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 	private BufferedImage image;
 	
 	private final int bounds = 10;
+
+	private int drawDelay = 3;
 	
 	private void resetImage(){
 		Graphics g = this.image.getGraphics();
@@ -53,7 +55,12 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 
 	@Override
 	public void nextUndistortedSpots(ArrayList<ShapeObject> objs, long time) {
-		this.resetImage();
+		if (drawDelay <= 0) {
+			drawDelay = 3;
+			this.resetImage();
+		} else {
+			drawDelay -= 1;
+		}
 		Graphics g = this.image.getGraphics();
 
 		for (ShapeObject obj : objs) {
@@ -123,7 +130,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 			}
 		}
 		if (!found){
-			System.out.println("robot not found");
+			//System.out.println("robot not found");
 		}
 
 		Ball ball = state.getBall();
@@ -131,7 +138,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 			this.drawArc((int)ball.location.x, (int)ball.location.y, 10, Color.RED);
 
 		}else {
-			System.out.println("Picture"+StaticImage.cnt+"ball not found");
+			//System.out.println("Picture"+StaticImage.cnt+"ball not found");
 		}
 		RobotType prob = state.getProbableBallHolder();
 		if(prob != null){

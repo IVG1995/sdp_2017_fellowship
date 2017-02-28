@@ -21,10 +21,11 @@ import static vision.preProcessing.OpenCVProcessor.img2Mat;
 
 public class BgSubtractor implements MatProcessor {
     public static ArrayList<ShapeObject> objects;
-    public static BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 12, true);
+    public static BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 8, true);
     public static long cnt = 0;
 
     public BgSubtractor() {
+
     }
 
     public static RotatedRect getApproxContour(MatOfPoint thisContour) {
@@ -77,11 +78,11 @@ public class BgSubtractor implements MatProcessor {
         Imgproc.threshold(fgMask, fgMask, 128, 255, Imgproc.THRESH_BINARY);
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hier = new Mat();
-        mat.copyTo(output, fgMask);
+        mat.copyTo(output);
         Imgproc.findContours(fgMask, contours, hier, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         objects = new ArrayList<>();
         for (int i = 0; i < contours.size(); i++) {
-            if (Imgproc.contourArea(contours.get(i)) > 200) {
+            if (Imgproc.contourArea(contours.get(i)) > 300) {
                 RotatedRect rotatedRect = getApproxContour(contours.get(i));
                 // double angle = rotatedRect.angle; // angle
                 Point[] rect_points = new Point[4];
@@ -90,7 +91,6 @@ public class BgSubtractor implements MatProcessor {
                 // read center of rotated rect
                 Point center = rotatedRect.center; // center
                 // add plate
-
                 Rect boundingRect = Imgproc.boundingRect(contours.get(i));
                 objects.add(new RectObject(rotatedRect, boundingRect));
                 Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));

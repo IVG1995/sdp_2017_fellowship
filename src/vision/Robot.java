@@ -42,4 +42,10 @@ public class Robot {
         location.x = x;
         location.y = y;
     }
+    public void  update_robot(Robot r){
+        location = r.location.clone();
+        velocity = r.velocity.clone();
+        type = r.type;
+
+    }
 }

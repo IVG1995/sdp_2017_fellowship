@@ -32,6 +32,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
     private int height;
     private int x;
     private int y;
+    private int marker_count;
 
     public PartialSpotAnalysis() {
         super();
@@ -53,7 +54,8 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
         if (maxDepth <= 0 || x < this.x || x >= this.x + this.width || y < this.y || y >= this.y + this.height) return;
         int i = getIndex(x, y);
         if (this.found[i / 3] == sdpColorInstance.sdpColor) return;
-        if (sdpColorInstance.isColor(this.hsv[i], this.hsv[i + 1], this.hsv[i + 2])) {
+        if (sdpColorInstance.isColor(this.hsv[i], this.hsv[i + 1], this.hsv[i + 2], x, y)) {
+
             average.addPoint(x, y);
             this.found[i / 3] = sdpColorInstance.sdpColor;
             this.processPixel(x, y + 1, sdpColorInstance, average, maxDepth - 1);
@@ -93,6 +95,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
             this.height = i.boundingRect.height;
             this.x = i.boundingRect.x;
             this.y = i.boundingRect.y;
+
 
             for (int j = this.y; j < this.y + this.height; j++) {
                 for (int k = this.x; k < this.width + this.x; k++) {

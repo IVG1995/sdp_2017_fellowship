@@ -1,10 +1,14 @@
 package vision;
 
+import org.opencv.core.Rect;
 import vision.gui.SDPConsole;
 import vision.preProcessing.matProcessor.BgSubtractor;
+import vision.robotAnalysis.newRobotAnalysis.BgRobotAnalysis;
+import vision.shapeObject.RectObject;
 import vision.shapeObject.ShapeObject;
 import vision.tools.DirectedPoint;
 
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +34,7 @@ public class DynamicWorld {
 
     // If the ball is not found, this will be set to the robot that is most likely holding it.
     private RobotType probableBallHolder;
+
 
     //number of robots
     public int robotCount;
@@ -68,7 +73,9 @@ public class DynamicWorld {
 
     public ArrayList<ShapeObject> getObjects(){
         return BgSubtractor.objects;
+
     }
+
 
     //This is just a bunch of getters and setters
     //Robots can be searched for by either alias or type
@@ -111,13 +118,25 @@ public class DynamicWorld {
 
     //adds a robot to both hashmaps using the robots type and alias (if it has
     //one)
-    public void setRobot(Robot r){
+    public void setRobot(Robot r, ArrayList<RectObject> rectObjects){
         this.robots.put(r.type, r);
+        //add to last known one
+        BgRobotAnalysis.lastKnownRobots.put(r.type, r);
+        rectObjects.remove(r.object);
         if(r.alias != RobotAlias.UNKNOWN){
             this.aliases.put(r.alias, r);
         }
     }
 
+
+    public void setRobot(Robot r){
+        this.robots.put(r.type, r);
+        //add to last known one
+        BgRobotAnalysis.lastKnownRobots.put(r.type, r);
+        if(r.alias != RobotAlias.UNKNOWN){
+            this.aliases.put(r.alias, r);
+        }
+    }
     //sets the probable holder of the ball
     public void setProbableBallHolder(RobotType type){
         this.probableBallHolder = type;
@@ -154,6 +173,6 @@ public class DynamicWorld {
         if (!(robots.keySet().contains(r))){
             setRobot(rob);
         }
-        robots.get(r).update_point(x,y);
+        robots.get(r).update_robot(rob);
     }
 }

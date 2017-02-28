@@ -5,12 +5,15 @@ import vision.RobotAlias;
 import vision.colorAnalysis.SDPColor;
 import vision.gui.MiscellaneousSettings;
 import vision.robotAnalysis.RobotColorSettings;
+import vision.shapeObject.RectObject;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.spotAnalysis.recursiveSpotAnalysis.XYCumulativeAverage;
 import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
 
 import java.util.ArrayList;
+
 /**
  * Created by Simon Rovder
  */
@@ -26,9 +29,12 @@ public class RobotPlate {
     private VectorGeometry actualDeterminer = null;
     private SDPColor teamColor = null;
     private VectorGeometry center = null;
+    private ShapeObject object = null;
     private ArrayList<Spot> spots = new ArrayList<Spot>();
+    private Spot marker = null;
 
-    public RobotPlate(Spot s1, Spot s2, Spot s3) {
+    public RobotPlate(Spot s1, Spot s2, Spot s3, ShapeObject obj) {
+        this.object = obj;
         this.mainColor = s1.color;
         this.addSpot(s1);
         this.addSpot(s2);
@@ -36,14 +42,14 @@ public class RobotPlate {
         double angle1 = VectorGeometry.angle(s2, s1, s3);
         double angle2 = VectorGeometry.angle(s1, s2, s3);
         double angle3 = VectorGeometry.angle(s2, s3, s1);
-        if(angle1 > angle2){
-            if(angle1 > angle3){
+        if (angle1 > angle2) {
+            if (angle1 > angle3) {
                 findExpectedDeterminer(s1);
             } else {
                 findExpectedDeterminer(s3);
             }
         } else {
-            if(angle2 > angle3){
+            if (angle2 > angle3) {
                 findExpectedDeterminer(s2);
             } else {
                 findExpectedDeterminer(s3);
@@ -51,7 +57,7 @@ public class RobotPlate {
         }
     }
 
-    private void findExpectedDeterminer(Spot s){
+    private void findExpectedDeterminer(Spot s) {
         VectorGeometry centre = new VectorGeometry(this.location.getXAverage(), this.location.getYAverage());
         VectorGeometry dir = VectorGeometry.fromTo(s, centre);
         dir.multiply(0.7);
@@ -59,62 +65,71 @@ public class RobotPlate {
         this.expectedDeterminer = dir;
     }
 
-    public boolean validate(Spot s){
-        if(s.color != this.mainColor){
-            if(VectorGeometry.distance(this.expectedDeterminer, s) < 10){
+    public void setMarker(Spot s) {
+        this.marker = s;
+    }
+
+    public boolean validate(Spot s) {
+        if (s.color != this.mainColor) {
+            if (VectorGeometry.distance(this.expectedDeterminer, s) < 10) {
                 this.addSpot(s);
                 this.center = new VectorGeometry(this.location.getXAverage(), this.location.getYAverage());
-                this.actualDeterminer = VectorGeometry.fromTo(center, s);
+                if (this.marker != null) {
+                    this.actualDeterminer = VectorGeometry.fromTo(center, marker);
+                } else {
+                    this.actualDeterminer = VectorGeometry.fromTo(center, s);
+                }
                 return true;
             }
         }
         return false;
     }
 
-    public Robot toRobot(){
+    public Robot toRobot() {
         Robot r = new Robot();
         r.type = RobotColorSettings.getRobotType(this.teamColor, this.mainColor);
         r.location = this.toDirectedPoint();
-        r.alias = (RobotAlias)(MiscellaneousSettings.aliases.get(r.type).getSelectedItem());
+        r.alias = (RobotAlias) (MiscellaneousSettings.aliases.get(r.type).getSelectedItem());
+        r.object = (RectObject) this.object;
         return r;
     }
 
-    private DirectedPoint toDirectedPoint(){
-        return new DirectedPoint((int)this.center.x, (int)this.center.y, this.getHeading());
+    private DirectedPoint toDirectedPoint() {
+        return new DirectedPoint((int) this.center.x, (int) this.center.y, this.getHeading());
     }
 
-    private double getHeading(){
+    private double getHeading() {
         return this.actualDeterminer.angle() - Math.PI + MAGIC_ANGLE_NUMBER_PLEASE_CHANGE_ME;
     }
 
-    private void addSpot(Spot s){
+    private void addSpot(Spot s) {
         this.spots.add(s);
         this.location.addPoint(s.x, s.y);
     }
 
-    public boolean isValid(){
+    public boolean isValid() {
         return this.actualDeterminer != null;
     }
 
-    public boolean hasTeam(){
+    public boolean hasTeam() {
         return this.teamColor != null;
     }
 
-    public void tryAddTeam(Spot s){
-        if(this.teamColor == null && VectorGeometry.distance(this.center, s) < 5){
+    public void tryAddTeam(Spot s) {
+        if (this.teamColor == null && VectorGeometry.distance(this.center, s) < 5) {
             this.teamColor = s.color;
             this.addSpot(s);
         }
     }
 
-    public void setTeam(SDPColor c){
+    public void setTeam(SDPColor c) {
         this.teamColor = c;
     }
 
-    public boolean isBotPart(Spot spot){
-        for(Spot s : this.spots){
+    public boolean isBotPart(Spot spot) {
+        for (Spot s : this.spots) {
             //Try to modify this to a best value since it can't find the ball
-            if(VectorGeometry.distance(s, spot) < 8){
+            if (VectorGeometry.distance(s, spot) < 8) {
                 return true;
             }
         }
