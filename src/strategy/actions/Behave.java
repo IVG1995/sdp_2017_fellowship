@@ -94,6 +94,8 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                     System.out.println(fileName);
                 } catch (IOException io) {
                     // if an exception is thrown settings stay the same and we continue to next timer cycle
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } else {
                 // If our robot is further away from our goal then the ball is, go into SAFE mode (execute sub-action GoToSafeLocation).

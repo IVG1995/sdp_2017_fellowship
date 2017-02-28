@@ -8,6 +8,7 @@ import vision.robotAnalysis.RobotAnalysisBase;
 import vision.RobotType;
 import vision.robotAnalysis.RobotColorSettings;
 import vision.shapeObject.CircleObject;
+import vision.shapeObject.RectObject;
 import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.tools.DirectedPoint;
@@ -218,7 +219,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                 }
 
                 //update the position
-                if (max_type != null) {
+                if (max_type != null  && obj instanceof RectObject) {
                     world.update_robot(max_type, pre_rob.get(max_type), obj.pos.x, obj.pos.y);
                 }
                 //disallow any robot to be assigned twice
