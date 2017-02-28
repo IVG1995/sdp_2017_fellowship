@@ -90,7 +90,7 @@ public class MotionController extends ControllerBase {
 
         // Contains a vector of length 10 pointing in the direction the robot is currently heading in.
         VectorGeometry robotHeading = VectorGeometry.fromAngular(us.location.direction, 10, null);
-        // Contains a vector pointing in the direction the motion controller was told to head in.
+        // Contains a vector pointing in the direction the motion controller was told to face.
         VectorGeometry robotToPoint = VectorGeometry.fromTo(us.location, heading);
         // factor denotes basically the speed of movement; factor = 1 means the robot travels at full speed, 0 means doesn't move, etc.
         double factor = 1;

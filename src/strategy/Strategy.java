@@ -42,6 +42,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
     public static DynamicWorld world = null;
     public static DynamicWorld previous = null;
 
+    /** In milliseconds */
+    public static final int cycleTime = 50;
+
     public static Status status;
 
     private String readLine() {
@@ -73,12 +76,10 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         semiStrategy.vision = new Vision(args);
         semiStrategy.vision.addVisionListener(semiStrategy);
 
-
-
         this.action = "";
         GUI.gui.doesNothingButIsNecessarySoDontDelete();
         GUI.gui.setRobot(frodo);
-        this.timer = new Timer(50, this);
+        this.timer = new Timer(cycleTime, this);
         this.timer.start();
 
 

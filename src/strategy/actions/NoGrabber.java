@@ -47,7 +47,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         Ball ball = Strategy.world.getBall();
         Robot ally = Strategy.world.getRobot(RobotType.FRIEND_1);
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
-        RobotType ballHolder = Strategy.world.getProbableBallHolder();
+        RobotType ballHolderType = Strategy.world.getProbableBallHolder();
         this.closestRobotInfo.calculate_closest();
 
 
@@ -63,7 +63,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         if (ally == null) {
 
             // Enemies have the ball OR ball is lost ==> DEFEND
-            if (ballHolder == RobotType.FOE_1 || ballHolder == RobotType.FOE_2 || ball == null ||
+            if (ballHolderType == RobotType.FOE_1 || ballHolderType == RobotType.FOE_2 || ball == null ||
                     this.closestRobotInfo.enemyPossession()) {
                 this.nextState = NoGrabberEnum.DEFEND;
                 return this.nextState;
@@ -84,7 +84,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
             }
 
             // We have the ball AND a shot on goal ==> SCORE
-            if (ballHolder == RobotType.FRIEND_2 && shot_on_goal(us, us.location)) {
+            if (ballHolderType == RobotType.FRIEND_2 && shot_on_goal(us, us.location)) {
                 this.nextState = NoGrabberEnum.SCORE;
                 return this.nextState;
             }
@@ -109,7 +109,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         // Ally is on the pitch: go full offense mode.
         // =============================================================================================
 
-        Robot holderRobot = Strategy.world.getRobot(ballHolder);
+        Robot holderRobot = Strategy.world.getRobot(ballHolderType);
 
         // We need to defend (see method for details) ==> DEFEND
         // (basically if the defender is out of position)
@@ -123,8 +123,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         // Enemies have ball AND ball is near our goal ==> BLOCK_PASS
         //      (stay in between the 2 enemies)
         //      (to keep out of friendly defender's way)
-        if (ballHolder == RobotType.FOE_1 || ballHolder == RobotType.FOE_2 ||
-                this.closestRobotInfo.enemyPossession()) {
+        if (ballHolderType == RobotType.FOE_1 || ballHolderType == RobotType.FOE_2)  {
             if (holderRobot.location.x > -(Constants.PITCH_WIDTH / 2) + 50) {
                 this.nextState = NoGrabberEnum.ANNOY;
             } else {
@@ -135,7 +134,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
 
         // Friend has the ball ==> GET_OPEN
         // TODO: Figure this out
-        if (ballHolder == RobotType.FRIEND_1 || this.closestRobotInfo.friendPossession()) {
+        if (ballHolderType == RobotType.FRIEND_1 || this.closestRobotInfo.friendPossession()) {
             this.nextState = NoGrabberEnum.WAIT;
             return this.nextState;
         }
@@ -155,7 +154,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         }
 
         // Ball is near a wall ==> WALL
-        // TODO: Should we just wait? Going near a wall never goes well
+        // TODO: ==> WAIT instead? Going near a wall never goes well
         if (Math.abs(ball.location.x) > (Constants.PITCH_WIDTH / 2) - 20 ||
                 Math.abs(ball.location.y) > (Constants.PITCH_HEIGHT / 2) - 20) {
             this.nextState = NoGrabberEnum.WALL;
@@ -170,7 +169,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
 
         // Frodo has the ball ==> SCORE
         // Frodo is closest and could have a shot on goal ==> SCORE
-        if (ballHolder == RobotType.FRIEND_2 ||
+        if (ballHolderType == RobotType.FRIEND_2 ||
                 (this.closestRobotInfo.getClosest() == RobotType.FRIEND_2 && shot_on_goal(us, ball.location))) {
             this.nextState = NoGrabberEnum.SCORE;
             return this.nextState;
