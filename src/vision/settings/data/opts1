@@ -10,7 +10,7 @@ BLUE
 GREEN
 0.28333333;0.38333336;0.95;1.0;0.08333334;1.0
 ^MISC
-false;false;true;false;false;UNKNOWN;UNKNOWN;UNKNOWN;UNKNOWN
+false;false;false;false;false;UNKNOWN;FRED;UNKNOWN;UNKNOWN;72;true;false;true;/tmp/image/shot
 ^DISTORTION
 22;1;9;11;-6;-1;-1;10:10;630:470
 ^END
