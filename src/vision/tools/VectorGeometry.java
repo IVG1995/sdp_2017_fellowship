@@ -62,7 +62,9 @@ public class VectorGeometry {
         return this.minus(vector.x, vector.y);
     }
 
-
+    public VectorGeometry reduceLinearlyTo(double target) {
+        return this.multiply(target / Math.max(Math.abs(this.x), Math.abs(this.y)));
+    }
 
     public VectorGeometry multiply(double factor){
         this.x = this.x * factor;
@@ -205,6 +207,14 @@ public class VectorGeometry {
         if(cos > 1) return 0;
         if(cos < -1) return Math.PI;
         return Math.acos(cos);
+    }
+
+    /**
+     * Implementation of a signed angle using atan2 : returns an angle in the range [PI, -PI]
+     * which is to be used for the shortest rotation Frodo has to do to get to a particular heading
+     */
+    public static double mySignedAngleAtan2FromTo(VectorGeometry from, VectorGeometry to){
+        return Math.atan2( from.x * to.y - from.y * to.x, from.x * to.x + from.y * to.y );
     }
 
     public static double angle(double x, double y){
@@ -365,7 +375,7 @@ public class VectorGeometry {
      * @return
      */
     public static double signedAngle(VectorGeometry a, VectorGeometry b){
-        double angle = VectorGeometry.angle(a,b);
+        double angle = VectorGeometry.angle(a, b);
         boolean sign = crossProductDirection(a, b);
         return angle * (sign ? 1 : -1);
     }

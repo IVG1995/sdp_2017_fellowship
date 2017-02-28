@@ -26,9 +26,6 @@ public class MotionController extends ControllerBase {
 
     private int tolerance;
 
-
-
-
     private LinkedList<Obstacle> obstacles = new LinkedList<Obstacle>();
 
     public MotionController(RobotBase robot) {

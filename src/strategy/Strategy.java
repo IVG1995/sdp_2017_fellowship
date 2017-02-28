@@ -78,7 +78,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
         this.action = "";
         GUI.gui.doesNothingButIsNecessarySoDontDelete();
         GUI.gui.setRobot(frodo);
-        this.timer = new Timer(100, this);
+        this.timer = new Timer(50, this);
         this.timer.start();
 
 

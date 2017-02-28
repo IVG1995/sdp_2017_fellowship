@@ -48,6 +48,18 @@ public class VectorGeometryTest {
         assertTrue("VectorGeometry(0, 1) is equal to VectorGeometry(0, 1) after -360 degree rotation", epsilonEquality(vExpected, vTest));
     }
 
+    @Test
+    public void testNormaliseToLength() throws Exception {
+        VectorGeometry a = new VectorGeometry(0, 1);
+        a.normaliseToLength(1);
+        assertTrue(a.equals(new VectorGeometry(0, 1)));
+
+        VectorGeometry b = new VectorGeometry(0, 1);
+        b.normaliseToLength(2);
+        assertTrue(b.equals(new VectorGeometry(0, 2)));
+
+
+    }
     private boolean epsilonEquality(VectorGeometry a, VectorGeometry b) {
         VectorGeometry difference = a.minus(b);
         return Math.abs(difference.x) < EPSILON && Math.abs(difference.y) < EPSILON;

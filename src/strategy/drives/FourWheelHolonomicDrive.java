@@ -10,8 +10,9 @@ import vision.tools.VectorGeometry;
  */
 
 public class FourWheelHolonomicDrive implements DriveInterface {
-    private final int ROTATION_WEIGHT = 90;
-    private final int FORCE_WEIGHT    = 200 - ROTATION_WEIGHT;
+    private final double ROTATION_WEIGHT = 20d;
+    private final double MIN_ROTATION = 0d;
+    private final double FORCE_WEIGHT    = 70d;
     private final double RECTANGULAR_DRIVE_FACTOR = 0.8;
 
     public int MAX_ROTATION = 0; //deprecated
@@ -22,19 +23,25 @@ public class FourWheelHolonomicDrive implements DriveInterface {
 
         VectorGeometry dir = new VectorGeometry();
 
-        force.copyInto(dir).coordinateRotation(location.direction).normaliseToLength(1);
+        force.copyInto(dir).coordinateRotation(location.direction).reduceLinearlyTo(1);;
 
-        rotation /= Math.PI;
-
-        double front = dir.y * FORCE_WEIGHT - rotation * ROTATION_WEIGHT * RECTANGULAR_DRIVE_FACTOR;
-        double left  = dir.x * FORCE_WEIGHT - rotation * ROTATION_WEIGHT;
-        double back  = dir.y * FORCE_WEIGHT + rotation * ROTATION_WEIGHT * RECTANGULAR_DRIVE_FACTOR;
-        double right = dir.x * FORCE_WEIGHT + rotation * ROTATION_WEIGHT;
+        double front = dir.y * FORCE_WEIGHT + rotationHeuristic(rotation) * RECTANGULAR_DRIVE_FACTOR;
+        double left  = dir.x * FORCE_WEIGHT - rotationHeuristic(rotation);
+        double back  = dir.y * FORCE_WEIGHT - rotationHeuristic(rotation) * RECTANGULAR_DRIVE_FACTOR;
+        double right = dir.x * FORCE_WEIGHT + rotationHeuristic(rotation);
 
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
 
     }
 
+    private double rotationHeuristic(double rotation){
+        if (rotation > 0) {
+            return rotation * ROTATION_WEIGHT + MIN_ROTATION;
+        } else {
+            return rotation * ROTATION_WEIGHT - MIN_ROTATION;
+
+        }
+    }
     //not completed
     public void aim(RobotPort port, double rotation) {
         double front = -rotation;
