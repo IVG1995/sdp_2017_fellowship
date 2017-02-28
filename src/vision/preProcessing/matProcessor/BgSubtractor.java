@@ -26,7 +26,7 @@ import static vision.preProcessing.OpenCVProcessor.img2Mat;
  */
 public class BgSubtractor implements MatProcessor {
     public static ArrayList<ShapeObject> objects;
-    public static BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 18, true);
+    public static BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 12, true);
     public static long cnt = 0;
 
     public BgSubtractor() {
