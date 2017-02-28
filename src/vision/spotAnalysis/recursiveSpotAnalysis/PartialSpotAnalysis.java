@@ -123,7 +123,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
             }
 
-            if (color_count > 1 || spot_count > 1) {
+            if (color_count > 2 || spot_count > 2) {
                 objs.add(i);
             } else if (
                     ((i.spots.get(SDPColor._BALL).size() >= 1) || (i.spots.get(SDPColor.PINK).size() >= 1))

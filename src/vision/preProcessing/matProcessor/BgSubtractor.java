@@ -107,8 +107,7 @@ public class BgSubtractor implements MatProcessor {
 //                }
 
 
-
-            } else if (Imgproc.contourArea(contours.get(i)) > 100) {
+            } else if (Imgproc.contourArea(contours.get(i)) > 80) {
                 Point center = new Point();
                 float[] radius = new float[1];
                 MatOfPoint thisContour = contours.get(i);
