@@ -18,23 +18,23 @@ public class KickablePoint extends DynamicPointBase{
 
         if (b == null) {
             //Angry yelling
-            System.out.println("cant find ball assholes");
+//            System.out.println("cant find ball assholes");
         }
 
         if(b != null){
             VectorGeometry ball = b.location.clone();
             VectorGeometry goal = new EnemyGoal().toVectorGeometry();
-            System.out.println("ball: " + ball.toString());
+//            System.out.println("ball: " + ball.toString());
 
             VectorGeometry ballToGoal = goal.minus(ball);
 
             VectorGeometry kickablePoint = ball.plus(ballToGoal.normaliseToLength(-DISTANCE_TO_KICKER));
-            System.out.println("kickablePoint: " + kickablePoint.toString());
+//            System.out.println("kickablePoint: " + kickablePoint.toString());
 
             this.x = (int) kickablePoint.x;
             this.y = (int) kickablePoint.y;
         }
-        System.out.println(this.toVectorGeometry().toString());
+//        System.out.println(this.toVectorGeometry().toString());
     }
 
     @Override

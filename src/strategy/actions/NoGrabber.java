@@ -63,8 +63,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         if (ally == null) {
 
             // Enemies have the ball OR ball is lost ==> DEFEND
-            if (ballHolderType == RobotType.FOE_1 || ballHolderType == RobotType.FOE_2 || ball == null ||
-                    this.closestRobotInfo.enemyPossession()) {
+            if (ballHolderType == RobotType.FOE_1 || ballHolderType == RobotType.FOE_2 || ball == null) {
                 this.nextState = NoGrabberEnum.DEFEND;
                 return this.nextState;
             }
@@ -245,25 +244,25 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
      */
     private class ClosestRobotInfo {
         private RobotType closest;
-        private HashMap<RobotType, Integer> distances;
+        private HashMap<RobotType, Integer> distances = new HashMap<>();
 
         private final Integer POSSESSION_RANGE = 8;
 
         public void calculate_closest() {
+            distances.clear();
             this.closest = null;
             if (Strategy.world.getBall() == null) return;
 
             VectorGeometry ball_loc = Strategy.world.getBall().location;
-            Robot[] robots = (Robot[]) Strategy.world.getRobots().toArray();
             double closest_so_far = 100000000.0;
 
-            for (int i = 0; i < robots.length; i++) {
-                if (robots[i] == null) continue;
-                double dist = VectorGeometry.distance(robots[i].location, ball_loc);
-                distances.put(robots[i].type, (int) dist);
+            for (Robot r : Strategy.world.getRobots()) {
+                if (r == null) continue;
+                double dist = VectorGeometry.distance(r.location, ball_loc);
+                distances.put(r.type, (int) dist);
 
                 if (closest == null || closest_so_far > dist) {
-                    this.closest = robots[i].type;
+                    this.closest = r.type;
                     closest_so_far = dist;
                 }
             }
@@ -329,10 +328,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         c.calculate_closest();
         Robot ballHolder = Strategy.world.getRobot(Strategy.world.getProbableBallHolder());
 
-        if ((ballHolder == null && (c.getClosest() == RobotType.FRIEND_2 || c.getClosest() == RobotType.FRIEND_1)) ||
-                ballHolder.type == RobotType.FRIEND_1 || ballHolder.type == RobotType.FRIEND_2) {
-            return false;
-        }
+        if (ballHolder == null) { return false; }
 
         VectorGeometry friendlyGoal = new VectorGeometry((-Constants.PITCH_WIDTH / 2), 0);
         VectorGeometry ballHolderToGoal = VectorGeometry.fromTo(ballHolder.location, friendlyGoal);

@@ -22,6 +22,7 @@ public class OffensiveKick extends ActionBase {
     private final int GOING_TO_KICKABLE  = 0;
     private final int KICKING = 1;
     private final int KICKED_EXIT = 2;
+    private final int STOP = 3;
     // A GrabbablePoint always contains the location 7 (this number could change) cm in front of the ball.
     private BallPoint ballPoint = new BallPoint();
     private EnemyGoal goal = new EnemyGoal();
@@ -54,8 +55,11 @@ public class OffensiveKick extends ActionBase {
             this.robot.MOTION_CONTROLLER.setDestination(null);
             this.robot.MOTION_CONTROLLER.setHeading(null);
             ((FrodoRobotPort)(this.robot.port)).stopKick();
+        } else if (newState == STOP) {
+            System.out.println("STOP");
+            ((FrodoRobotPort) (this.robot.port)).stopKick();
+            ((this.robot.port)).stop();
         }
-
         this.state = newState;
     }
 
@@ -66,21 +70,22 @@ public class OffensiveKick extends ActionBase {
         this.point.recalculate();
         Robot us = Strategy.world.getRobot(this.robot.robotType);
         if (us == null || Strategy.world.getBall() == null) {
-            return;
+            enterState(STOP);
         } else {
             VectorGeometry robotLocation = new VectorGeometry();
+            VectorGeometry robotHeading = new VectorGeometry().fromAngular(us.location.direction, 10d);
             us.location.copyInto(robotLocation);
             double distanceToKickable = VectorGeometry.distance(robotLocation, new VectorGeometry(this.point.getX(), this.point.getY()));
             double distanceToBall     = VectorGeometry.distance(robotLocation, new VectorGeometry(ballPoint.getX(), ballPoint.getY()));
-            System.out.println("distance to kickable: " + distanceToKickable);
-            System.out.println("distance to ball: " + distanceToBall);
-            System.out.println("distance to target: " + VectorGeometry.distance(robotLocation, new VectorGeometry(this.point.getX(), this.point.getY())));
-            System.out.println("us: " + us.location.toString());
-            System.out.println("robotLocation: " + robotLocation);
+//            System.out.println("distance to kickable: " + distanceToKickable);
+//            System.out.println("distance to ball: " + distanceToBall);
+//            System.out.println("distance to target: " + VectorGeometry.distance(robotLocation, new VectorGeometry(this.point.getX(), this.point.getY())));
+//            System.out.println("us: " + us.location.toString());
+//            System.out.println("robotLocation: " + robotLocation);
             VectorGeometry robotToPoint  = VectorGeometry.fromTo(robotLocation, ballPoint.toVectorGeometry());
-            System.out.println("angle to target: " + Math.abs(VectorGeometry.signedAngle(robotToPoint, robotLocation)) * 180 / Math.PI);
+//            System.out.println("angle to target: " + Math.abs(VectorGeometry.signedAngle(robotToPoint, robotLocation)) * 180 / Math.PI);
 
-            if (distanceToKickable > 40 || Math.abs(VectorGeometry.signedAngle(robotLocation, robotToPoint)) > Math.PI / 4){
+            if (distanceToKickable > 15 || Math.abs(VectorGeometry.signedAngle(robotHeading, robotToPoint)) > Math.PI / 3){
                 enterState(GOING_TO_KICKABLE);
             } else {
                 enterState(KICKING);
