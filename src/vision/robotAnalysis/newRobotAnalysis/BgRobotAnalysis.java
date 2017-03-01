@@ -199,7 +199,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                 HashMap<RobotType, Double> obj_prob = new HashMap<RobotType, Double>();
                 for (RobotType rType : pre_rob.keySet()) {
                     //probabilities based on distance
-                    obj_prob.put(rType, 1 / (Math.sqrt((pre_rob.get(rType).velocity.x - obj.pos.x) * (pre_rob.get(rType).velocity.x - obj.pos.x)) + Math.sqrt((pre_rob.get(rType).velocity.y - obj.pos.y) * (pre_rob.get(rType).velocity.y - obj.pos.y))));
+                    obj_prob.put(rType, 1 / (Math.sqrt((pre_rob.get(rType).velocity.x - obj.pos.x) * (pre_rob.get(rType).velocity.x - obj.pos.x)) +((pre_rob.get(rType).velocity.y - obj.pos.y) * (pre_rob.get(rType).velocity.y - obj.pos.y))));
                 }
                 probabilities.add(obj_prob);
             }
