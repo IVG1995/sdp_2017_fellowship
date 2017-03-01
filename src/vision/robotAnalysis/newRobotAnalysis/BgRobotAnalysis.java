@@ -1,5 +1,6 @@
 package vision.robotAnalysis.newRobotAnalysis;
 
+import org.opencv.core.Rect;
 import vision.Ball;
 import vision.DynamicWorld;
 import vision.Robot;
@@ -176,37 +177,45 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
         }
 
         if ( /*world.getRobots().contains(null) &&*/ world.getRobots().size() < (objects.size() - 1) && this.lastKnownWorld != null) {
-
+            RobotType[] r_types = {RobotType.FOE_1,RobotType.FOE_2,RobotType.FRIEND_2,RobotType.FRIEND_1};
             DynamicWorld previous = this.lastKnownWorld;
             System.out.println("At least one robot not found");
             //avoids multiple calls to the return method
             HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
-            //contains the probability that every robot is every other robot
+            //contains the probability that every robot is every shape
             ArrayList<HashMap<RobotType, Double>> probabilities = new ArrayList<HashMap<RobotType, Double>>();
             int count = 0;
 
-            //loop over every robot for every shape
+            //use only rectangles (to avoid considering the ball)
+            ArrayList<RectObject> rectObjects = new ArrayList<>();
             for (ShapeObject obj : objects) {
+                if (obj instanceof RectObject) {
+                    rectObjects.add((RectObject) obj);
+                }
+            }
+
+            //loop over every robot for every shape
+            for (ShapeObject obj : rectObjects) {
                 HashMap<RobotType, Double> obj_prob = new HashMap<RobotType, Double>();
                 for (RobotType rType : pre_rob.keySet()) {
                     //probabilities based on distance
-                    obj_prob.put(rType, 1 / (Math.sqrt((pre_rob.get(rType).velocity.x - obj.pos.x) * (pre_rob.get(rType).velocity.x - obj.pos.x)) + Math.sqrt((pre_rob.get(rType).velocity.y - obj.pos.y) * (pre_rob.get(rType).velocity.y - obj.pos.y))));
+                    obj_prob.put(rType, 1 / (Math.sqrt(((pre_rob.get(rType).velocity.x - obj.pos.x) * (pre_rob.get(rType).velocity.x - obj.pos.x)) +((pre_rob.get(rType).velocity.y - obj.pos.y) * (pre_rob.get(rType).velocity.y - obj.pos.y)))));
                 }
                 probabilities.add(obj_prob);
             }
 
             //IDEALLY THESE ARE REMOVED BEFORE THE PROBABILITY CALCULATIONS TO SAVE TIME BUT THIS IS EASIER
             //remove any already found robots from consideration
-            for (Robot rType : world.getRobots()) {
-                if (!(rType.equals(null))) {
+            for (RobotType rType : r_types) {
+                if (world.returnRobots().keySet().contains(rType)) {
                     for (HashMap<RobotType, Double> map : probabilities) {
-                        map.remove(rType.type);
+                        map.remove(rType);
                     }
                 }
             }
 
             //do the actual position updating
-            for (ShapeObject obj : objects) {
+            for (ShapeObject obj : rectObjects) {
                 //init to null
                 RobotType max_type = null;
                 double max_prob = 0;
@@ -219,7 +228,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                 }
 
                 //update the position
-                if (max_type != null  && obj instanceof RectObject) {
+                if (max_type != null) {
                     world.update_robot(max_type, pre_rob.get(max_type), obj.pos.x, obj.pos.y);
                 }
                 //disallow any robot to be assigned twice
