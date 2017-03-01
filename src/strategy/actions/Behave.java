@@ -92,23 +92,7 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
             Robot us = Strategy.world.getRobot(this.robot.robotType);
             if(us == null){
                 // TODO: Angry yelling
-<<<<<<< HEAD
 
-
-=======
-                System.out.println("ay ya get shit on");
-                try {
-                    String path = "../../../vision/settings/data/opts";
-                    if(optNumber == NUMBER_OF_OPTS) optNumber = 1; else optNumber++;
-                    String fileName = path + Integer.toString(optNumber);
-                    SettingsManager.loadSettings(fileName);
-                    System.out.println(fileName);
-                } catch (IOException io) {
-                    // if an exception is thrown settings stay the same and we continue to next timer cycle
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
->>>>>>> origin/test_test_newvision
             } else {
                 // If our robot is further away from our goal then the ball is, go into SAFE mode (execute sub-action GoToSafeLocation).
                 // This action rushes our robot back to right in front of our goal while also making sure not to accidentally
