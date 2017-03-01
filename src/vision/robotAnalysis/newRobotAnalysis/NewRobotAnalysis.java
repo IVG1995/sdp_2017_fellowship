@@ -8,6 +8,7 @@ import vision.colorAnalysis.SDPColor;
 import vision.robotAnalysis.RobotAnalysisBase;
 import vision.RobotType;
 import vision.robotAnalysis.RobotColorSettings;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
@@ -18,20 +19,18 @@ import java.util.HashMap;
 /**
  * Created by Simon Rovder
  */
- //
 public class NewRobotAnalysis extends RobotAnalysisBase {
 
 
 //    private SDPColor[] teamColor = {SDPColor.YELLOW, SDPColor.BLUE};
 //    private SDPColor[] spotColor = {SDPColor.GREEN, SDPColor.PINK};
 
-    //constructor
+
     public NewRobotAnalysis(){
         super();
     }
 
-    //analyses the undistorted spots and is literally the only thing here
-    @Override
+
     public void nextUndistortedSpots(HashMap<SDPColor, ArrayList<Spot>> spots, long time) {
         ArrayList<Spot> spotList;
         ArrayList<RobotPlate> plates = new ArrayList<RobotPlate>();
@@ -50,7 +49,6 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
         DynamicWorld world = new DynamicWorld(time);
         Robot r;
 
-        //sets team for plates
         for(RobotPlate plate : plates){
             if(!plate.hasTeam()){
                 plate.setTeam(RobotColorSettings.ASSUME_YELLOW ? SDPColor.YELLOW : SDPColor.BLUE);
@@ -69,10 +67,10 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
             }
         }
 
-        //gets the number of robots on the field
+
         world.robotCount = world.getRobots().size();
 
-        //the ball details
+
         Ball ball;
         Ball oldBall = null;
         long timeDelta = 0;
@@ -90,7 +88,6 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
         }
         ball = world.getBall();
 
-        //update from the last known world
         if(lastKnownWorld != null && world.robotChangeDelay != 0 && lastKnownWorld.getProbableBallHolder() != null){
 
             world.setBall(null);
@@ -129,7 +126,6 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
             }
         }
 
-        //ball stuff
         if(lastKnownWorld != null && world.getBall() != null && lastKnownWorld.getBall() != null){
             VectorGeometry velocity = VectorGeometry.fromTo(lastKnownWorld.getBall().location, world.getBall().location);
             velocity.setLength(velocity.length()/timeDelta);
@@ -221,5 +217,10 @@ public class NewRobotAnalysis extends RobotAnalysisBase {
 
         }
         this.informListeners(world);
+    }
+
+    @Override
+    public void nextUndistortedSpots(ArrayList<ShapeObject> objects, long time) {
+
     }
 }

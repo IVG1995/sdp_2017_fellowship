@@ -124,7 +124,7 @@ public class ApproximatedSpotAnalysis extends SpotAnalysisBase implements RawInp
 		
 		
 		Preview.flushToLabel();
-		this.informListeners(spots, time);
+		//this.informListeners(spots, time);
 	}
 	
 	private float val;

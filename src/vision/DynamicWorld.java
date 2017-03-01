@@ -2,9 +2,9 @@ package vision;
 
 import vision.gui.SDPConsole;
 import vision.preProcessing.matProcessor.BgSubtractor;
+import vision.shapeObject.ShapeObject;
 import vision.tools.DirectedPoint;
 
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,9 +52,7 @@ public class DynamicWorld {
 
     public ArrayList<ShapeObject> getObjects(){
         return BgSubtractor.objects;
-
     }
-
 
     //This is just a bunch of getters and setters
     //Robots can be searched for by either alias or type
@@ -112,17 +110,17 @@ public class DynamicWorld {
     //does what it says, pretty much prints every bit of information about the
     //world. probably meant for debugging
     public void printData() {
-		DirectedPoint p;
-		if(this.ball != null){
-			SDPConsole.writeln("BALL at " + this.ball.location.x + " : " + this.ball.location.y);
-		}
-		for(RobotType rt : this.robots.keySet()){
-			p = this.robots.get(rt).location;
-			SDPConsole.writeln("ROBOT: " + rt + " at " + p.x + " : " + p.y + " heading: " + p.direction);
-		}
-		if(this.probableBallHolder != null) SDPConsole.writeln("Probable ball holder: " + this.probableBallHolder.toString());
+        DirectedPoint p;
+        if(this.ball != null){
+            SDPConsole.writeln("BALL at " + this.ball.location.x + " : " + this.ball.location.y);
+        }
+        for(RobotType rt : this.robots.keySet()){
+            p = this.robots.get(rt).location;
+            SDPConsole.writeln("ROBOT: " + rt + " at " + p.x + " : " + p.y + " heading: " + p.direction);
+        }
+        if(this.probableBallHolder != null) SDPConsole.writeln("Probable ball holder: " + this.probableBallHolder.toString());
         if(this.lastKnownBall != null) SDPConsole.writeln("Last Known ball: " + this.lastKnownBall.toString());
-	}
+    }
 
 
     //extra getter method that just returns all the robots
@@ -136,6 +134,7 @@ public class DynamicWorld {
 
     //update directed point using the shape detection stuff
     public void update_robot(RobotType r, Robot rob, double x, double y){
+
         if (!(robots.keySet().contains(r))){
             setRobot(rob);
         }

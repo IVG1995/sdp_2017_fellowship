@@ -95,7 +95,6 @@ public class VectorGeometry {
         return this;
     }
 
-    // d is in radians
     public VectorGeometry fromAngular(double d, double distance){
         this.x = distance*Math.cos(d);
         this.y = distance*Math.sin(d);
@@ -149,7 +148,7 @@ public class VectorGeometry {
     }
 
 
-    // d is in radians
+
     public static VectorGeometry fromAngular(double d, double distance, VectorGeometry vg){
         if(vg == null) vg = new VectorGeometry();
         return vg.fromAngular(d, distance);
@@ -182,12 +181,10 @@ public class VectorGeometry {
         return this;
     }
 
-    // returns the distance between two points
     public static double distance(double x1, double y1, double x2, double y2){
         return Math.sqrt(squareDistance(x1, y1, x2, y2));
     }
 
-    // returns the square of the distance between two points
     public static double squareDistance(double x1, double y1, double x2, double y2){
         double x = x1 - x2;
         double y = y1 - y2;
@@ -237,8 +234,8 @@ public class VectorGeometry {
         double denominator = dotProduct(dir, dir);
         double t = numerator/denominator;
         VectorGeometry vector = new VectorGeometry();
-        vector.x = base.x + t * dir.x;
-        vector.y = base.y + t * dir.y;
+        vector.x = base.x + t*dir.x;
+        vector.y = base.y + t*dir.y;
         return vector;
     }
 
@@ -381,7 +378,6 @@ public class VectorGeometry {
     }
 
     public static VectorGeometry fromTo(VectorGeometry a, VectorGeometry b){
-        // returns b - a
         return b.copyInto(new VectorGeometry()).minus(a);
     }
 

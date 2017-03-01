@@ -22,13 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/**
+/**++++------------------------------------------------------------------------------------------------------------------------------------------------------------
  * Created by Simon Rovder
  */
 public class Strategy implements VisionListener, PortListener, ActionListener {
-
-
-
     private Timer timer;
     private String action;
     private Vision vision;
@@ -45,6 +42,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
 
     /** In milliseconds */
     public static final int cycleTime = 50;
+
 
     public static Status status;
 
@@ -240,8 +238,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
 
     @Override
     public void nextWorld(DynamicWorld dynamicWorld) {
-		world = dynamicWorld;
-		status = new Status(world);
+        previous = world;
+        world = dynamicWorld;
+        status = new Status(world);
     }
 
 

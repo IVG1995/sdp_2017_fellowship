@@ -23,8 +23,6 @@ public class OpenCVProcessor implements PreProcessor {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
     public OpenCVProcessor() {
-        matProcessors.add(new GaussianBlur());
-        matProcessors.add(new BgSubtractor());
     }
 
     public static BufferedImage mat2Img(Mat in) {
@@ -53,8 +51,7 @@ public class OpenCVProcessor implements PreProcessor {
         return mat;
     }
 
-    private List<MatProcessor> matProcessors = new ArrayList<MatProcessor>() {
-    };
+    public List<MatProcessor> matProcessors = new ArrayList<MatProcessor>() ;
 
     @Override
     public BufferedImage process(BufferedImage image) {

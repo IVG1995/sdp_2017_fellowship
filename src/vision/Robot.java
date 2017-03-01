@@ -1,18 +1,20 @@
 package vision;
 
+import vision.shapeObject.RectObject;
 import vision.tools.DirectedPoint;
 
 /**
  * Created by Simon Rovder
  */
 
- //class for robots which have a location, velocity, type and alias
+//class for robots which have a location, velocity, type and alias
 //these are defined in their own classes
 public class Robot {
     public DirectedPoint location;
     public DirectedPoint velocity;
     public RobotType type;
     public RobotAlias alias;
+    public RectObject object;
 
     //Umm.....
     public Robot(){
