@@ -11,6 +11,7 @@ import vision.tools.VectorGeometry;
 /**
  * If the enemy ball holder (EBH) is:
  *  -facing away from our goal: this point is right next to EBH, in between it and the friendly goal.
+ *      -or its direction is unknown: ^
  *  -facing towards our goal: this point is directly in front of EBH, (hopefully) blocking its passes and shots.
  */
 public class AnnoyBallHolderPoint extends DynamicPointBase {
@@ -24,7 +25,9 @@ public class AnnoyBallHolderPoint extends DynamicPointBase {
 
         VectorGeometry enemyGoal = new VectorGeometry(Constants.PITCH_WIDTH / 2, 0);
         VectorGeometry friendlyGoal = new VectorGeometry(-Constants.PITCH_WIDTH / 2, 0);
+
         VectorGeometry enemyDir = new VectorGeometry().fromAngular(ballHolder.location.direction, 40);
+
 
         // If EBH is facing away from our goal:
         if (VectorGeometry.isInGeneralDirection(ballHolder.location, enemyDir, enemyGoal)) {
@@ -35,6 +38,12 @@ public class AnnoyBallHolderPoint extends DynamicPointBase {
             this.x = (int) annoyingPoint.x;
             this.y = (int) annoyingPoint.y;
         } else {
+            int x_sign = (enemyDir.x >= 0) ? 1 : -1;
+            int y_sign = (enemyDir.y >= 0) ? 1 : -1;
+
+            // Make sure the point isn't outside the pitch/too close to walls
+            if (Math.abs(enemyDir.x) > (Constants.PITCH_WIDTH / 2) - 15) enemyDir.x = x_sign * ((Constants.PITCH_WIDTH / 2) - 15);
+            if (Math.abs(enemyDir.y) > (Constants.PITCH_HEIGHT / 2) - 15) enemyDir.y = y_sign * ((Constants.PITCH_HEIGHT / 2) - 15);
 
             this.x = (int) enemyDir.x;
             this.y = (int) enemyDir.y;

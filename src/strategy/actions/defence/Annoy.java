@@ -41,5 +41,6 @@ public class Annoy extends ActionBase {
         if (Strategy.world.getBall() == null && Strategy.world.getProbableBallHolder() == null) this.enterState(WAIT);
 
         this.point.recalculate();
+        this.enterState(ANNOY);
     }
 }
