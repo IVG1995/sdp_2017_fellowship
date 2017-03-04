@@ -128,6 +128,7 @@ public class VectorGeometry {
 
 
     public VectorGeometry normaliseToLength(double length){
+        if(this.length() == 0d) return this;
         return this.multiply(length / this.length());
     }
     /**

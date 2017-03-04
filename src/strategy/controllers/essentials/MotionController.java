@@ -2,6 +2,7 @@ package strategy.controllers.essentials;
 
 import strategy.Strategy;
 import strategy.controllers.ControllerBase;
+import strategy.drives.pid.ControlHistory;
 import strategy.navigation.NavigationInterface;
 import strategy.navigation.Obstacle;
 import strategy.points.DynamicPoint;
@@ -93,7 +94,6 @@ public class MotionController extends ControllerBase {
         // Contains a vector pointing in the direction the motion controller was told to face.
         VectorGeometry robotToPoint = VectorGeometry.fromTo(us.location, heading);
         // factor denotes basically the speed of movement; factor = 1 means the robot travels at full speed, 0 means doesn't move, etc.
-        double factor = 1;
         // rotation contains the angle the robot has to turn to be facing the right direction
         double rotation = VectorGeometry.signedAngle(robotToPoint, robotHeading);
 
@@ -117,16 +117,17 @@ public class MotionController extends ControllerBase {
                 }
             }
 
-            // If anything is in our way or if robot isn't pretty much already at destination, set up A* navigation.
-            if(intersects || us.location.distance(destination) > 30){
-                navigation = new AStarNavigation();
-                GUI.gui.searchType.setText("A*");
-            } else {
-                // Otherwise set up "potential field navigation".
-                navigation = new PotentialFieldNavigation();
-                GUI.gui.searchType.setText("Potential Fields");
-            }
-
+//            // If anything is in our way or if robot isn't pretty much already at destination, set up A* navigation.
+//            if(intersects || us.location.distance(destination) > 30){
+//                navigation = new AStarNavigation();
+//                GUI.gui.searchType.setText("A*");
+//            } else {
+//                // Otherwise set up "potential field navigation".
+//                navigation = new PotentialFieldNavigation();
+//                GUI.gui.searchType.setText("Potential Fields");
+//            }
+            navigation = new AStarNavigation();
+            GUI.gui.searchType.setText("A*");
             navigation.setDestination(new VectorGeometry(destination.x, destination.y));
 
         // If no destination was specified, and we mean to aim, use aim navigation.
@@ -146,6 +147,7 @@ public class MotionController extends ControllerBase {
         VectorGeometry force = navigation.getForce();
         if(force == null){
             this.robot.port.stop();
+            System.out.println("MOTION CONTROLLER IS STOPPING MOVEMENT");
             return;
         }
 
@@ -154,20 +156,17 @@ public class MotionController extends ControllerBase {
         // If we are close enough to the destination, don't move anymore (tolerance denotes close-enoughness)
         // The lower the tolerance, the closer we have to be to the point before the robot stops moving.
         if(this.destination != null && us.location.distance(destination) < tolerance){
+            System.out.println("MOTION CONTROLLER IS STOPPING MOVEMENT");
             this.robot.port.stop();
             return;
         }
 
         // Can throw null without check because null check takes SourceGroup into consideration.
-        if(destination.distance(us.location) < 30){
-            // If we are less than 30 cm away from our destination, move at 70% speed.
-            factor = 0.7;
-        }
 
-        navigation.draw();// uncomment to get a JFrame of navigation info
 
+//        navigation.draw();// uncomment to get a JFrame of navigation info
         switch (this.mode) {
-            case MOVE: this.robot.drive.move(this.robot.port, us.location, force, rotation, factor); break;
+            case MOVE: this.robot.drive.move(this.robot.port, us.location, force, rotation); break;
             case AIM: this.robot.drive.aim(this.robot.port, rotation); break;
         }
 

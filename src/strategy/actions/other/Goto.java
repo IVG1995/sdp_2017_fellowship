@@ -14,8 +14,8 @@ import vision.tools.VectorGeometry;
  */
 public class Goto extends ActionBase {
 
-    private final int STATIONARY = 0;
-    private final int GOTO_POINT = 1;
+    private final int STATIONARY = 1;
+    private final int GOTO_POINT = 0;
     private final int SUCCESS = 2;
 
     public Goto(RobotBase robot, DynamicPoint point) {
@@ -42,7 +42,7 @@ public class Goto extends ActionBase {
             this.enterState(this.STATIONARY);
             return;
         }
-        if(VectorGeometry.distance(this.point.getX(), this.point.getY(), us.location.x, us.location.y) < 10){
+        if(VectorGeometry.distance(this.point.getX(), this.point.getY(), us.location.x, us.location.y) < 5){
             this.enterState(this.SUCCESS);
         } else {
             if(this.state == this.STATIONARY){

@@ -6,6 +6,8 @@ import strategy.actions.ActionBase;
 import strategy.robots.RobotBase;
 import strategy.Strategy;
 
+import javax.swing.*;
+
 /**
  * Created by Simon Rovder
  */
@@ -28,5 +30,6 @@ public class Waiting extends ActionBase {
     @Override
     public void tok() throws ActionException {
         enterState(0);
+        throw new ActionException(true, true);
     }
 }

@@ -1,6 +1,7 @@
 package strategy.drives;
 
 import communication.ports.interfaces.RobotPort;
+import strategy.drives.pid.ControlResult;
 import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
 
@@ -22,8 +23,7 @@ public interface DriveInterface {
      * @param location The location of the robot as found in the DynamicWorld
      * @param force The force acting on the robot (absolute direction in which it is supposed to move
      * @param rotation Rotational offset from the point the robot is to be facing
-     * @param factor The required speed of motion.
      */
-    void move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation, double factor);
+    ControlResult move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation);
     void aim(RobotPort port, double rotation);
 }

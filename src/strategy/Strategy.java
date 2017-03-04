@@ -44,7 +44,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
     public static DynamicWorld previous = null;
 
     /** In milliseconds */
-    public static final int cycleTime = 50;
+    public static final int cycleTime = 100;
 
     public static Status status;
 

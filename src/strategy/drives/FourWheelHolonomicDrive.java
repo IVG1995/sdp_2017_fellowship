@@ -2,46 +2,51 @@ package strategy.drives;
 
 import communication.ports.interfaces.FourWheelHolonomicRobotPort;
 import communication.ports.interfaces.RobotPort;
+import strategy.drives.pid.ControlResult;
+import strategy.drives.pid.PIDDirectionControl;
+import strategy.drives.pid.PIDRotationControl;
+import strategy.drives.pid.error.DirectionControlError;
+import strategy.drives.pid.error.RotationControlError;
 import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
 
-/**
+/**`
  * Created by Simon Rovder
  */
 
 public class FourWheelHolonomicDrive implements DriveInterface {
-    private final double ROTATION_WEIGHT = 20d;
-    private final double MIN_ROTATION = 10d;
-    private final double FORCE_WEIGHT    = 70d;
-    private final double RECTANGULAR_DRIVE_FACTOR = 0.8;
+//                                                                    90  3   3
+    private PIDRotationControl  pidRotation  = new PIDRotationControl(45d, 3d, 3.7d);
+    private PIDDirectionControl pidDirection = new PIDDirectionControl(10d, 0d, 0d);
 
     public int MAX_ROTATION = 100; //deprecated
     public int MAX_MOTION = 0; //deprecated
 
-    public void move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation, double factor) {
+    public ControlResult move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation) {
         assert(port instanceof FourWheelHolonomicRobotPort);
 
-        VectorGeometry dir = new VectorGeometry();
+        VectorGeometry robotForce = new VectorGeometry();
 
-        force.copyInto(dir).coordinateRotation(location.direction).reduceLinearlyTo(1);
+        force.copyInto(robotForce).coordinateRotation(location.direction);
 
-        double front = dir.y * FORCE_WEIGHT + rotationHeuristic(rotation) * RECTANGULAR_DRIVE_FACTOR;
-        double left  = dir.x * FORCE_WEIGHT - rotationHeuristic(rotation);
-        double back  = dir.y * FORCE_WEIGHT - rotationHeuristic(rotation) * RECTANGULAR_DRIVE_FACTOR;
-        double right = dir.x * FORCE_WEIGHT + rotationHeuristic(rotation);
+//        rotation = 0;
+        robotForce = new VectorGeometry(0d, 0d);
 
-        ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
-
-    }
-
-    private double rotationHeuristic(double rotation){
-        if (Math.abs(rotation) < Math.PI / 9) return 0d;
-        if (rotation > 0) {
-            return rotation * ROTATION_WEIGHT + MIN_ROTATION;
+        ControlResult rotationControl;
+        ControlResult directionControl = pidDirection.getActuatorInput(new DirectionControlError(robotForce));
+        if (Math.abs(rotation * 180d / Math.PI) < 5d) {
+            rotationControl = new ControlResult();
+            pidRotation.getHistory().setAccumulated(new RotationControlError());
         } else {
-            return rotation * ROTATION_WEIGHT - MIN_ROTATION;
-
+            rotationControl  = pidRotation.getActuatorInput(new RotationControlError(rotation));
         }
+        ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(
+                directionControl.getFront() + rotationControl.getFront(),
+                directionControl.getBack()  + rotationControl.getBack(),
+                directionControl.getLeft()  + rotationControl.getLeft(),
+                directionControl.getRight() + rotationControl.getRight());
+
+        return directionControl;
     }
 
     //not completed
@@ -53,4 +58,5 @@ public class FourWheelHolonomicDrive implements DriveInterface {
 
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
     }
+
 }
