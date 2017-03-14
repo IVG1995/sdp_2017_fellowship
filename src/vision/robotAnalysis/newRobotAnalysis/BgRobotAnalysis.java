@@ -1,9 +1,11 @@
 package vision.robotAnalysis.newRobotAnalysis;
 
 import org.opencv.core.Rect;
+import strategy.navigation.aStarNavigation.Circle;
 import vision.Ball;
 import vision.DynamicWorld;
 import vision.Robot;
+import vision.colorAnalysis.ColorGroup;
 import vision.colorAnalysis.SDPColor;
 import vision.robotAnalysis.RobotAnalysisBase;
 import vision.RobotType;
@@ -16,7 +18,10 @@ import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Simon Rovder
@@ -32,33 +37,58 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
         super();
     }
 
+    public static HashMap<RobotType, Robot> lastKnownRobots = new HashMap<>();
+
 
     @Override
     public void nextUndistortedSpots(ArrayList<ShapeObject> objects, long time) {
         ArrayList<Spot> spotList = new ArrayList<>();
         ArrayList<RobotPlate> plates = new ArrayList<RobotPlate>();
-
-        for (ShapeObject i : objects) {
-            HashMap<SDPColor, ArrayList<Spot>> spots = i.spots;
-            if (spots.get(SDPColor.PINK).size() > 1) {
-                PatternMatcher.patternMatch(spots.get(SDPColor.PINK), plates);
+        ArrayList<RectObject> rectObjects = new ArrayList<>();
+        ArrayList<CircleObject> circleObjects = new ArrayList<>();
+        for (ShapeObject obj : objects) {
+            if (obj instanceof RectObject) {
+                rectObjects.add((RectObject) obj);
             } else {
-                PatternMatcher.patternMatch(spots.get(SDPColor.GREEN), plates);
+                circleObjects.add((CircleObject) obj);
+            }
+        }
+
+
+        for (RectObject i : rectObjects) {
+            HashMap<SDPColor, ArrayList<Spot>> spots = i.spots;
+            ArrayList<Spot> pinkSpots = new ArrayList<>();
+            ArrayList<Spot> greenSpots = new ArrayList<>();
+            for (SDPColor c : ColorGroup.pink) {
+                pinkSpots.addAll(spots.get(c));
             }
 
-            PatternMatcher.singularValidate(spots.get(SDPColor.GREEN), plates);
-            PatternMatcher.singularValidate(spots.get(SDPColor.PINK), plates);
+            for (SDPColor c : ColorGroup.green) {
+                greenSpots.addAll(spots.get(c));
+            }
+
+            if (spots.get(SDPColor.PINK).size() > 1) {
+
+                PatternMatcher.patternMatch(pinkSpots, plates, i);
+            } else {
+                PatternMatcher.patternMatch(greenSpots, plates, i);
+            }
+
+            PatternMatcher.singularValidate(greenSpots, plates);
+            PatternMatcher.singularValidate(pinkSpots, plates);
 
             PatternMatcher.removeInvalid(plates);
 
             PatternMatcher.teamAnalysis(plates, spots.get(SDPColor.YELLOW));
             PatternMatcher.teamAnalysis(plates, spots.get(SDPColor.BLUE));
+        }
 
-            //TODO: add circle
-            if (!spots.get(SDPColor._BALL).isEmpty() && (i instanceof CircleObject)) {
+        // maybe pink?
+        for (CircleObject c : circleObjects) {
+            HashMap<SDPColor, ArrayList<Spot>> spots = c.spots;
+            if (!spots.get(SDPColor._BALL).isEmpty()) {
                 spotList.addAll(spots.get(SDPColor._BALL));
             }
-
         }
 
 
@@ -70,7 +100,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                 plate.setTeam(RobotColorSettings.ASSUME_YELLOW ? SDPColor.YELLOW : SDPColor.BLUE);
             }
             bot = plate.toRobot();
-            world.setRobot(bot);
+            world.setRobot(bot, rectObjects);
         }
 
 
@@ -176,43 +206,35 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
             }
         }
 
-        if ( /*world.getRobots().contains(null) &&*/ world.getRobots().size() < (objects.size() - 1) && this.lastKnownWorld != null) {
-            RobotType[] r_types = {RobotType.FOE_1,RobotType.FOE_2,RobotType.FRIEND_2,RobotType.FRIEND_1};
+        if ( /*world.getRobots().contains(null) &&*/ rectObjects.size() > 0 && this.lastKnownWorld != null) {
+            RobotType[] r_types = {RobotType.FOE_1, RobotType.FOE_2, RobotType.FRIEND_2, RobotType.FRIEND_1};
             DynamicWorld previous = this.lastKnownWorld;
-            System.out.println("At least one robot not found");
+            //System.out.println("At least one robot not found");
             //avoids multiple calls to the return method
             HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
+            HashMap<RobotType, Boolean> robot_mask = new HashMap<>();
+            for (Robot i : world.getRobots()) {
+                robot_mask.put(i.type, true);
+            }
             //contains the probability that every robot is every shape
             ArrayList<HashMap<RobotType, Double>> probabilities = new ArrayList<HashMap<RobotType, Double>>();
             int count = 0;
-
             //use only rectangles (to avoid considering the ball)
-            ArrayList<RectObject> rectObjects = new ArrayList<>();
-            for (ShapeObject obj : objects) {
-                if (obj instanceof RectObject) {
-                    rectObjects.add((RectObject) obj);
-                }
-            }
+
 
             //loop over every robot for every shape
             for (ShapeObject obj : rectObjects) {
                 HashMap<RobotType, Double> obj_prob = new HashMap<RobotType, Double>();
-                for (RobotType rType : pre_rob.keySet()) {
-                    //probabilities based on distance
-                    obj_prob.put(rType, 1 / (Math.sqrt(((pre_rob.get(rType).location.x - obj.pos.x) * (pre_rob.get(rType).location.x - obj.pos.x)) +((pre_rob.get(rType).location.y - obj.pos.y) * (pre_rob.get(rType).location.y - obj.pos.y)))));
+                for (RobotType rType : lastKnownRobots.keySet()) {
+                    if (!robot_mask.containsKey(rType)) {
+                        //probabilities based on distance
+                        obj_prob.put(rType, 1 / (Math.sqrt(((lastKnownRobots.get(rType).velocity.x - obj.pos.x) * (lastKnownRobots.get(rType).velocity.x - obj.pos.x)) + ((lastKnownRobots.get(rType).velocity.y - obj.pos.y) * (lastKnownRobots.get(rType).velocity.y - obj.pos.y)))));
+                        //obj_prob.put(rType, 1 / (Math.sqrt((lastKnownRobots.get(rType).velocity.x - obj.pos.x) * (lastKnownRobots.get(rType).velocity.x - obj.pos.x)) + Math.sqrt((lastKnownRobots.get(rType).velocity.y - obj.pos.y) * (lastKnownRobots.get(rType).velocity.y - obj.pos.y))));
+                    }
                 }
                 probabilities.add(obj_prob);
             }
 
-            //IDEALLY THESE ARE REMOVED BEFORE THE PROBABILITY CALCULATIONS TO SAVE TIME BUT THIS IS EASIER
-            //remove any already found robots from consideration
-            for (RobotType rType : r_types) {
-                if (world.returnRobots().keySet().contains(rType)) {
-                    for (HashMap<RobotType, Double> map : probabilities) {
-                        map.remove(rType);
-                    }
-                }
-            }
 
             //do the actual position updating
             for (ShapeObject obj : rectObjects) {
@@ -229,7 +251,9 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
 
                 //update the position
                 if (max_type != null) {
-                    world.update_robot(max_type, pre_rob.get(max_type), obj.pos.x, obj.pos.y);
+                    Robot rob = lastKnownRobots.get(max_type);
+                    rob.update_point(obj.pos.x,obj.pos.y);
+                    world.update_robot(max_type, lastKnownRobots.get(max_type), obj.pos.x, obj.pos.y);
                 }
                 //disallow any robot to be assigned twice
                 for (HashMap<RobotType, Double> map : probabilities) {

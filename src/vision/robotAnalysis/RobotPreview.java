@@ -123,7 +123,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 			}
 		}
 		if (!found){
-			System.out.println("robot not found");
+			//System.out.println("robot not found");
 		}
 
 		Ball ball = state.getBall();
@@ -131,7 +131,7 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 			this.drawArc((int)ball.location.x, (int)ball.location.y, 10, Color.RED);
 
 		}else {
-			System.out.println("Picture"+StaticImage.cnt+"ball not found");
+			//System.out.println("Picture"+StaticImage.cnt+"ball not found");
 		}
 		RobotType prob = state.getProbableBallHolder();
 		if(prob != null){

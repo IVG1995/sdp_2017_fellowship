@@ -5,6 +5,8 @@ import vision.RobotAlias;
 import vision.colorAnalysis.SDPColor;
 import vision.gui.MiscellaneousSettings;
 import vision.robotAnalysis.RobotColorSettings;
+import vision.shapeObject.RectObject;
+import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 import vision.spotAnalysis.recursiveSpotAnalysis.XYCumulativeAverage;
 import vision.tools.DirectedPoint;
@@ -26,9 +28,11 @@ public class RobotPlate {
     private VectorGeometry actualDeterminer = null;
     private SDPColor teamColor = null;
     private VectorGeometry center = null;
+    private ShapeObject object = null;
     private ArrayList<Spot> spots = new ArrayList<Spot>();
 
-    public RobotPlate(Spot s1, Spot s2, Spot s3) {
+    public RobotPlate(Spot s1, Spot s2, Spot s3,ShapeObject obj) {
+        this.object =obj;
         this.mainColor = s1.color;
         this.addSpot(s1);
         this.addSpot(s2);
@@ -76,6 +80,7 @@ public class RobotPlate {
         r.type = RobotColorSettings.getRobotType(this.teamColor, this.mainColor);
         r.location = this.toDirectedPoint();
         r.alias = (RobotAlias)(MiscellaneousSettings.aliases.get(r.type).getSelectedItem());
+        r.object = (RectObject) this.object;
         return r;
     }
 

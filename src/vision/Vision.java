@@ -20,7 +20,6 @@ import vision.gui.MiscellaneousSettings;
 import vision.gui.Preview;
 import vision.gui.SDPConsole;
 import vision.rawInput.RawInput;
-import vision.robotAnalysis.newRobotAnalysis.NewRobotAnalysis;
 import vision.robotAnalysis.RobotPreview;
 import vision.robotAnalysis.DynamicWorldListener;
 import vision.robotAnalysis.RobotAnalysisBase;

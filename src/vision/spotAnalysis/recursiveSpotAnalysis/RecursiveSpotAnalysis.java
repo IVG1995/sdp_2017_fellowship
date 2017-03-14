@@ -46,7 +46,7 @@ public class RecursiveSpotAnalysis extends SpotAnalysisBase {
         if (maxDepth <= 0 || x < 0 || x >= Constants.INPUT_WIDTH || y < 0 || y >= Constants.INPUT_HEIGHT) return;
         int i = getIndex(x, y);
         if (this.found[i / 3] == sdpColorInstance.sdpColor) return;
-        if (sdpColorInstance.isColor(this.hsv[i], this.hsv[i + 1], this.hsv[i + 2])) {
+        if (sdpColorInstance.isColor(this.hsv[i], this.hsv[i + 1], this.hsv[i + 2], x, y)) {
             average.addPoint(x, y);
             this.found[i / 3] = sdpColorInstance.sdpColor;
             this.processPixel(x - 1, y, sdpColorInstance, average, maxDepth - 1);
