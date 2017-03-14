@@ -71,11 +71,6 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
         this.add(this.loadSettings);
         this.loadSettings.addActionListener(this);
 
-        trainFromImage = new JCheckBox("Train From static Image");
-        this.trainFromImage.setBounds(170, 50, 200, 30);
-        this.trainFromImage.addActionListener(this);
-        this.add(this.trainFromImage);
-
         this.flipPitch = new JCheckBox("Flip Pitch");
         this.flipPitch.setBounds(10, 110, 200, 30);
         this.flipPitch.addActionListener(this);
@@ -96,46 +91,51 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
         this.foeOneIsGreen.addActionListener(this);
         this.add(this.foeOneIsGreen);
 
-        this.enableGaussianBlur = new JCheckBox("Enable Gaussian Blur");
-        this.enableGaussianBlur.setBounds(220, 80, 200, 30);
-        this.enableGaussianBlur.addActionListener(this);
-        this.add(this.enableGaussianBlur);
-
-        this.assumeYellow = new JCheckBox("Assume Yellow");
-        this.assumeYellow.setBounds(220, 110, 200, 30);
-        this.assumeYellow.addActionListener(this);
-        this.add(this.assumeYellow);
-
-        JLabel lblBri = new JLabel("Brightness:");
-        lblBri.setBounds(220, 140, 80, 14);
-        this.add(lblBri);
-
-        brightness = new JSlider();
-        brightness.setBounds(300, 140, 200, 14);
-        brightness.addChangeListener(this);
-        brightness.setMinimum(1);
-        this.add(brightness);
-
-        train = new JButton("restart training");
-        train.setBounds(220, 170, 200, 14);
-        train.addActionListener(this);
-        this.add(train);
-
+        lblImageSource = new JLabel("Image source:");
+        lblImageSource.setBounds(220, 30, 120, 20);
+        this.add(lblImageSource);
 
         textField = new JTextField();
-        textField.setBounds(300, 30, 150, 20);
+        textField.setBounds(340, 30, 150, 20);
         textField.setEnabled(false);
         this.add(textField);
         textField.setColumns(5);
 
-        lblImageSource = new JLabel("Image source:");
-        lblImageSource.setBounds(170, 30, 129, 14);
-        this.add(lblImageSource);
-
         btnBrowse = new JButton("Browse");
-        btnBrowse.setBounds(500, 30, 89, 23);
+        btnBrowse.setBounds(500, 30, 90, 20);
         btnBrowse.addActionListener(this);
         this.add(btnBrowse);
+
+        trainFromImage = new JCheckBox("Train From Static Image");
+        this.trainFromImage.setBounds(220, 60, 200, 30);
+        this.trainFromImage.addActionListener(this);
+        this.add(this.trainFromImage);
+
+        this.enableGaussianBlur = new JCheckBox("Enable Gaussian Blur");
+        this.enableGaussianBlur.setBounds(220, 90, 200, 30);
+        this.enableGaussianBlur.addActionListener(this);
+        this.add(this.enableGaussianBlur);
+
+        this.assumeYellow = new JCheckBox("Assume Yellow");
+        this.assumeYellow.setBounds(220, 120, 200, 30);
+        this.assumeYellow.addActionListener(this);
+        this.add(this.assumeYellow);
+
+        JLabel lblBri = new JLabel("Brightness:");
+        lblBri.setBounds(220, 150, 200, 30);
+        this.add(lblBri);
+
+        brightness = new JSlider();
+        brightness.setBounds(340, 150, 200, 30);
+        brightness.addChangeListener(this);
+        brightness.setMinimum(1);
+        this.add(brightness);
+
+        train = new JButton("Restart Training...");
+        train.setBounds(220, 190, 200, 30);
+        train.addActionListener(this);
+        this.add(train);
+
         int offset = 0;
 
         for (RobotType type : RobotType.values()) {
@@ -232,7 +232,7 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 
     @Override
     public void loadSettings(String settings) {
-        String[] set = settings.split(";");
+        String[] set = settings.split(";", -1);
         this.flipPitch.setSelected(Boolean.parseBoolean(set[0]));
         this.friendsAreYellow.setSelected(Boolean.parseBoolean(set[1]));
         this.friendOneIsGreen.setSelected(Boolean.parseBoolean(set[2]));
