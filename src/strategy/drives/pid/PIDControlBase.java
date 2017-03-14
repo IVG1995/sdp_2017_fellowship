@@ -18,13 +18,13 @@ public abstract class PIDControlBase {
     }
 
     public ControlResult getActuatorInput(ControlErrorBase error) {
-        ControlResult actuatorControl =
+        ControlResult actuatorInput =
                 getProportional(error).multiply(pFactor).add( // Kp * P(e(t))
                 getIntegral(error).multiply(iFactor).add(     // Ki * Integral(e(t)) {in [0, t]}
                 getDerivative(error).multiply(dFactor)        // Kd * d(e(t)) / dt
                 ));
         history.update(error);
-        return actuatorControl;
+        return actuatorInput;
     }
 
     abstract ControlResult getProportional(ControlErrorBase error);

@@ -246,7 +246,7 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
         //this.enableMask.setSelected(Boolean.parseBoolean(set[10]));
         this.enableGaussianBlur.setSelected(Boolean.parseBoolean(set[11]));
         this.trainFromImage.setSelected(Boolean.parseBoolean(set[12]));
-        this.textField.setText(set[13]);
+//        this.textField.setText(set[13]);
         this.checkBoxesToValues();
         VisionSettings.brightness = ((float) this.brightness.getValue()) / 100.0f;
     }

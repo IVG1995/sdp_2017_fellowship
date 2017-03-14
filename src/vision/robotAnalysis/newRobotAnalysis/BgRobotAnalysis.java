@@ -179,7 +179,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
         if ( /*world.getRobots().contains(null) &&*/ world.getRobots().size() < (objects.size() - 1) && this.lastKnownWorld != null) {
             RobotType[] r_types = {RobotType.FOE_1,RobotType.FOE_2,RobotType.FRIEND_2,RobotType.FRIEND_1};
             DynamicWorld previous = this.lastKnownWorld;
-            System.out.println("At least one robot not found");
+//            System.out.println("At least one robot not found");
             //avoids multiple calls to the return method
             HashMap<RobotType, Robot> pre_rob = previous.returnRobots();
             //contains the probability that every robot is every shape

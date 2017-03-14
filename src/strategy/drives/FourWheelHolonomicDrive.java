@@ -15,8 +15,7 @@ import vision.tools.VectorGeometry;
  */
 
 public class FourWheelHolonomicDrive implements DriveInterface {
-//                                                                    90  3   3
-    private PIDRotationControl  pidRotation  = new PIDRotationControl(45d, 3d, 3.7d);
+    private PIDRotationControl  pidRotation  = new PIDRotationControl(30d, 2d, 1d); //perfect
     private PIDDirectionControl pidDirection = new PIDDirectionControl(10d, 0d, 0d);
 
     public int MAX_ROTATION = 100; //deprecated

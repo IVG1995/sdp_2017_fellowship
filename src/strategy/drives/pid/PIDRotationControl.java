@@ -23,17 +23,16 @@ public class PIDRotationControl extends PIDControlBase {
 
     @Override
     protected ControlResult getIntegral(ControlErrorBase error) {
-        ControlResult accumulated = getProportional(history.getAccumulated().add(error));
-        if (Math.abs(accumulated.getRight()) > 30){
-            return accumulated.multiply(30d / Math.abs(accumulated.getBack()));
+        ControlResult motorPowers = getProportional(history.getAccumulated().add(error));
+        if (Math.abs(motorPowers.getRight()) > 30){
+            return motorPowers.multiply(30d / Math.abs(motorPowers.getRight()));
         } else {
-            return accumulated;
+            return motorPowers;
         }
     }
 
     @Override
     protected ControlResult getDerivative(ControlErrorBase error) {
         return getProportional(history.getPrevious().subtract(error));
-
     }
 }
