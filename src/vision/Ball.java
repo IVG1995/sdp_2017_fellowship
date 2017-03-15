@@ -10,6 +10,12 @@ public class Ball {
     public VectorGeometry velocity;
     public Ball(){ }
 
+    // FOR STRATEGY TESTING PURPOSES:
+    public Ball(VectorGeometry loc, VectorGeometry vel) {
+        this.location = loc;
+        this.velocity = vel;
+    }
+
     @Override
     public Ball clone(){
         Ball ball = new Ball();

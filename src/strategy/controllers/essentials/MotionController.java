@@ -63,6 +63,16 @@ public class MotionController extends ControllerBase {
         this.obstacles.clear();
     }
 
+    /** FOR STRATEGY TESTING PURPOSES: */
+    public DynamicPoint getDestination() {
+        return this.destination;
+    }
+
+    public DynamicPoint getHeading() {
+        return this.heading;
+    }
+    /** ============================== */
+
     public void perform(){
         if(this.mode == MotionMode.OFF) return;
 

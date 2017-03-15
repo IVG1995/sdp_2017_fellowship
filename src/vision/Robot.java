@@ -21,6 +21,13 @@ public class Robot {
 
     }
 
+    // FOR STRATEGY TESTING PURPOSES:
+    public Robot(DirectedPoint location, DirectedPoint velocity, RobotType type) {
+        this.location = location;
+        this.velocity = velocity;
+        this.type = type;
+    }
+
     //override for clone to return an exact copy of the robot
     @Override
     public Robot clone(){

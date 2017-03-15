@@ -50,6 +50,22 @@ public class DynamicWorld {
         this.aliases = new HashMap<RobotAlias, Robot>();
     }
 
+    // FOR STRATEGY TESTING PURPOSES:
+    public DynamicWorld(Robot[] robots, Ball ball, RobotType ballHolder) {
+        this.time = 0;
+
+        if (ball != null) {
+            this.ball = ball;
+            this.lastKnownBall = ball;
+        }
+
+        for (Robot r : robots) {
+            if (r != null) this.robots.put(r.type, r);
+        }
+
+        if (ballHolder != null) this.probableBallHolder = ballHolder;
+    }
+
     public ArrayList<ShapeObject> getObjects(){
         return BgSubtractor.objects;
     }

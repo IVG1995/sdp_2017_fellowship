@@ -29,7 +29,7 @@ public class FourWheelHolonomicDrive implements DriveInterface {
         force.copyInto(robotForce).coordinateRotation(location.direction);
 
 //        rotation = 0;
-        robotForce = new VectorGeometry(0d, 0d);
+//        robotForce = new VectorGeometry(0d, 0d);
 
         ControlResult rotationControl;
         ControlResult directionControl = pidDirection.getActuatorInput(new DirectionControlError(robotForce));

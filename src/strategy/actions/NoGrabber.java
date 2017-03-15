@@ -88,6 +88,13 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
                 return this.nextState;
             }
 
+            // There are no enemies ==> SCORE
+            // ?: We are 0 distance away from the ball ==> SCORE
+            if (this.closestRobotInfo.getClosestEnemyDist() == null || this.closestRobotInfo.getDist(RobotType.FRIEND_2) == 0) {
+                this.nextState = NoGrabberEnum.SCORE;
+                return this.nextState;
+            }
+
             // We are closest to the ball by far AND could have a shot ==> SCORE
             if (this.closestRobotInfo.getClosest() == RobotType.FRIEND_2 && shot_on_goal(us, ball.location) &&
                     (this.closestRobotInfo.getClosestEnemyDist() / this.closestRobotInfo.getDist(RobotType.FRIEND_2)) >= 2 &&
@@ -270,6 +277,11 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
 
         public RobotType getClosest() { return this.closest; }
 
+        /**
+         * Returns the robot's distance from the ball, or null if the robot is lost.
+         * @param robot
+         * @return
+         */
         public Integer getDist(RobotType robot) { return distances.get(robot); }
 
         public Integer getClosestEnemyDist() {
