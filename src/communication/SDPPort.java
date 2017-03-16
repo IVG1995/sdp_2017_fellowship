@@ -75,7 +75,7 @@ public class SDPPort extends JFrame implements PortListener, ActionListener{
 
 
         // Unfinished GUI
-//        this.setVisible(true);
+		//this.setVisible(true);
     }
 
 
@@ -184,6 +184,7 @@ public class SDPPort extends JFrame implements PortListener, ActionListener{
     @Override
     public void receivedStringHandler(String string) {
         this.inbound.append(string);
+        SDPConsole.writeln("Robot: " + string);
         for(PortListener listener : this.listeners){
             listener.receivedStringHandler(string);
         }
