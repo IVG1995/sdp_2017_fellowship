@@ -137,6 +137,17 @@ public class SerialPortWrapper implements SerialPortEventListener {
                 }
             } catch (SerialPortException spe) {
                 spe.printStackTrace();
+            } catch (NumberFormatException e){ // this exception is assumed to be caused by packet corruption along the pipeline
+                try {
+                    for (Integer sNum : window) {
+                        command = savedCommands.get(sNum);
+                        SDPConsole.writeln("RDT is Resending: " + command);
+                        this.port.writeBytes((command + "\n").getBytes());
+                    }
+                } catch (SerialPortException spe) {
+                    e.printStackTrace();
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
