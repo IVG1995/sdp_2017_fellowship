@@ -29,6 +29,8 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 	private BufferedImage image;
 	
 	private final int bounds = 10;
+
+	private int drawDelay = 3;
 	
 	private void resetImage(){
 		Graphics g = this.image.getGraphics();
@@ -53,7 +55,12 @@ public class RobotPreview extends JFrame implements DistortionListener, DynamicW
 
 	@Override
 	public void nextUndistortedSpots(ArrayList<ShapeObject> objs, long time) {
-		this.resetImage();
+		if (drawDelay <= 0) {
+			drawDelay = 3;
+			this.resetImage();
+		} else {
+			drawDelay -= 1;
+		}
 		Graphics g = this.image.getGraphics();
 
 		for (ShapeObject obj : objs) {

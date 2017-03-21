@@ -5,5 +5,5 @@ package vision.colorAnalysis;
  * If you need to detect more colors, add them here. Everything else will accommodate the change automatically.
  */
 public enum SDPColor {
-	_BALL, PINK, YELLOW, BLUE, GREEN, GREEN_0, GREEN_1,GREEN_2, GREEN_3
+	_BALL, PINK, YELLOW, BLUE, GREEN, GREEN_0, GREEN_1,GREEN_2, GREEN_3,MARKER
 }

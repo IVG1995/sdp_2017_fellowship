@@ -30,8 +30,9 @@ public class PatternMatcher {
         }
     }
 
-    public static void singularValidate(ArrayList<Spot> spots, ArrayList<RobotPlate> plates){
+    public static void singularValidate(ArrayList<Spot> spots, ArrayList<RobotPlate> plates,Spot marker){
         for(RobotPlate plate : plates){
+            plate.setMarker(marker);
             for(Spot s : spots){
                 if(plate.validate(s)) break;
             }
