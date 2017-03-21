@@ -1,14 +1,12 @@
 package vision.robotAnalysis.newRobotAnalysis;
 
-import org.opencv.core.Rect;
-import strategy.navigation.aStarNavigation.Circle;
 import vision.Ball;
 import vision.DynamicWorld;
 import vision.Robot;
+import vision.RobotType;
 import vision.colorAnalysis.ColorGroup;
 import vision.colorAnalysis.SDPColor;
 import vision.robotAnalysis.RobotAnalysisBase;
-import vision.RobotType;
 import vision.robotAnalysis.RobotColorSettings;
 import vision.shapeObject.CircleObject;
 import vision.shapeObject.RectObject;
@@ -18,10 +16,7 @@ import vision.tools.DirectedPoint;
 import vision.tools.VectorGeometry;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Simon Rovder

@@ -13,7 +13,8 @@ import communication.PortListener;
 public class RobotPort implements PortListener {
 
     public final SDPPort sdpPort = new SDPPort();
-
+    private boolean isStopped;
+    private boolean isHalted;
 
     public RobotPort(final String expectedPingResponse){
         (new Thread() {
@@ -22,6 +23,8 @@ public class RobotPort implements PortListener {
             }
         }).start();
         sdpPort.addCommunicationListener(this);
+        this.isStopped = false;
+        this.isHalted = false;
     }
 
     @Override
@@ -34,13 +37,16 @@ public class RobotPort implements PortListener {
     }
 
     public void stop() {
-        sdpPort.commandSender("f");
-        sdpPort.commandSender("f");
-        sdpPort.commandSender("f");
-        sdpPort.commandSender("f");
+        if (!isStopped) {
+            sdpPort.commandSender("f");
+            this.isStopped = true;
+        }
     }
 
     public void halt() {
-        sdpPort.commandSender("h");
+        if (!isHalted) {
+            sdpPort.commandSender("h");
+            this.isHalted = true;
+        }
     }
 }
