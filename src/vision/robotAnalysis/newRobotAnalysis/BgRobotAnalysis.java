@@ -73,9 +73,12 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
             } else {
                 PatternMatcher.patternMatch(greenSpots, plates, i);
             }
-
-            PatternMatcher.singularValidate(greenSpots, plates);
-            PatternMatcher.singularValidate(pinkSpots, plates);
+            Spot marker = null;
+            if (spots.get(SDPColor.MARKER).size()>0) {
+                marker = spots.get(SDPColor.MARKER).get(0);
+            }
+            PatternMatcher.singularValidate(greenSpots, plates, marker);
+            PatternMatcher.singularValidate(pinkSpots, plates, marker);
 
             PatternMatcher.removeInvalid(plates);
 
