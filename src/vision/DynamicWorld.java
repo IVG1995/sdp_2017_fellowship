@@ -1,6 +1,5 @@
 package vision;
 
-import org.opencv.core.Rect;
 import vision.gui.SDPConsole;
 import vision.preProcessing.matProcessor.BgSubtractor;
 import vision.robotAnalysis.newRobotAnalysis.BgRobotAnalysis;

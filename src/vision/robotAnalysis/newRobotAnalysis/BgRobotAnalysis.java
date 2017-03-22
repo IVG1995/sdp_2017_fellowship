@@ -1,12 +1,12 @@
 package vision.robotAnalysis.newRobotAnalysis;
 
-import org.opencv.core.Rect;
 import strategy.navigation.aStarNavigation.Circle;
 import vision.Ball;
 import vision.DynamicWorld;
 import vision.Robot;
 import vision.colorAnalysis.ColorGroup;
 import vision.colorAnalysis.SDPColor;
+import vision.constants.Constants;
 import vision.robotAnalysis.RobotAnalysisBase;
 import vision.RobotType;
 import vision.robotAnalysis.RobotColorSettings;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Simon Rovder
@@ -44,6 +43,8 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
     public void nextUndistortedSpots(ArrayList<ShapeObject> objects, long time) {
         ArrayList<Spot> spotList = new ArrayList<>();
         ArrayList<RobotPlate> plates = new ArrayList<RobotPlate>();
+
+        // Split list of objects into rectangles (robots) and circles (ball)
         ArrayList<RectObject> rectObjects = new ArrayList<>();
         ArrayList<CircleObject> circleObjects = new ArrayList<>();
         for (ShapeObject obj : objects) {
@@ -54,7 +55,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
             }
         }
 
-
+        // Go through list of rectangles and produce list of RobotPlates
         for (RectObject i : rectObjects) {
             HashMap<SDPColor, ArrayList<Spot>> spots = i.spots;
             ArrayList<Spot> pinkSpots = new ArrayList<>();
@@ -98,6 +99,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
         DynamicWorld world = new DynamicWorld(time);
         Robot bot;
 
+        // Take list of plates and use them to assign robots to new world
         for (RobotPlate plate : plates) {
             if (!plate.hasTeam()) {
                 plate.setTeam(RobotColorSettings.ASSUME_YELLOW ? SDPColor.YELLOW : SDPColor.BLUE);
@@ -106,7 +108,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
             world.setRobot(bot, rectObjects);
         }
 
-
+        // Remove all spots corresponding to robots so only ball-spot is left
         for (int i = 0; i < spotList.size(); i++) {
             Spot s = spotList.get(i);
             if (PatternMatcher.isBotPart(plates, s)) {
@@ -136,9 +138,12 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
         }
         ball = world.getBall();
 
+
         if (lastKnownWorld != null && world.robotChangeDelay != 0 && lastKnownWorld.getProbableBallHolder() != null) {
 
-            world.setBall(null);
+            // Why set the ball to null?
+            //world.setBall(null);
+
             world.setProbableBallHolder(lastKnownWorld.getProbableBallHolder());
             world.setLastKnownBall(lastKnownWorld.getLastKnownBall());
             if (world.robotCount == lastKnownWorld.robotCount) {
@@ -151,6 +156,8 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                 Ball lastKnownBall = this.lastKnownWorld.getBall();
                 if (lastKnownBall != null) {
                     if (ball == null) {
+
+                        // Determine closest robot to lastKnownBall
                         Robot closest = null;
                         for (Robot robot : world.getRobots()) {
                             if (closest == null) closest = robot;
@@ -169,6 +176,24 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                         } else {
                             world.setBall(lastKnownBall.clone());
                         }
+
+                        // ALTERNATIVE WAY TO UPDATE BALL: =============================================================
+                        // Use its last known location and velocity to predict new location
+//                        double xMovement = (lastKnownBall.velocity.x / 1000000) * timeDelta;
+//                        double yMovement = (lastKnownBall.velocity.y / 1000000) * timeDelta;
+//                        VectorGeometry newBallLoc = lastKnownBall.location.add(xMovement, yMovement);
+//
+//                        // Make sure predicted ball location isn't outside of/clipping the walls
+//                        if (newBallLoc.x > (Constants.PITCH_WIDTH / 2) - 3) newBallLoc.x = ((Constants.PITCH_WIDTH / 2) - 3);
+//                        if (newBallLoc.y > (Constants.PITCH_HEIGHT / 2) - 3) newBallLoc.y = ((Constants.PITCH_HEIGHT / 2) - 3);
+//                        if (newBallLoc.x < (-Constants.PITCH_WIDTH / 2) + 3) newBallLoc.x = ((-Constants.PITCH_WIDTH / 2) + 3);
+//                        if (newBallLoc.y < (-Constants.PITCH_HEIGHT / 2) + 3) newBallLoc.y = ((-Constants.PITCH_HEIGHT / 2) + 3);
+//
+//                        Ball newBall = new Ball();
+//                        newBall.location = newBallLoc;
+//                        newBall.velocity = lastKnownBall.velocity.multiply(0.8);
+//                        world.setBall(newBall);
+                        // =============================================================================================
                     }
                 }
             }
