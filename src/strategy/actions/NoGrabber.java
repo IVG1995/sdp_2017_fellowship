@@ -95,6 +95,13 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
                 return this.nextState;
             }
 
+            // Bug?: We are 0 distance away from the ball ==> SCORE
+            // There are no enemies on the pitch ==> SCORE
+            if (this.closestRobotInfo.getDist(RobotType.FRIEND_2) == 0 || this.closestRobotInfo.getClosestEnemyDist() == null) {
+                this.nextState = NoGrabberEnum.SCORE;
+                return this.nextState;
+            }
+            
             // We are closest to the ball by far AND could have a shot ==> SCORE
             if (this.closestRobotInfo.getClosest() == RobotType.FRIEND_2 && shot_on_goal(us, ball.location) &&
                     (this.closestRobotInfo.getClosestEnemyDist() / this.closestRobotInfo.getDist(RobotType.FRIEND_2)) >= 2 &&
@@ -160,7 +167,6 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         }
 
         // Ball is near a wall ==> WALL
-        // TODO: ==> WAIT instead? Going near a wall never goes well
         if (Math.abs(ball.location.x) > (Constants.PITCH_WIDTH / 2) - 20 ||
                 Math.abs(ball.location.y) > (Constants.PITCH_HEIGHT / 2) - 20) {
             this.nextState = NoGrabberEnum.WALL;
