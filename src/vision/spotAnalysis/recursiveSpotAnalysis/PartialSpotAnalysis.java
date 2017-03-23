@@ -1,5 +1,7 @@
 package vision.spotAnalysis.recursiveSpotAnalysis;
 
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColorInstance;
 import vision.colorAnalysis.SDPColors;
@@ -7,6 +9,7 @@ import vision.constants.Constants;
 import vision.gui.Preview;
 import vision.preProcessing.matProcessor.BgSubtractor;
 import vision.shapeObject.CircleObject;
+import vision.shapeObject.RectObject;
 import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.SpotAnalysisBase;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import static org.opencv.highgui.Highgui.imwrite;
 import static vision.tools.ImageTools.rgbToHsv;
 
 /**
@@ -128,6 +132,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
             if (color_count > 2 || spot_count > 2) {
                 objs.add(i);
+
             } else if (
                     ((i.spots.get(SDPColor._BALL).size() >= 1) || (i.spots.get(SDPColor.PINK).size() >= 1))
                             && (i instanceof CircleObject)
@@ -138,6 +143,12 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
         }
         BgSubtractor.objects = objs;
+        for (int i = 0; i < objs.size(); i++) {
+            if (objs.get(i) instanceof RectObject) {
+                Mat m = new Mat(BgSubtractor.cur_mat, objs.get(i).boundingRect);
+                imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) BgSubtractor.cnt), Integer.toString(i)), m);
+            }
+        }
         this.informListeners(objs, time);
         Preview.flushToLabel();
 

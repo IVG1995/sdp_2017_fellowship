@@ -17,7 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
+import static org.opencv.highgui.Highgui.imwrite;
 import static vision.preProcessing.OpenCVProcessor.img2Mat;
 
 /**
@@ -27,6 +29,7 @@ public class BgSubtractor implements MatProcessor {
     public static ArrayList<ShapeObject> objects;
     public static BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 8, true);
     public static long cnt = 0;
+    public static Mat cur_mat;
 
     public BgSubtractor() {
 
@@ -54,6 +57,7 @@ public class BgSubtractor implements MatProcessor {
     @Override
     public Mat process(Mat mat) {
         Mat fgMask = new Mat();
+        cur_mat = mat;
         if (cnt < 50 && VisionSettings.trainFromStaticImage) {
             System.out.println(" Start training from static image");
             BrightnessProcessor brightnessProcessor = new BrightnessProcessor();
@@ -97,6 +101,8 @@ public class BgSubtractor implements MatProcessor {
                 Point center = rotatedRect.center; // center
                 // add plate
                 Rect boundingRect = Imgproc.boundingRect(contours.get(i));
+                Mat cropped = new Mat(mat, boundingRect);
+                //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) cnt),Integer.toString(i)),cropped);
                 objects.add(new RectObject(rotatedRect, boundingRect));
                 Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
                 //Core.circle(output, center, 5, new Scalar(255, 255, 255));

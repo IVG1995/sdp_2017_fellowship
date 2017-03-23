@@ -29,7 +29,7 @@ public class testCV extends JFrame {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
-    static String prefix = "/Users/nlfox/SDP-2017-G-6/Fred_working/sdp/test/";
+    static String prefix = "/home/daniel/IdeaProjects/SDP-2017-G-6/Fred_working/sdp/test/";
 
     static MatProcessor gb = new GaussianBlur();
 
@@ -48,6 +48,10 @@ public class testCV extends JFrame {
 
             //Mat thresh = new Mat();
             Imgproc.threshold(mask, mask, 128, 255, Imgproc.THRESH_BINARY);
+            Mat kern = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
+            Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN,kern);
+         //   kern = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
+          //  Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN,kern);
             List<MatOfPoint> contours = new ArrayList<>();
             Mat hier = new Mat();
 
@@ -58,7 +62,7 @@ public class testCV extends JFrame {
             Imgproc.findContours(mask, contours, hier, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
             for (int i = 0; i < contours.size(); i++) {
-                if (Imgproc.contourArea(contours.get(i)) > 150) {
+                if (Imgproc.contourArea(contours.get(i)) > 100) {
 
                     RotatedRect rotatedRect = getApproxContour(contours.get(i));
                     double angle = rotatedRect.angle; // angle
@@ -74,7 +78,7 @@ public class testCV extends JFrame {
 
                     //Core.rectangle(res, rect.tl(), rect.br(), new Scalar(255, 0, 0),1, 8,0);
                     //Imgproc.drawContours(res, contours, i, new Scalar(0, 255, 0), 1);
-                } else if (Imgproc.contourArea(contours.get(i)) > 100) {
+                } else if (Imgproc.contourArea(contours.get(i)) > 150) {
                     Point center = new Point();
                     float[] radius = new float[1];
                     MatOfPoint thisContour = contours.get(i);

@@ -10,5 +10,4 @@ import java.util.List;
 public class ColorGroup {
     public static List<SDPColor> green = Arrays.asList(SDPColor.GREEN, SDPColor.GREEN_0, SDPColor.GREEN_1, SDPColor.GREEN_2, SDPColor.GREEN_3);
     public static List<SDPColor> pink = Arrays.asList(SDPColor.PINK);
-
 }
