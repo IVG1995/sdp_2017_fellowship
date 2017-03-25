@@ -29,7 +29,7 @@ public class Predictor {
     Predictor() {
 
         try {
-            network = KerasModelImport.importKerasSequentialModelAndWeights("/Users/nlfox/my_model.json", "/Users/nlfox/my_model.weights", false);
+            network = KerasModelImport.importKerasSequentialModelAndWeights(System.getProperty("user.dir")+"/my_model.json", System.getProperty("user.dir")+"/my_model.weights", false);
         } catch (IOException | InvalidKerasConfigurationException | UnsupportedKerasConfigurationException e) {
             e.printStackTrace();
         }

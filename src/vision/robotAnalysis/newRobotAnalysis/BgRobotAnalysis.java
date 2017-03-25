@@ -36,7 +36,6 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
     public BgRobotAnalysis() {
         super();
     }
-
     public static HashMap<RobotType, Robot> lastKnownRobots = new HashMap<>();
 
 
