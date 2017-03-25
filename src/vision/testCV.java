@@ -17,6 +17,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.tensorflow.Graph;
+import org.tensorflow.Session;
+import org.tensorflow.Tensor;
+
+
+
+
+/**
+ * Created by nlfox on 2/4/17.
+ */
 public class testCV extends JFrame {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -25,7 +40,21 @@ public class testCV extends JFrame {
 
     static MatProcessor gb = new GaussianBlur();
 
+
     public static void main(String[] args) throws InterruptedException {
+
+
+        try (Graph graph = new Graph()) {
+            graph.importGraphDef(Files.readAllBytes(Paths.get("saved_model.pb")));
+            try (Session sess = new Session(graph)) {
+                try (Tensor x = Tensor.create(1.0f);
+                     Tensor y = sess.runner().feed("x", x).fetch("y").run().get(0)) {
+                    System.out.println(y.floatValue());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         JFrame test = null;
         Mat mask = new Mat(480, 640, CvType.CV_8UC1);
         BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 26, true);
