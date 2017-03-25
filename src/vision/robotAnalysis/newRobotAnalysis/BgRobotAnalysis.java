@@ -251,7 +251,6 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                         max_type = rType;
                     }
                 }
-
                 //update the position
                 if (max_type != null) {
                     Robot rob = lastKnownRobots.get(max_type);

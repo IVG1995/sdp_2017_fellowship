@@ -15,6 +15,7 @@ public class ShapeObject {
     public VectorGeometry pos;
     public Integer shape;
     public Rect boundingRect;
+    public int kind = -1;
     public static Integer SQUARE = 0;
     public static Integer CIRCLE = 1;
     public HashMap<SDPColor, ArrayList<Spot>> spots;

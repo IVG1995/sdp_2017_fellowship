@@ -2,11 +2,13 @@ package vision.spotAnalysis.recursiveSpotAnalysis;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import vision.Predictor;
 import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColorInstance;
 import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
 import vision.gui.Preview;
+import vision.preProcessing.PreProcessor;
 import vision.preProcessing.matProcessor.BgSubtractor;
 import vision.shapeObject.CircleObject;
 import vision.shapeObject.RectObject;
@@ -146,7 +148,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
         for (int i = 0; i < objs.size(); i++) {
             if (objs.get(i) instanceof RectObject) {
                 Mat m = new Mat(BgSubtractor.cur_mat, objs.get(i).boundingRect);
-                imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) BgSubtractor.cnt), Integer.toString(i)), m);
+                objs.get(i).kind = Predictor.getPredictor().getPlateKind(m);
             }
         }
         this.informListeners(objs, time);
