@@ -128,13 +128,13 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
                 if (flag_color) {
                     color_count += 1;
                 }
-
-
             }
 
-            if (color_count > 2 || spot_count > 2) {
-                objs.add(i);
+            Mat m = new Mat(BgSubtractor.cur_mat, i.boundingRect);
+            i.kind = Predictor.getPredictor().getPlateKind(m);
 
+            if (i.kind != 4) {
+                objs.add(i);
             } else if (
                     ((i.spots.get(SDPColor._BALL).size() >= 1) || (i.spots.get(SDPColor.PINK).size() >= 1))
                             && (i instanceof CircleObject)
@@ -147,8 +147,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
         BgSubtractor.objects = objs;
         for (int i = 0; i < objs.size(); i++) {
             if (objs.get(i) instanceof RectObject) {
-                Mat m = new Mat(BgSubtractor.cur_mat, objs.get(i).boundingRect);
-                objs.get(i).kind = Predictor.getPredictor().getPlateKind(m);
+
             }
         }
         this.informListeners(objs, time);
