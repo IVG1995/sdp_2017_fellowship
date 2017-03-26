@@ -104,14 +104,12 @@ public class BgSubtractor implements MatProcessor {
                 Rect boundingRect = Imgproc.boundingRect(contours.get(i));
                 Mat cropped = new Mat(mat, boundingRect);
                 //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) cnt),Integer.toString(i)),cropped);
-                objects.add(new RectObject(rotatedRect, boundingRect));
-                Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
-                Core.putText(output,String.format(" %d", Predictor.getPredictor().getPlateKind(cropped)), boundingRect.tl(),Core.FONT_HERSHEY_PLAIN,1.0,  new Scalar(255, 255, 255));
-                //Core.circle(output, center, 5, new Scalar(255, 255, 255));
-                // draw rotated rect
-//                for (int j = 0; j < 4; ++j) {
-//                    Core.line(output, rect_points[j], rect_points[(j + 1) % 4], new Scalar(255, 255, 255));
-//                }
+                if (Predictor.getPredictor().isRobot(cropped)) {
+                    Core.putText(output, String.format(" %d", Predictor.getPredictor().getPlateKind(cropped)), boundingRect.tl(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
+                    objects.add(new RectObject(rotatedRect, boundingRect));
+                    Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
+                }
+
 
 
             } else if (Imgproc.contourArea(contours.get(i)) > 80) {
