@@ -3,6 +3,7 @@ package vision.preProcessing.matProcessor;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractorMOG2;
+import vision.Predictor;
 import vision.Vision;
 import vision.VisionSettings;
 import vision.preProcessing.BrightnessProcessor;
@@ -105,6 +106,7 @@ public class BgSubtractor implements MatProcessor {
                 //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) cnt),Integer.toString(i)),cropped);
                 objects.add(new RectObject(rotatedRect, boundingRect));
                 Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
+                Core.putText(output,String.format(" %d", Predictor.getPredictor().getPlateKind(cropped)), boundingRect.tl(),Core.FONT_HERSHEY_PLAIN,1.0,  new Scalar(255, 255, 255));
                 //Core.circle(output, center, 5, new Scalar(255, 255, 255));
                 // draw rotated rect
 //                for (int j = 0; j < 4; ++j) {
