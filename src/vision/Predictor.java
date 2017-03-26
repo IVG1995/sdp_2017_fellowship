@@ -49,11 +49,20 @@ public class Predictor {
     }
 
     public double[] getHistArr(Mat image) {
+
         List<Mat> images = new ArrayList<>();
+        Mat yuv_img = new Mat();
+        Imgproc.cvtColor(image,yuv_img,Imgproc.COLOR_BGR2YUV);
+        List<Mat> channels = new ArrayList<>();
+        Core.split(yuv_img,channels);
+        Imgproc.equalizeHist(channels.get(0),channels.get(0));
+        Core.merge(channels,yuv_img);
+        Imgproc.cvtColor(yuv_img,image,Imgproc.COLOR_YUV2BGR);
         images.add(image);
         double[] arr = new double[768];
         for (int i = 1; i <= 3; i++) {
             Mat hist = new Mat();
+
             Imgproc.calcHist(images,new MatOfInt(i-1),new Mat(),hist,new MatOfInt(256),new MatOfFloat(0f,256f));
             for (int j = 0; j < hist.height(); j++) {
                 arr[(i-1)*255+j] = hist.get(j,0)[0]/100.0;
@@ -65,6 +74,6 @@ public class Predictor {
 
     public static void main(String[] args) throws Exception {
         Predictor p = Predictor.getPredictor();
-        System.out.println(p.getPlateKind(imread("/Users/nlfox/train/1/1855_0.jpg")));
+        System.out.println(p.getPlateKind(imread("/Users/nlfox/train/5/1016_0.jpg")));
     }
 }

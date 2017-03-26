@@ -142,8 +142,13 @@ public class MiscellaneousSettings extends JPanel implements ActionListener, Sav
 
 
             JLabel label = new JLabel(type.toString());
-            label.setBounds(10, 230 + offset, 300, 30);
+            label.setBounds(10, 230 + offset, 100, 30);
             this.add(label);
+
+            JComboBox<String> selection1 = new JComboBox<>(new String[]{"-1","0","1","2","3"});
+            selection1.setBounds(120, 230 + offset, 100, 30);
+            selection1.setSelectedItem("-1");
+            this.add(selection1);
 
             JComboBox<RobotAlias> selection = new JComboBox<>(RobotAlias.values());
             selection.setBounds(230, 230 + offset, 300, 30);
