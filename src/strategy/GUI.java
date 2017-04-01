@@ -7,10 +7,14 @@ import strategy.actions.other.Goto;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.other.Waiting;
 import strategy.drives.FourWheelHolonomicDrive;
+import strategy.drives.pid.PIDControlBase;
+import strategy.drives.pid.PIDDirectionControl;
+import strategy.drives.pid.PIDRotationControl;
 import strategy.points.basicPoints.*;
 import strategy.controllers.essentials.MotionController;
 import communication.ports.robotPorts.FredRobotPort;
 import strategy.robots.Fred;
+import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.RobotAlias;
 import communication.ports.interfaces.PropellerEquipedRobotPort;
@@ -18,6 +22,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 /**
  * Created by Simon Rovder
@@ -28,8 +33,8 @@ public class GUI extends JFrame implements KeyListener{
     public JTextField searchType;
     public JTextField behaviour;
     private JTextField r;
-    private JTextField maxSpeed;
-    private JTextField turnSpeed;
+    private JTextField directionalPID;
+    private JTextField rotationalPID;
 
     public static final GUI gui = new GUI();
 
@@ -70,40 +75,30 @@ public class GUI extends JFrame implements KeyListener{
         c.add(this.behaviour);
         this.addKeyListener(this);
 
-
-//
-//
-//
-//
-//        this.behaviour = new JTextField();
-//        this.behaviour.setBounds(20,100,300,30);
-//        this.behaviour.setEditable(false);
-//        c.add(this.behaviour);
-//        this.addKeyListener(this);
         this.setVisible(true);
 
 
 
 
 
-        label = new JLabel("Maximum Speed:");
+        label = new JLabel("Rotational PID: ");
         label.setBounds(20,140,200,30);
         c.add(label);
-        this.maxSpeed = new JTextField();
-        this.maxSpeed.setBounds(220,140,300,30);
-        this.maxSpeed.setText("200");
-        c.add(this.maxSpeed);
-        this.maxSpeed.addKeyListener(this);
+        this.rotationalPID = new JTextField();
+        this.rotationalPID.setBounds(220,140,300,30);
+        this.rotationalPID.setText("30 2 1");
+        c.add(this.rotationalPID);
+        this.rotationalPID.addKeyListener(this);
 
 
-        label = new JLabel("Maximum rotation speed:");
+        label = new JLabel("Directional PID: ");
         label.setBounds(20,180,200,30);
         c.add(label);
-        this.turnSpeed = new JTextField();
-        this.turnSpeed.setBounds(220,180,300,30);
-        this.turnSpeed.setText("30");
-        c.add(this.turnSpeed);
-        this.turnSpeed.addKeyListener(this);
+        this.directionalPID = new JTextField();
+        this.directionalPID.setBounds(220,180,300,30);
+        this.directionalPID.setText("10 0 0");
+        c.add(this.directionalPID);
+        this.directionalPID.addKeyListener(this);
 
 
         label = new JLabel("Command box:");
@@ -232,21 +227,49 @@ public class GUI extends JFrame implements KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if(this.robot instanceof Fred){
+        if(this.robot instanceof Frodo){
             FourWheelHolonomicDrive drive = (FourWheelHolonomicDrive)this.robot.drive;
-            if(e.getSource() == this.maxSpeed){
-                System.out.println("SpeedChange");
-                try{
-                    drive.MAX_MOTION = Integer.parseInt(this.maxSpeed.getText());
-                } catch(Exception ex){}
-                System.out.println("SpeedChange : " + drive.MAX_MOTION);
-            } else if(e.getSource() == this.turnSpeed){
-                try{
-                    drive.MAX_ROTATION = Integer.parseInt(this.turnSpeed.getText());
-                } catch(Exception ex){}
-                System.out.println("TurnChange : " + drive.MAX_ROTATION);
+            if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER) {
+                if(e.getSource() == this.rotationalPID){
+                    System.out.println("Rotational PID change");
+                    try{
+                        drive.setPidRotation(parsePIDRotationControl(this.rotationalPID.getText()));
+                    } catch(Exception ex){}
+                    System.out.println("Rotational PID change : " + drive.getPidRotation().toString());
+                } else if(e.getSource() == this.directionalPID){
+                    System.out.println("Directional PID change");
+                    try{
+                        drive.setPidDirection(parsePIDDirectionControl(this.directionalPID.getText()));
+                    } catch(Exception ex){}
+                    System.out.println("Directional PID change : " + drive.getPidDirection().toString());
+                }
             }
+
         }
         r.setText("");
+    }
+
+    private PIDRotationControl parsePIDRotationControl(String input) {
+        String[] params = input.split("\\s+");
+        System.out.println("Parser params[0] : " + Double.parseDouble(params[0]));
+        System.out.println("Parser params[1] : " + Double.parseDouble(params[1]));
+        System.out.println("Parser params[2] : " + Double.parseDouble(params[2]));
+        return new PIDRotationControl(
+            Double.parseDouble(params[0]),
+            Double.parseDouble(params[1]),
+            Double.parseDouble(params[2])
+        );
+    }
+
+    private PIDDirectionControl parsePIDDirectionControl(String input) {
+        String[] params = input.split("\\s+");
+        System.out.println("Parser params[0] : " + Double.parseDouble(params[0]));
+        System.out.println("Parser params[1] : " + Double.parseDouble(params[1]));
+        System.out.println("Parser params[2] : " + Double.parseDouble(params[2]));
+        return new PIDDirectionControl(
+                Double.parseDouble(params[0]),
+                Double.parseDouble(params[1]),
+                Double.parseDouble(params[2])
+        );
     }
 }

@@ -15,8 +15,10 @@ import vision.tools.VectorGeometry;
  */
 
 public class FourWheelHolonomicDrive implements DriveInterface {
-    private PIDRotationControl  pidRotation  = new PIDRotationControl(30d, 2d, 1d); //perfect
+    private PIDRotationControl  pidRotation  = new PIDRotationControl(30d, 2d, 1d);
     private PIDDirectionControl pidDirection = new PIDDirectionControl(10d, 0d, 0d);
+
+
 
     public int MAX_ROTATION = 100; //deprecated
     public int MAX_MOTION = 0; //deprecated
@@ -58,4 +60,19 @@ public class FourWheelHolonomicDrive implements DriveInterface {
         ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
     }
 
+    public PIDRotationControl getPidRotation() {
+        return pidRotation;
+    }
+
+    public PIDDirectionControl getPidDirection() {
+        return pidDirection;
+    }
+
+    public void setPidRotation(PIDRotationControl pidRotation) {
+        this.pidRotation = pidRotation;
+    }
+
+    public void setPidDirection(PIDDirectionControl pidDirection) {
+        this.pidDirection = pidDirection;
+    }
 }

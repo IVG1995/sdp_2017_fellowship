@@ -85,7 +85,7 @@ public class OffensiveKick extends ActionBase {
             VectorGeometry robotToPoint  = VectorGeometry.fromTo(robotLocation, ballPoint.toVectorGeometry());
 //            System.out.println("angle to target: " + Math.abs(VectorGeometry.signedAngle(robotToPoint, robotLocation)) * 180 / Math.PI);
 
-            if (distanceToKickable > 15 || Math.abs(VectorGeometry.signedAngle(robotHeading, robotToPoint)) > Math.PI / 3){
+            if (distanceToKickable > 25 || Math.abs(VectorGeometry.signedAngle(robotHeading, robotToPoint)) > Math.PI / 3){
                 enterState(GOING_TO_KICKABLE);
             } else {
                 enterState(KICKING);

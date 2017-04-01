@@ -41,11 +41,8 @@ public abstract class PIDControlBase {
         return history;
     }
 
-    public String toString(ControlErrorBase error) {
-        return String.format("%.3f * %s + %.3f * %s + %.3f * %s",
-                pFactor, getProportional(error),
-                iFactor, getIntegral(error),
-                dFactor, getDerivative(error));
+    public String toString() {
+        return String.format("%.3f, %.3f, %.3f", pFactor, iFactor, dFactor);
     }
 
 }
