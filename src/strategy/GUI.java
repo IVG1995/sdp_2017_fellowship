@@ -251,9 +251,6 @@ public class GUI extends JFrame implements KeyListener{
 
     private PIDRotationControl parsePIDRotationControl(String input) {
         String[] params = input.split("\\s+");
-        System.out.println("Parser params[0] : " + Double.parseDouble(params[0]));
-        System.out.println("Parser params[1] : " + Double.parseDouble(params[1]));
-        System.out.println("Parser params[2] : " + Double.parseDouble(params[2]));
         return new PIDRotationControl(
             Double.parseDouble(params[0]),
             Double.parseDouble(params[1]),
@@ -263,9 +260,6 @@ public class GUI extends JFrame implements KeyListener{
 
     private PIDDirectionControl parsePIDDirectionControl(String input) {
         String[] params = input.split("\\s+");
-        System.out.println("Parser params[0] : " + Double.parseDouble(params[0]));
-        System.out.println("Parser params[1] : " + Double.parseDouble(params[1]));
-        System.out.println("Parser params[2] : " + Double.parseDouble(params[2]));
         return new PIDDirectionControl(
                 Double.parseDouble(params[0]),
                 Double.parseDouble(params[1]),
