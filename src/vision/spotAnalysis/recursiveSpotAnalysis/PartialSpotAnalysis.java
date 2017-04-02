@@ -131,16 +131,19 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
             }
 
             Mat m = new Mat(BgSubtractor.cur_mat, i.boundingRect);
-            i.kind = Predictor.getPredictor().getPlateKind(m);
 
-            if (i.kind != 4) {
+            if (color_count > 2 || spot_count > 2 || Predictor.getPredictor().isRobot(m)) {
                 objs.add(i);
             } else if (
                     ((i.spots.get(SDPColor._BALL).size() >= 1) || (i.spots.get(SDPColor.PINK).size() >= 1))
                             && (i instanceof CircleObject)
                     ) {
                 objs.add(i);
+            } else{
+
+                //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) BgSubtractor.cnt), i.toString()), m);
             }
+
 
 
         }

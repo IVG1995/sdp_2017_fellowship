@@ -88,7 +88,7 @@ public class BgSubtractor implements MatProcessor {
         Imgproc.threshold(fgMask, fgMask, 128, 255, Imgproc.THRESH_BINARY);
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hier = new Mat();
-        mat.copyTo(output);
+        mat.copyTo(output,fgMask);
         Imgproc.findContours(fgMask, contours, hier, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         objects = new ArrayList<>();
         for (int i = 0; i < contours.size(); i++) {
@@ -103,12 +103,13 @@ public class BgSubtractor implements MatProcessor {
                 // add plate
                 Rect boundingRect = Imgproc.boundingRect(contours.get(i));
                 Mat cropped = new Mat(mat, boundingRect);
-                //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) cnt),Integer.toString(i)),cropped);
-                if (Predictor.getPredictor().isRobot(cropped)) {
-                    Core.putText(output, String.format(" %d", Predictor.getPredictor().getPlateKind(cropped)), boundingRect.tl(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
+
+                //if (Predictor.getPredictor().isRobot(cropped)) {
+                    //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) cnt),Integer.toString(i)),cropped);
+                    //Core.putText(output, String.format(" %d", Predictor.getPredictor().getPlateKind(cropped)), boundingRect.tl(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
                     objects.add(new RectObject(rotatedRect, boundingRect));
                     Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
-                }
+                //}
 
 
 

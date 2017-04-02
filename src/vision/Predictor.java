@@ -90,6 +90,6 @@ public class Predictor {
 
     public static void main(String[] args) throws Exception {
         Predictor p = Predictor.getPredictor();
-        System.out.println(p.isRobot(imread("/Users/nlfox/Desktop/Screen Shot 2017-03-20 at 6.27.43 PM.png")));
+        System.out.println(p.isRobot(imread("/private/tmp/train/68_7787.jpg")));
     }
 }
