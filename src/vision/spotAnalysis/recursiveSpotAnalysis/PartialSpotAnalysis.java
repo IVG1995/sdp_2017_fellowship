@@ -1,12 +1,17 @@
 package vision.spotAnalysis.recursiveSpotAnalysis;
 
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import vision.Predictor;
 import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColorInstance;
 import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
 import vision.gui.Preview;
+import vision.preProcessing.PreProcessor;
 import vision.preProcessing.matProcessor.BgSubtractor;
 import vision.shapeObject.CircleObject;
+import vision.shapeObject.RectObject;
 import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.SpotAnalysisBase;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
@@ -18,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import static org.opencv.highgui.Highgui.imwrite;
 import static vision.tools.ImageTools.rgbToHsv;
 
 /**
@@ -122,19 +128,21 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
                 if (flag_color) {
                     color_count += 1;
                 }
-
-
             }
 
-            if (color_count > 2 || spot_count > 2) {
+            Mat m = new Mat(BgSubtractor.cur_mat, i.boundingRect);
+
+            if (color_count > 2 || spot_count > 2 || Predictor.getPredictor().isRobot(m)) {
                 objs.add(i);
             } else if (
                     ((i.spots.get(SDPColor._BALL).size() >= 1) || (i.spots.get(SDPColor.PINK).size() >= 1))
                             && (i instanceof CircleObject)
                     ) {
                 objs.add(i);
-            }
+            } else{
 
+                //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) BgSubtractor.cnt), i.toString()), m);
+            }
 
         }
         BgSubtractor.objects = objs;

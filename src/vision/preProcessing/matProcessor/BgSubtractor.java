@@ -3,6 +3,8 @@ package vision.preProcessing.matProcessor;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractorMOG2;
+import vision.Predictor;
+import vision.Vision;
 import vision.VisionSettings;
 import vision.preProcessing.BrightnessProcessor;
 import vision.preProcessing.OpenCVProcessor;
@@ -16,13 +18,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
+import static org.opencv.highgui.Highgui.imwrite;
 import static vision.preProcessing.OpenCVProcessor.img2Mat;
 
+/**
+ * Created by nlfox on 2/5/17.
+ */
 public class BgSubtractor implements MatProcessor {
     public static ArrayList<ShapeObject> objects;
     public static BackgroundSubtractorMOG2 backgroundSubtractorMOG = new BackgroundSubtractorMOG2(50, 8, true);
     public static long cnt = 0;
+    public static Mat cur_mat;
 
     public BgSubtractor() {
 
@@ -40,6 +48,7 @@ public class BgSubtractor implements MatProcessor {
         double approxDistance = Imgproc.arcLength(thisContour2f, true) * 0.02;
 
         Imgproc.approxPolyDP(thisContour2f, approxContour2f, approxDistance, true);
+        //System.out.println(" contour size: " + thisContour.size() + " apprix size " + thisContour2f.size());
         approxContour2f.convertTo(approxContour, CvType.CV_32S);
 
         return Imgproc.minAreaRect(approxContour2f);
@@ -49,6 +58,7 @@ public class BgSubtractor implements MatProcessor {
     @Override
     public Mat process(Mat mat) {
         Mat fgMask = new Mat();
+        cur_mat = mat;
         if (cnt < 50 && VisionSettings.trainFromStaticImage) {
             System.out.println(" Start training from static image");
             BrightnessProcessor brightnessProcessor = new BrightnessProcessor();
@@ -92,13 +102,14 @@ public class BgSubtractor implements MatProcessor {
                 Point center = rotatedRect.center; // center
                 // add plate
                 Rect boundingRect = Imgproc.boundingRect(contours.get(i));
+                Mat cropped = new Mat(mat, boundingRect);
+
+                //imwrite(String.format("/tmp/train/%s_%s.jpg", Integer.toString((int) cnt),Integer.toString(i)),cropped);
+                //Core.putText(output, String.format(" %d", Predictor.getPredictor().getPlateKind(cropped)), boundingRect.tl(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
                 objects.add(new RectObject(rotatedRect, boundingRect));
-                Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
-                //Core.circle(output, center, 5, new Scalar(255, 255, 255));
-                // draw rotated rect
-//                for (int j = 0; j < 4; ++j) {
-//                    Core.line(output, rect_points[j], rect_points[(j + 1) % 4], new Scalar(255, 255, 255));
-//                }
+                //Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
+
+
 
 
             } else if (Imgproc.contourArea(contours.get(i)) > 80) {
@@ -110,7 +121,7 @@ public class BgSubtractor implements MatProcessor {
                 Imgproc.minEnclosingCircle(thisContour2f, center, radius);
                 Rect boundingRect = Imgproc.boundingRect(thisContour);
                 objects.add(new CircleObject(center, radius[0], boundingRect));
-                Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
+                //Core.rectangle(output, boundingRect.tl(), boundingRect.br(), new Scalar(255, 255, 255));
             }
         }
 

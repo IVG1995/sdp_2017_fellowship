@@ -53,7 +53,7 @@ public class Vision extends JFrame implements DynamicWorldListener {
      */
     public Vision(String[] args) {
         super("Vision");
-
+        Predictor.getPredictor();
         this.visionListeners = new LinkedList<VisionListener>();
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
