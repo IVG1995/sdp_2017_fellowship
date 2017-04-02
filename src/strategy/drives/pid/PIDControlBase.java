@@ -23,6 +23,14 @@ public abstract class PIDControlBase {
                 getIntegral(error).multiply(iFactor).add(     // Ki * Integral(e(t)) {in [0, t]}
                 getDerivative(error).multiply(dFactor)        // Kd * d(e(t)) / dt
                 ));
+
+        ControlResult p = getProportional(error).multiply(pFactor);
+        ControlResult i = getIntegral(error).multiply(iFactor);
+        ControlResult d = getDerivative(error).multiply(dFactor);
+
+        System.out.println("P = " + pFactor + "  => " + p.toString());
+        System.out.println("I = " + iFactor + "  => " + i.toString());
+        System.out.println("D = " + dFactor + " => " + d.toString());
         history.update(error);
         return actuatorInput;
     }
@@ -42,7 +50,7 @@ public abstract class PIDControlBase {
     }
 
     public String toString() {
-        return String.format("%.3f, %.3f, %.3f", pFactor, iFactor, dFactor);
+        return String.format("%.3f  %.3f  %.3f", pFactor, iFactor, dFactor);
     }
 
 }

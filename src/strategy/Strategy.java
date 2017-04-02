@@ -4,8 +4,9 @@ import communication.PortListener;
 import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.Behave;
 import strategy.actions.MainOffense;
+import strategy.actions.calibration.AimCalibration;
 import strategy.actions.offense.BallGrab;
-import strategy.actions.offense.OffensiveKick;
+import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.ShuntKick;
 import strategy.actions.other.*;
 import strategy.controllers.essentials.MotionController;
@@ -13,7 +14,6 @@ import strategy.points.basicPoints.*;
 import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.*;
-
 
 import javax.swing.*;
 import java.awt.*;
@@ -125,7 +125,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.ACTION_CONTROLLER.setAction(new HoldPosition(frodo, new MidFoePoint()));
                     break;
                 case "kick":
-                    frodo.ACTION_CONTROLLER.setAction(new OffensiveKick(frodo));
+                    frodo.ACTION_CONTROLLER.setAction(new PreciseKick(frodo));
                     break;
                 case "go_kick":
                     frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new KickablePoint()));
@@ -228,6 +228,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     break;
                 case "no_grabber":
                     frodo.ACTION_CONTROLLER.setAction(new MainOffense(frodo));
+                    break;
+                case "aim":
+                    frodo.ACTION_CONTROLLER.setAction(new AimCalibration(frodo));
                     break;
             }
         }

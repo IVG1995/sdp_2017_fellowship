@@ -3,7 +3,7 @@ package strategy;
 import strategy.actions.Behave;
 import strategy.actions.MainOffense;
 import strategy.actions.offense.BallGrab;
-import strategy.actions.offense.OffensiveKick;
+import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.ShuntKick;
 import strategy.actions.other.*;
 import strategy.controllers.essentials.MotionController;
@@ -120,7 +120,7 @@ public class TestStrategy {
                     frodo.ACTION_CONTROLLER.setAction(new HoldPosition(frodo, new MidFoePoint()));
                     break;
                 case "kick":
-                    frodo.ACTION_CONTROLLER.setAction(new OffensiveKick(frodo));
+                    frodo.ACTION_CONTROLLER.setAction(new PreciseKick(frodo));
                     break;
                 case "go_kick":
                     frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new KickablePoint()));

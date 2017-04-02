@@ -1,9 +1,12 @@
 package strategy.actions;
 
 import strategy.Strategy;
+import strategy.drives.FourWheelHolonomicDrive;
 import strategy.points.DynamicPoint;
 import strategy.robots.RobotBase;
 import vision.gui.SDPConsole;
+
+import java.util.FormatFlagsConversionMismatchException;
 
 /**
  * Created by Simon Rovder
@@ -39,14 +42,16 @@ public abstract class ActionBase implements ActionInterface {
     protected final RobotBase robot;
 
     public ActionBase(RobotBase robot, DynamicPoint point){
+        if (robot.drive instanceof FourWheelHolonomicDrive) {
+            ((FourWheelHolonomicDrive) robot.drive).resetHistory();
+        }
         this.robot = robot;
         this.point = point;
         this.enterState(0);
     }
 
     public ActionBase(RobotBase robot){
-        this.robot = robot;
-        this.enterState(0);
+        this(robot, null);
     }
 
     protected void enterAction(ActionBase action, int successExit, int failureExit){

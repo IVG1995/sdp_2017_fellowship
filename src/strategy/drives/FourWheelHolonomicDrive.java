@@ -15,23 +15,15 @@ import vision.tools.VectorGeometry;
  */
 
 public class FourWheelHolonomicDrive implements DriveInterface {
-    private PIDRotationControl  pidRotation  = new PIDRotationControl(30d, 2d, 1d);
-    private PIDDirectionControl pidDirection = new PIDDirectionControl(10d, 0d, 0d);
-
-
-
-    public int MAX_ROTATION = 100; //deprecated
-    public int MAX_MOTION = 0; //deprecated
-
+    private static PIDRotationControl  pidRotation  = new PIDRotationControl(10d, 2d, 1d);
+    private static PIDDirectionControl pidDirection = new PIDDirectionControl(10d, 0d, 0d);
+    private static PIDRotationControl  pidAim       = new PIDRotationControl(30d, 2d, 150d);
     public ControlResult move(RobotPort port, DirectedPoint location, VectorGeometry force, double rotation) {
         assert(port instanceof FourWheelHolonomicRobotPort);
 
         VectorGeometry robotForce = new VectorGeometry();
 
         force.copyInto(robotForce).coordinateRotation(location.direction);
-
-//        rotation = 0;
-//        robotForce = new VectorGeometry(0d, 0d);
 
         ControlResult rotationControl;
         ControlResult directionControl = pidDirection.getActuatorInput(new DirectionControlError(robotForce));
@@ -50,14 +42,29 @@ public class FourWheelHolonomicDrive implements DriveInterface {
         return directionControl;
     }
 
-    //not completed
     public void aim(RobotPort port, double rotation) {
-        double front = -rotation;
-        double back  = rotation;
-        double left  = -rotation;
-        double right = rotation;
 
-        ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(front, back, left, right);
+        System.out.println(pidAim.toString());
+        System.out.println("rotation = " + rotation);
+
+        ControlResult rotationControl;
+        /*if (Math.abs(rotation * 180d / Math.PI) < 5d) {
+            rotationControl = new ControlResult();
+            pidAim.getHistory().setAccumulated(new RotationControlError());
+        } else {*/
+            rotationControl  = pidAim.getActuatorInput(new RotationControlError(rotation));
+//        }
+
+//        ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(
+//                rotationControl.getFront(),
+//                rotationControl.getBack(),
+//                rotationControl.getLeft(),
+//                rotationControl.getRight());
+        if (rotation > 0) {
+            ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(24, -24, -24, 24);
+        } else {
+            ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(-24, 24, 24, -24);
+        }
     }
 
     public PIDRotationControl getPidRotation() {
@@ -68,11 +75,25 @@ public class FourWheelHolonomicDrive implements DriveInterface {
         return pidDirection;
     }
 
+    public PIDRotationControl getPidAim() {
+        return pidAim;
+    }
+
     public void setPidRotation(PIDRotationControl pidRotation) {
-        this.pidRotation = pidRotation;
+        FourWheelHolonomicDrive.pidRotation = pidRotation;
     }
 
     public void setPidDirection(PIDDirectionControl pidDirection) {
-        this.pidDirection = pidDirection;
+        FourWheelHolonomicDrive.pidDirection = pidDirection;
+    }
+
+    public void setPidAim(PIDRotationControl pidAim) {
+        FourWheelHolonomicDrive.pidAim = pidAim;
+    }
+
+    public void resetHistory() {
+        pidRotation.getHistory().setAccumulated(new RotationControlError());
+        pidAim.getHistory().setAccumulated(new RotationControlError());
+        pidDirection.getHistory().setAccumulated(new DirectionControlError());
     }
 }

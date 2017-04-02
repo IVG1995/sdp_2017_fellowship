@@ -1,18 +1,19 @@
 package strategy.actions;
 
+import strategy.Strategy;
 import strategy.actions.defence.Annoy;
 import strategy.actions.defence.BlockPass;
 import strategy.actions.defence.Clear;
-import strategy.actions.offense.OffensiveKick;
+import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
 import strategy.actions.other.Goto;
 import strategy.actions.other.Waiting;
+import strategy.controllers.essentials.MotionController;
 import strategy.points.basicPoints.BallPoint;
 import strategy.robots.RobotBase;
 import vision.Ball;
-import strategy.Strategy;
 import vision.Robot;
 import vision.RobotType;
 import vision.constants.Constants;
@@ -189,6 +190,7 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
         // TODO: ???
         // Ball is free, no other conditions apply ==> GO_TO_BALL
         this.nextState = MainOffenseEnum.GO_TO_BALL;
+
         return this.nextState;
 
     }
@@ -197,9 +199,12 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
     public void tok() {
         this.robot.MOTION_CONTROLLER.clearObstacles();
         this.lastState = this.nextState;
+        if (this.nextState != MainOffenseEnum.WAIT) {
+            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
+        }
         switch (this.nextState) {
             case SCORE:
-                this.enterAction(new OffensiveKick(this.robot), 0, 0);
+                this.enterAction(new PreciseKick(this.robot), 0, 0);
                 break;
             case SAFE:
                 this.enterAction(new GoToSafeLocation(this.robot), 0, 0);

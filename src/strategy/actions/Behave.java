@@ -1,25 +1,17 @@
 package strategy.actions;
 
-import strategy.GUI;
 import strategy.Strategy;
-import strategy.WorldTools;
+import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
-import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
-import strategy.points.basicPoints.BallPoint;
-import strategy.robots.Fred;
-import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.Ball;
 import vision.Robot;
 import vision.RobotType;
 import vision.constants.Constants;
-import vision.settings.SettingsManager;
 import vision.tools.VectorGeometry;
-
-import java.io.IOException;
 
 /**
  * Created by Simon Rovder
@@ -65,7 +57,7 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                 this.enterAction(new DefendGoal(this.robot), 0, 0);
                 break;
             case KICK:
-                this.enterAction(new OffensiveKick(this.robot), 0, 0);
+                this.enterAction(new PreciseKick(this.robot), 0, 0);
                 break;
             case SHUNT:
                 this.enterAction(new ShuntKick(this.robot), 0, 0);
