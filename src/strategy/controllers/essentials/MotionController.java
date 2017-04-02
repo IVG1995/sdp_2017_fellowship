@@ -41,6 +41,10 @@ public class MotionController extends ControllerBase {
         this.mode = mode;
     }
 
+    public MotionMode getMode() {
+        return mode;
+    }
+
     public void setTolerance(int tolerance){
         this.tolerance = tolerance;
     }

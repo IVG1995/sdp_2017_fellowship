@@ -3,6 +3,7 @@ package strategy.points.basicPoints;
 import strategy.points.*;
 import strategy.Strategy;
 import vision.*;
+import vision.constants.Constants;
 import vision.tools.VectorGeometry;
 
 
@@ -10,7 +11,6 @@ import vision.tools.VectorGeometry;
  *
  */
 public class KickablePoint extends DynamicPointBase{
-    private static final int DISTANCE_TO_KICKER = 25;
 
     @Override
     public void recalculate() {
@@ -28,7 +28,7 @@ public class KickablePoint extends DynamicPointBase{
 
             VectorGeometry ballToGoal = goal.minus(ball);
 
-            VectorGeometry kickablePoint = ball.plus(ballToGoal.normaliseToLength(-DISTANCE_TO_KICKER));
+            VectorGeometry kickablePoint = ball.plus(ballToGoal.normaliseToLength(-Constants.distanceToKicker));
 //            System.out.println("kickablePoint: " + kickablePoint.toString());
 
             this.x = (int) kickablePoint.x;

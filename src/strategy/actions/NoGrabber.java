@@ -9,6 +9,7 @@ import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
 import strategy.actions.other.Goto;
 import strategy.actions.other.Waiting;
+import strategy.controllers.essentials.MotionController;
 import strategy.points.basicPoints.BallPoint;
 import strategy.points.basicPoints.KickablePoint;
 import strategy.robots.RobotBase;
@@ -190,6 +191,7 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
         // TODO: ???
         // Ball is free, no other conditions apply ==> GO_TO_BALL
         this.nextState = NoGrabberEnum.GO_TO_BALL;
+
         return this.nextState;
 
     }
@@ -198,6 +200,9 @@ public class NoGrabber extends StatefulActionBase<NoGrabberEnum>{
     public void tok() {
         this.robot.MOTION_CONTROLLER.clearObstacles();
         this.lastState = this.nextState;
+        if (this.nextState != NoGrabberEnum.WAIT) {
+            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
+        }
         switch (this.nextState) {
             case SCORE:
                 this.enterAction(new OffensiveKick(this.robot), 0, 0);

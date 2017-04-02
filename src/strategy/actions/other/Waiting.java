@@ -3,6 +3,7 @@ package strategy.actions.other;
 import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.ActionException;
 import strategy.actions.ActionBase;
+import strategy.controllers.essentials.MotionController;
 import strategy.robots.RobotBase;
 import strategy.Strategy;
 
@@ -21,7 +22,11 @@ public class Waiting extends ActionBase {
     public void enterState(int newState) {
         if(newState == 0){
             this.robot.MOTION_CONTROLLER.clearObstacles();
-            this.robot.port.stop();
+            if (this.robot.MOTION_CONTROLLER.getMode() != MotionController.MotionMode.OFF) {
+                this.robot.port.stop();
+            }
+            this.robot.MOTION_CONTROLLER.setDestination(null);
+            this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.OFF);
             ((FrodoRobotPort)(this.robot.port)).stopKick();
         }
         this.state = newState;
@@ -30,6 +35,6 @@ public class Waiting extends ActionBase {
     @Override
     public void tok() throws ActionException {
         enterState(0);
-        throw new ActionException(true, true);
+        throw new ActionException(true, false);
     }
 }

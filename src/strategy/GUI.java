@@ -18,6 +18,8 @@ import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.RobotAlias;
 import communication.ports.interfaces.PropellerEquipedRobotPort;
+import vision.constants.Constants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -35,6 +37,9 @@ public class GUI extends JFrame implements KeyListener{
     private JTextField r;
     private JTextField directionalPID;
     private JTextField rotationalPID;
+    private JTextField aimPID;
+    private JTextField distanceToKicker;
+    private JTextField kickingAngle;
 
     public static final GUI gui = new GUI();
 
@@ -86,7 +91,7 @@ public class GUI extends JFrame implements KeyListener{
         c.add(label);
         this.rotationalPID = new JTextField();
         this.rotationalPID.setBounds(220,140,300,30);
-        this.rotationalPID.setText("30 2 1");
+        this.rotationalPID.setText(new FourWheelHolonomicDrive().getPidRotation().toString());
         c.add(this.rotationalPID);
         this.rotationalPID.addKeyListener(this);
 
@@ -96,16 +101,43 @@ public class GUI extends JFrame implements KeyListener{
         c.add(label);
         this.directionalPID = new JTextField();
         this.directionalPID.setBounds(220,180,300,30);
-        this.directionalPID.setText("10 0 0");
+        this.directionalPID.setText(new FourWheelHolonomicDrive().getPidDirection().toString());
         c.add(this.directionalPID);
         this.directionalPID.addKeyListener(this);
 
+        label = new JLabel("Aim PID: ");
+        label.setBounds(20,220,200,30);
+        c.add(label);
+        this.aimPID = new JTextField();
+        this.aimPID.setBounds(220,220,300,30);
+        this.aimPID.setText(new FourWheelHolonomicDrive().getPidAim().toString());
+        c.add(this.aimPID);
+        this.aimPID.addKeyListener(this);
+
+        label = new JLabel("Kicking Distance: ");
+        label.setBounds(20,260,200,30);
+        c.add(label);
+        this.distanceToKicker = new JTextField();
+        this.distanceToKicker.setBounds(220,260,300,30);
+        this.distanceToKicker.setText(Integer.toString(Constants.distanceToKicker));
+        c.add(this.distanceToKicker);
+        this.distanceToKicker.addKeyListener(this);
+
+        label = new JLabel("Kicking Angle Tolerance: ");
+        label.setBounds(20,300,200,30);
+        c.add(label);
+        this.kickingAngle = new JTextField();
+        this.kickingAngle.setBounds(220,300,300,30);
+        this.kickingAngle.setText(Double.toString(Constants.kickingAngleTolerance * 180 / Math.PI));
+        c.add(this.kickingAngle);
+        this.kickingAngle.addKeyListener(this);
+
 
         label = new JLabel("Command box:");
-        label.setBounds(20,250,200,30);
+        label.setBounds(20,340,200,30);
         c.add(label);
         r = new JTextField();
-        r.setBounds(220,250,300,30);
+        r.setBounds(220,340,300,30);
         c.add(r);
         r.addKeyListener(this);
 
@@ -240,8 +272,22 @@ public class GUI extends JFrame implements KeyListener{
                     System.out.println("Directional PID change");
                     try{
                         drive.setPidDirection(parsePIDDirectionControl(this.directionalPID.getText()));
-                    } catch(Exception ex){}
+                    } catch(Exception ex){
+                        ex.printStackTrace();
+                    }
                     System.out.println("Directional PID change : " + drive.getPidDirection().toString());
+                } else if(e.getSource() == this.aimPID){
+                    System.out.println("Aim PID change");
+                    try{
+                        drive.setPidAim(parsePIDRotationControl((this.aimPID.getText())));
+                    } catch(Exception ex){}
+                    System.out.println("Aim PID change : " + drive.getPidAim().toString());
+                } else if (e.getSource() == this.distanceToKicker){
+                    System.out.println("Kicking Distance change");
+                    Constants.distanceToKicker = Integer.parseInt(this.distanceToKicker.getText());
+                } else if (e.getSource() == this.kickingAngle){
+                    System.out.println("Kicking Angle change");
+                    Constants.kickingAngleTolerance = Double.parseDouble(this.kickingAngle.getText()) * Math.PI / 180;
                 }
             }
 

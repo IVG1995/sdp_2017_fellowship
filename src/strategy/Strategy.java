@@ -4,6 +4,7 @@ import communication.PortListener;
 import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.Behave;
 import strategy.actions.NoGrabber;
+import strategy.actions.calibration.AimCalibration;
 import strategy.actions.offense.BallGrab;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
@@ -228,6 +229,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     break;
                 case "no_grabber":
                     frodo.ACTION_CONTROLLER.setAction(new NoGrabber(frodo));
+                    break;
+                case "aim":
+                    frodo.ACTION_CONTROLLER.setAction(new AimCalibration(frodo));
                     break;
             }
         }

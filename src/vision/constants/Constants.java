@@ -9,8 +9,11 @@ public class Constants {
 	public static final int INPUT_HEIGHT = 480; // In pixels
 	public static final int PITCH_WIDTH  = 300; // In centimetres
 	public static final int PITCH_HEIGHT = 220; // In centimetres
+
 	// I don't remember what the following two do...
 	public static boolean   GUI          = true;
 	public static boolean   TIMER        = false;
+    public static double    kickingAngleTolerance = Math.PI / 12;
+    public static int       distanceToKicker = 15;
 //	public static final int PREVIEW_FACTOR = 2;
 }
