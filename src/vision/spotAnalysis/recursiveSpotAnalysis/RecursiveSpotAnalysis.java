@@ -5,6 +5,7 @@ import vision.colorAnalysis.SDPColorInstance;
 import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
 import vision.gui.Preview;
+import vision.rawInput.RawInputListener;
 import vision.spotAnalysis.SpotAnalysisBase;
 import vision.spotAnalysis.approximatedSpotAnalysis.Spot;
 
@@ -53,7 +54,10 @@ public class RecursiveSpotAnalysis extends SpotAnalysisBase {
             this.processPixel(x + 1, y, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x, y + 1, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x, y - 1, sdpColorInstance, average, maxDepth - 1);
-            Graphics g = Preview.getImageGraphics();
+            Preview p = SDPColors.getActivePreview();
+            Graphics g = null;
+            if(p != null)
+                g = p.getImageGraphics();
             if (g != null && sdpColorInstance.isVisible()) {
                 g.setColor(Color.WHITE);
                 g.drawRect(x, y, 1, 1);
@@ -101,7 +105,11 @@ public class RecursiveSpotAnalysis extends SpotAnalysisBase {
             Collections.sort(spots.get(color));
         }
         //this.informListeners(spots, time);
-        Preview.flushToLabel();
+        Preview p = SDPColors.getActivePreview();
+        if (p != null)
+            p.repaint();
+
+//        Preview.preview.repaint();
 
     }
 }

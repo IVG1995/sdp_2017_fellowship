@@ -1,26 +1,20 @@
 package vision.colorAnalysis;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Panel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.Predicate;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.sun.beans.editors.ColorEditor;
 
+import vision.Vision;
 import vision.gui.Preview;
 import vision.gui.PreviewSelectionListener;
+import vision.rawInput.RawInput;
 import vision.settings.SaveLoadCapable;
 import vision.tools.ColoredPoint;
 import vision.tools.VectorGeometry;
@@ -29,7 +23,9 @@ import vision.tools.VectorGeometry;
 /**
  * Created by Simon Rovder
  */
-public class SDPColorInstance extends JFrame implements ActionListener, ChangeListener, PreviewSelectionListener, SaveLoadCapable {
+public class SDPColorInstance extends JDialog implements ActionListener, ChangeListener, PreviewSelectionListener, SaveLoadCapable {
+
+	public Preview preview;
 
 	private JTextField minHueTextField;
 	private JTextField maxHueTextField;
@@ -107,8 +103,11 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 	
 	
 	public SDPColorInstance(String name, Color referenceColor, SDPColor sdpColor, Predicate<VectorGeometry> locationConstraint){
-		super();
+		super(Vision.vision, name, true);
 		this.name = name;
+		preview = new Preview();
+		RawInput.addRawInputListener(preview);
+		preview.addSelectionListener(this);
 		this.setupGUI();
 		this.referenceColor = referenceColor;
 		this.minColor = referenceColor;
@@ -118,14 +117,14 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.calibratingMinMax = false;
 		this.sdpColor = sdpColor;
 		this.locationConstraint = locationConstraint;
-		Preview.addSelectionListener(this);
 	}
 	
 	private void setupGUI(){
 		// .setBounds(TOP, LEFT, LENGTH, WIDTH)
-
-		setTitle(this.name);
-		setSize(640,480);
+		this.setSize(1300, 600);
+//		setLocationRelativeTo();
+		setDefaultCloseOperation(
+				JDialog.HIDE_ON_CLOSE);
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
@@ -282,6 +281,14 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		panel.add(this.calibrateMinMax);
 		this.calibrateMinMax.addActionListener(this);
 
+		JLabel previewLabel = new JLabel("Preview");
+		previewLabel.setBounds(600, 10, 200, 30);
+		Dimension d = preview.getSize();
+		panel.add(previewLabel);
+		preview.setBounds(600, 60, (int) (d.getWidth() + 0.5), (int) (d.getHeight() + 0.5));
+		panel.add(preview);
+
+
 		this.minHueSlider.setMaximum(100);
 		this.minHueSlider.setMinimum(0);
 		this.maxHueSlider.setMaximum(100);
@@ -300,12 +307,16 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 		this.maxSaturationSlider.addChangeListener(this);
 		this.minBrightnessSlider.addChangeListener(this);
 		this.maxBrightnessSlider.addChangeListener(this);
-		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		this.recalculateSliders();
 		this.myRepaint();
 		this.setVisible(false);
 	}
-	
+
+	public void setVisible(boolean v) {
+		preview.visible = v;
+		super.setVisible(v);
+	}
+
 	private void refreshColors(){
 		this.referenceColor = new Color(Color.HSBtoRGB((this.minHue + this.maxHue)/2, (this.maxSaturation + this.minSaturation)/2, (this.minBrightness + this.maxBrightness)/2));
 		this.negatedColor = new Color(255 - this.referenceColor.getRed(), 255 - this.referenceColor.getGreen(), 255 - this.referenceColor.getBlue());
@@ -361,7 +372,6 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 				this.done.setEnabled(false);
 				this.calibrateMinMax.setEnabled(false);
 				this.calibrate.setText("Calibrating.. Click to end");
-				Preview.preview.transferFocus();
 			}
 			this.calibrating = !this.calibrating;
 		} else if (e.getSource() == this.calibrateMinMax) {
@@ -379,7 +389,6 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 				this.calibrateMinMax.setText("Calibrating Min Max.. Click to end");
 				this.calibrateMin.setEnabled(true);
 				this.calibrateMax.setEnabled(true);
-				Preview.preview.transferFocus();
 			}
 			this.calibratingMinMax = !this.calibratingMinMax;
 		} else if (e.getSource() == this.calibrateMin) {
@@ -390,7 +399,6 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 			} else {
 				this.calibrateMax.setEnabled(false);
 				this.calibrateMin.setText("End min");
-				Preview.preview.transferFocus();
 			}
 			this.calibratingMin = !this.calibratingMin;
 		} else if (e.getSource() == this.calibrateMax) {
@@ -401,7 +409,6 @@ public class SDPColorInstance extends JFrame implements ActionListener, ChangeLi
 			} else {
 				this.calibrateMin.setEnabled(false);
 				this.calibrateMax.setText("End max");
-				Preview.preview.transferFocus();
 			}
 			this.calibratingMax = !this.calibratingMax;
 		} else {

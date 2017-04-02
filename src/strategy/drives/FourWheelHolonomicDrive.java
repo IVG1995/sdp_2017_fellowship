@@ -43,23 +43,6 @@ public class FourWheelHolonomicDrive implements DriveInterface {
     }
 
     public void aim(RobotPort port, double rotation) {
-
-        System.out.println(pidAim.toString());
-        System.out.println("rotation = " + rotation);
-
-        ControlResult rotationControl;
-        /*if (Math.abs(rotation * 180d / Math.PI) < 5d) {
-            rotationControl = new ControlResult();
-            pidAim.getHistory().setAccumulated(new RotationControlError());
-        } else {*/
-            rotationControl  = pidAim.getActuatorInput(new RotationControlError(rotation));
-//        }
-
-//        ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(
-//                rotationControl.getFront(),
-//                rotationControl.getBack(),
-//                rotationControl.getLeft(),
-//                rotationControl.getRight());
         if (rotation > 0) {
             ((FourWheelHolonomicRobotPort) port).fourWheelHolonomicMotion(24, -24, -24, 24);
         } else {

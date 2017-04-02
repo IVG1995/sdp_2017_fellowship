@@ -7,20 +7,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
+
 /**
  * Created by Simon Rovder
  */
-public class SDPConsole extends JFrame{
+public class SDPConsole extends JScrollPane {
 	
 	public final static SDPConsole console = new SDPConsole();
 	
 	private JTextArea consoleTextArea;
-	private JScrollPane scrollPane;
 	public final static String[] onCloseMessages = {
 		"Console cannot be closed.",
 		"Console cannot be closed.",
@@ -57,32 +53,11 @@ public class SDPConsole extends JFrame{
 	private SDPConsole(){
 		super();
 		this.setSize(640, 480);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setTitle("SDP Console");
-		
-		this.scrollPane = new JScrollPane();
-		getContentPane().add(this.scrollPane, BorderLayout.CENTER);
 		
 		this.consoleTextArea = new JTextArea();
 		this.consoleTextArea.setBackground(Color.WHITE);
 		this.consoleTextArea.setEditable(false);
-		this.scrollPane.setViewportView(this.consoleTextArea);
-		
-		this.addWindowListener(new WindowAdapter()
-		{
-		    public void windowClosing(WindowEvent e)
-		    {
-		    	if(SDPConsole.onCloseMessagesIndex == SDPConsole.onCloseMessages.length - 1){
-		    		// If the asshole refuses to stop closing the console, spawn 20 more of them.
-		    		for(int i = 0; i < 20; i++) new SDPConsole();
-		    		SDPConsole.message("You should have stopped sooner.", SDPConsole.console);
-		    	}
-		        SDPConsole.writeln(SDPConsole.onCloseMessages[SDPConsole.onCloseMessagesIndex]);
-		        SDPConsole.onCloseMessagesIndex = (1 + SDPConsole.onCloseMessagesIndex) % SDPConsole.onCloseMessages.length;
-		    }
-		});
-		this.setVisible(Constants.GUI);
-		
+		this.setViewportView(this.consoleTextArea);
 	}
 	
 	public static void write(String s){

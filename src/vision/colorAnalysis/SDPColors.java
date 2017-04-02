@@ -1,6 +1,7 @@
 package vision.colorAnalysis;
 
 import vision.constants.Constants;
+import vision.gui.Preview;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -24,8 +25,16 @@ public class SDPColors {
         colors.put(SDPColor.GREEN, new SDPColorInstance(SDPColor.GREEN.toString(), new Color(255, 0, 0), SDPColor.GREEN, x -> true));
         colors.put(SDPColor.GREEN_0, new SDPColorInstance(SDPColor.GREEN_0.toString(), new Color(255, 0, 0), SDPColor.GREEN_0, vectorGeometry -> (vectorGeometry.x >= Constants.INPUT_WIDTH / 2 && vectorGeometry.y >= Constants.INPUT_HEIGHT / 2)));
         colors.put(SDPColor.GREEN_1, new SDPColorInstance(SDPColor.GREEN_1.toString(), new Color(255, 0, 0), SDPColor.GREEN_1, vectorGeometry -> (vectorGeometry.x >= Constants.INPUT_WIDTH / 2 && vectorGeometry.y <= Constants.INPUT_HEIGHT / 2)));
-        colors.put(SDPColor.GREEN_2, new SDPColorInstance(SDPColor.GREEN_2.toString(), new Color(255, 0, 0), SDPColor.GREEN_2, vectorGeometry -> (vectorGeometry.x <= Constants.INPUT_WIDTH / 2 && vectorGeometry.y >= Constants.INPUT_HEIGHT / 2)));
         colors.put(SDPColor.GREEN_3, new SDPColorInstance(SDPColor.GREEN_3.toString(), new Color(255, 0, 0), SDPColor.GREEN_3, vectorGeometry -> (vectorGeometry.x <= Constants.INPUT_WIDTH / 2 && vectorGeometry.y <= Constants.INPUT_HEIGHT / 2)));
+        colors.put(SDPColor.GREEN_2, new SDPColorInstance(SDPColor.GREEN_2.toString(), new Color(255, 0, 0), SDPColor.GREEN_2, vectorGeometry -> (vectorGeometry.x <= Constants.INPUT_WIDTH / 2 && vectorGeometry.y >= Constants.INPUT_HEIGHT / 2)));
+    }
 
+    public static Preview getActivePreview() {
+        for(SDPColorInstance instance : colors.values()) {
+            if(instance.isVisible()) {
+                return instance.preview;
+            }
+        }
+        return null;
     }
 }

@@ -13,6 +13,7 @@ import vision.colorAnalysis.SDPColor;
 import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
 import vision.gui.Preview;
+import vision.rawInput.RawInput;
 import vision.rawInput.RawInputListener;
 import vision.spotAnalysis.SpotAnalysisBase;
 
@@ -87,43 +88,47 @@ public class ApproximatedSpotAnalysis extends SpotAnalysisBase implements RawInp
 			rf.reset();
 		}
 
-		Graphics g = Preview.getImageGraphics();
-		if(g != null) g.setColor(Color.WHITE);
+		Preview p = SDPColors.getActivePreview();
+		Graphics g = null;
+		if(p != null)
+			g = p.getImageGraphics();
+
+		if (g != null) g.setColor(Color.WHITE);
 
 
 		// 8ms SECTION
-		for(RegionFinder regionFinder : this.regionFinders.values()){
-			for(int i = 0; i < Constants.INPUT_WIDTH*Constants.INPUT_HEIGHT; i++){
-				if(isChanged(i)){
-					regionFinder.nextPixel(hsv[3*i], hsv[3*i+1], hsv[3*i+2], i%Constants.INPUT_WIDTH, i/Constants.INPUT_WIDTH);
+		for (RegionFinder regionFinder : this.regionFinders.values()) {
+			for (int i = 0; i < Constants.INPUT_WIDTH * Constants.INPUT_HEIGHT; i++) {
+				if (isChanged(i)) {
+					regionFinder.nextPixel(hsv[3 * i], hsv[3 * i + 1], hsv[3 * i + 2], i % Constants.INPUT_WIDTH, i / Constants.INPUT_WIDTH);
 				}
 			}
 		}
 		// SECTION END
 
 
-
-
 		HashMap<SDPColor, ArrayList<Spot>> spots = new HashMap<SDPColor, ArrayList<Spot>>();
-		for(SDPColor c : SDPColor.values()){
+		for (SDPColor c : SDPColor.values()) {
 			spots.put(c, new ArrayList<Spot>());
 		}
 		Spot spot;
-		
-		
-		for(RegionFinder regionFinder : this.regionFinders.values()){
-			for(Region2D potentialSpot : regionFinder.getRegion2Ds()){
+
+
+		for (RegionFinder regionFinder : this.regionFinders.values()) {
+			for (Region2D potentialSpot : regionFinder.getRegion2Ds()) {
 				spot = Spot.spotSpotter(this.hsv, potentialSpot, regionFinder.color);
-				if(spot != null){
-					if(g != null) g.drawRect(potentialSpot.x1, potentialSpot.y1, (potentialSpot.x2 - potentialSpot.x1), (potentialSpot.y2 - potentialSpot.y1));
+				if (spot != null) {
+					if (g != null)
+						g.drawRect(potentialSpot.x1, potentialSpot.y1, (potentialSpot.x2 - potentialSpot.x1), (potentialSpot.y2 - potentialSpot.y1));
 					spots.get(spot.color).add(spot);
 				}
 			}
 			Collections.sort(spots.get(regionFinder.color));
 		}
-		
-		
-		Preview.flushToLabel();
+
+		if (p != null)
+			p.repaint();
+//		Preview.preview.repaint();
 		//this.informListeners(spots, time);
 	}
 	

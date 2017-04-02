@@ -1,31 +1,29 @@
 package vision;
 
-import java.awt.BorderLayout;
-import java.util.LinkedList;
-
-import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-
+import strategy.GUI;
 import vision.colorAnalysis.ColorCalibration;
-import vision.preProcessing.OpenCVProcessor;
-import vision.preProcessing.BrightnessProcessor;
-import vision.preProcessing.matProcessor.BgSubtractor;
-import vision.preProcessing.matProcessor.GaussianBlur;
-import vision.robotAnalysis.newRobotAnalysis.BgRobotAnalysis;
-import vision.spotAnalysis.recursiveSpotAnalysis.PartialSpotAnalysis;
-import vision.tools.CommandLineParser;
 import vision.distortion.Distortion;
 import vision.distortion.DistortionPreview;
 import vision.gui.MiscellaneousSettings;
-import vision.gui.Preview;
 import vision.gui.SDPConsole;
+import vision.preProcessing.BrightnessProcessor;
+import vision.preProcessing.OpenCVProcessor;
+import vision.preProcessing.matProcessor.BgSubtractor;
+import vision.preProcessing.matProcessor.GaussianBlur;
 import vision.rawInput.RawInput;
-import vision.robotAnalysis.RobotPreview;
 import vision.robotAnalysis.DynamicWorldListener;
 import vision.robotAnalysis.RobotAnalysisBase;
+import vision.robotAnalysis.RobotPreview;
+import vision.robotAnalysis.newRobotAnalysis.BgRobotAnalysis;
 import vision.spotAnalysis.SpotAnalysisBase;
-import vision.spotAnalysis.approximatedSpotAnalysis.ApproximatedSpotAnalysis;
-import vision.spotAnalysis.recursiveSpotAnalysis.RecursiveSpotAnalysis;
+import vision.spotAnalysis.recursiveSpotAnalysis.PartialSpotAnalysis;
+import vision.tools.CommandLineParser;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.util.LinkedList;
 
 /**
  * Created by Simon Rovder
@@ -37,6 +35,8 @@ import vision.spotAnalysis.recursiveSpotAnalysis.RecursiveSpotAnalysis;
 public class Vision extends JFrame implements DynamicWorldListener {
 
     private LinkedList<VisionListener> visionListeners;
+
+    public static Vision vision;
 
     /**
      * Add a vision listener. The Listener will be notified whenever the
@@ -54,12 +54,14 @@ public class Vision extends JFrame implements DynamicWorldListener {
     public Vision(String[] args) {
         super("Vision");
         Predictor.getPredictor();
+        vision = this;
+
         this.visionListeners = new LinkedList<VisionListener>();
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
-        SpotAnalysisBase recursiveSpotAnalysis = new RecursiveSpotAnalysis();
+//        SpotAnalysisBase recursiveSpotAnalysis = new RecursiveSpotAnalysis();
         SpotAnalysisBase partialSpotAnalysis = new PartialSpotAnalysis();
-        SpotAnalysisBase approximateSpotAnalysis = new ApproximatedSpotAnalysis();
+//        SpotAnalysisBase approximateSpotAnalysis = new ApproximatedSpotAnalysis();
 
         BrightnessProcessor brightnessProcessor = new BrightnessProcessor();
         OpenCVProcessor openCVProcessor = new OpenCVProcessor();
@@ -73,7 +75,6 @@ public class Vision extends JFrame implements DynamicWorldListener {
         RawInput.addPreProcessor(brightnessProcessor);
         RawInput.addPreProcessor(openCVProcessor);
         RawInput.addRawInputListener(partialSpotAnalysis);
-        RawInput.addRawInputListener(Preview.preview);
         RawInput.addRawInputListener(Distortion.distortion);
         partialSpotAnalysis.addSpotListener(Distortion.distortion);
         DistortionPreview.addDistortionPreviewClickListener(Distortion.distortion);
@@ -90,11 +91,18 @@ public class Vision extends JFrame implements DynamicWorldListener {
         tabbedPane.addTab("Distortion", null, Distortion.distortion, null);
 //		tabbedPane.addTab("Robots", null, RobotAnalysis.strategy.robots, null);
         tabbedPane.addTab("Misc Settings", null, MiscellaneousSettings.miscSettings, null);
+        tabbedPane.addTab("Strategy", null, GUI.gui, null);
+        tabbedPane.addTab("Console", null, SDPConsole.console, null);
 
-        SDPConsole.console.setVisible(true);
+        tabbedPane.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                RobotPreview.preview.visible = tabbedPane.getSelectedIndex() == 1;
+                DistortionPreview.preview.visible = tabbedPane.getSelectedIndex() == 2;
+            }
+        });
 
         this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-        this.setSize(640, 480);
+        this.setSize(1200, 600);
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 terminateVision();
@@ -103,6 +111,7 @@ public class Vision extends JFrame implements DynamicWorldListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         CommandLineParser.parser.newParse(args, this);
         this.setVisible(true);
+        this.setResizable(false);
     }
 
     /**

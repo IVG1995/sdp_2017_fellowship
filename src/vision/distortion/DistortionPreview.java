@@ -1,21 +1,21 @@
 package vision.distortion;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedList;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import vision.constants.Constants;
 /**
  * Created by Simon Rovder
  */
-public class DistortionPreview extends JFrame {
-	
-	public final JLabel previewLabel;
-	
+public class DistortionPreview extends JPanel {
+
 	public static final DistortionPreview preview = new DistortionPreview();
+
+	public boolean visible = false;
 	
 	private LinkedList<DistortionPreviewClickListener> listeners;
 	
@@ -30,14 +30,11 @@ public class DistortionPreview extends JFrame {
 	}
 	
 	private DistortionPreview(){
-		super("Distortion Preview");
-		this.setSize(Constants.INPUT_WIDTH, Constants.INPUT_HEIGHT + 20);
-		this.setResizable(false);
+		super();
+		this.setSize(Constants.INPUT_WIDTH, Constants.INPUT_HEIGHT);
 		this.listeners = new LinkedList<DistortionPreviewClickListener>();
-		this.previewLabel = new JLabel();
-		this.getContentPane().add(this.previewLabel);
-		this.setVisible(false);
-		this.previewLabel.addMouseListener(new MouseListener() {
+		this.setBorder(BorderFactory.createLineBorder(Color.black));
+		this.addMouseListener(new MouseListener() {
 	        @Override
 	        public void mouseClicked(MouseEvent e) {
 	            DistortionPreview.preview.clickHandler(e.getX(), e.getY());

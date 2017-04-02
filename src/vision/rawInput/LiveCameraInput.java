@@ -161,8 +161,6 @@ public class LiveCameraInput extends AbstractRawInput implements CaptureCallback
 		this.setActive(true);
 		this.startButton.setEnabled(false);
 		this.stopButton.setEnabled(true);
-		Preview.preview.setVisible(true);
-		
 	}
 
 	@Override
