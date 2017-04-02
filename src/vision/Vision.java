@@ -79,7 +79,6 @@ public class Vision extends JFrame implements DynamicWorldListener {
         RawInput.addPreProcessor(brightnessProcessor);
         RawInput.addPreProcessor(openCVProcessor);
         RawInput.addRawInputListener(partialSpotAnalysis);
-        RawInput.addRawInputListener(new Preview());
         RawInput.addRawInputListener(Distortion.distortion);
         partialSpotAnalysis.addSpotListener(Distortion.distortion);
         DistortionPreview.addDistortionPreviewClickListener(Distortion.distortion);

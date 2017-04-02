@@ -43,7 +43,11 @@ public class RegionFinder {
     
     public void nextPixel(float h, float s, float v, int x, int y){
 		if (this.colorInstance.isColor(h, s, v)) {
-			Graphics g = Preview.getImageGraphics();
+			Preview p = SDPColors.getActivePreview();
+			Graphics g = null;
+			if(p != null) {
+				g = p.getImageGraphics();
+			}
 			if (g != null && this.colorInstance.isVisible()) {
 				g.setColor(this.colorInstance.negatedColor);
 				g.drawLine(x, y, x, y);

@@ -103,9 +103,10 @@ public class SDPColorInstance extends JDialog implements ActionListener, ChangeL
 	
 	
 	public SDPColorInstance(String name, Color referenceColor, SDPColor sdpColor, Predicate<VectorGeometry> locationConstraint){
-		super(Vision.vision, true);
+		super(Vision.vision, name, true);
 		this.name = name;
 		preview = new Preview();
+		RawInput.addRawInputListener(preview);
 		preview.addSelectionListener(this);
 		this.setupGUI();
 		this.referenceColor = referenceColor;
@@ -120,8 +121,6 @@ public class SDPColorInstance extends JDialog implements ActionListener, ChangeL
 	
 	private void setupGUI(){
 		// .setBounds(TOP, LEFT, LENGTH, WIDTH)
-
-		setTitle(this.name);
 		this.setSize(1300, 600);
 //		setLocationRelativeTo();
 		setDefaultCloseOperation(
@@ -308,7 +307,6 @@ public class SDPColorInstance extends JDialog implements ActionListener, ChangeL
 		this.maxSaturationSlider.addChangeListener(this);
 		this.minBrightnessSlider.addChangeListener(this);
 		this.maxBrightnessSlider.addChangeListener(this);
-		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		this.recalculateSliders();
 		this.myRepaint();
 		this.setVisible(false);

@@ -88,7 +88,11 @@ public class ApproximatedSpotAnalysis extends SpotAnalysisBase implements RawInp
 			rf.reset();
 		}
 
-		Graphics g = Preview.getImageGraphics();
+		Preview p = SDPColors.getActivePreview();
+		Graphics g = null;
+		if(p != null)
+			g = p.getImageGraphics();
+
 		if (g != null) g.setColor(Color.WHITE);
 
 
@@ -122,7 +126,6 @@ public class ApproximatedSpotAnalysis extends SpotAnalysisBase implements RawInp
 			Collections.sort(spots.get(regionFinder.color));
 		}
 
-		Preview p = SDPColors.getActivePreview();
 		if (p != null)
 			p.repaint();
 //		Preview.preview.repaint();

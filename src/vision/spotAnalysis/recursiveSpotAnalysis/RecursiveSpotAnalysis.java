@@ -54,7 +54,10 @@ public class RecursiveSpotAnalysis extends SpotAnalysisBase {
             this.processPixel(x + 1, y, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x, y + 1, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x, y - 1, sdpColorInstance, average, maxDepth - 1);
-            Graphics g = Preview.getImageGraphics();
+            Preview p = SDPColors.getActivePreview();
+            Graphics g = null;
+            if(p != null)
+                g = p.getImageGraphics();
             if (g != null && sdpColorInstance.isVisible()) {
                 g.setColor(Color.WHITE);
                 g.drawRect(x, y, 1, 1);

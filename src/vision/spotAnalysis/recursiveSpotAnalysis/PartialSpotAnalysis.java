@@ -64,7 +64,11 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
             this.processPixel(x - 1, y, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x + 1, y, sdpColorInstance, average, maxDepth - 1);
 
-            Graphics g = Preview.getImageGraphics();
+            Preview p = SDPColors.getActivePreview();
+            Graphics g = null;
+            if(p != null)
+                g = p.getImageGraphics();
+
             if (g != null && sdpColorInstance.isVisible()) {
                 g.setColor(Color.WHITE);
                 g.drawRect(x, y, 1, 1);
@@ -140,11 +144,11 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
         }
 
-        BgSubtractor.objects = objs;
         Preview p = SDPColors.getActivePreview();
         if (p != null) {
             p.repaint();
         }
+        BgSubtractor.objects = objs;
         this.informListeners(objs, time);
 
 

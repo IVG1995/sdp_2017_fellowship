@@ -22,8 +22,8 @@ import java.util.ArrayList;
 public class Preview extends JPanel implements RawInputListener {
 
     private ArrayList<PreviewSelectionListener> listeners;
-    private static BufferedImage drawnImage;
-    private static BufferedImage originalImage;
+    private BufferedImage drawnImage;
+    private BufferedImage originalImage;
 
     public boolean visible = false;
 
@@ -93,11 +93,10 @@ public class Preview extends JPanel implements RawInputListener {
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(visible)
-            g.drawImage(drawnImage, 0, 0, null);
+        g.drawImage(drawnImage, 0, 0, null);
     }
 
-    public static Graphics getImageGraphics() {
+    public Graphics getImageGraphics() {
         if (drawnImage == null) {
             return null;
         }
