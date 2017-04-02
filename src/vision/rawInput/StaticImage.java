@@ -158,7 +158,6 @@ public class StaticImage extends AbstractRawInput implements ActionListener {
 
             this.timer.start();
             this.btnBrowse.setEnabled(false);
-            Preview.preview.setVisible(true);
         } catch (Exception e) {
             SDPConsole.message("Could not open the image. Something went wrong. Try JPG and JPEG images of size 640 by 480.", this);
         }

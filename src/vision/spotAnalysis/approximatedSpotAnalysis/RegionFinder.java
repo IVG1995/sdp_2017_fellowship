@@ -8,6 +8,8 @@ import vision.colorAnalysis.SDPColorInstance;
 import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
 import vision.gui.Preview;
+import vision.rawInput.RawInputListener;
+
 /**
  * Created by Simon Rovder
  */
@@ -40,16 +42,16 @@ public class RegionFinder {
     }
     
     public void nextPixel(float h, float s, float v, int x, int y){
-    	if(this.colorInstance.isColor(h, s, v)){
-        	Graphics g = Preview.getImageGraphics();
-        	if(g != null && this.colorInstance.isVisible()){
-        		g.setColor(this.colorInstance.negatedColor);
-        		g.drawLine(x, y, x, y);
-        	}
-    		counter++;
-    		this.xAxis[x] = true;
-    		this.yAxis[y] = true;
-    	}
+		if (this.colorInstance.isColor(h, s, v)) {
+			Graphics g = Preview.getImageGraphics();
+			if (g != null && this.colorInstance.isVisible()) {
+				g.setColor(this.colorInstance.negatedColor);
+				g.drawLine(x, y, x, y);
+			}
+			counter++;
+			this.xAxis[x] = true;
+			this.yAxis[y] = true;
+		}
     }
     
     public void nextPixel(boolean b, int x, int y){

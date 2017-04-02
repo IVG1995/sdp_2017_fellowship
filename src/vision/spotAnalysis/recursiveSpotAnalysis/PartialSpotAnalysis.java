@@ -6,6 +6,7 @@ import vision.colorAnalysis.SDPColors;
 import vision.constants.Constants;
 import vision.gui.Preview;
 import vision.preProcessing.matProcessor.BgSubtractor;
+import vision.rawInput.RawInputListener;
 import vision.shapeObject.CircleObject;
 import vision.shapeObject.ShapeObject;
 import vision.spotAnalysis.SpotAnalysisBase;
@@ -62,6 +63,7 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
             this.processPixel(x, y - 1, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x - 1, y, sdpColorInstance, average, maxDepth - 1);
             this.processPixel(x + 1, y, sdpColorInstance, average, maxDepth - 1);
+
             Graphics g = Preview.getImageGraphics();
             if (g != null && sdpColorInstance.isVisible()) {
                 g.setColor(Color.WHITE);
@@ -137,9 +139,14 @@ public class PartialSpotAnalysis extends SpotAnalysisBase {
 
 
         }
+
         BgSubtractor.objects = objs;
+        Preview p = SDPColors.getActivePreview();
+        if (p != null) {
+            p.repaint();
+        }
         this.informListeners(objs, time);
-        Preview.flushToLabel();
+
 
     }
 }

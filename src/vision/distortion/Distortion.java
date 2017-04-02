@@ -1,8 +1,6 @@
 package vision.distortion;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -70,9 +68,8 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 
     public static boolean ROTATE_PITCH = true;
 
-    private void updateDistortion() {
+    public void updateDistortion() {
         if (this.savedImage != null) {
-            DistortionPreview.preview.setVisible(true);
             VectorGeometry pg = new VectorGeometry();
             barrel = ((double) ((Integer) this.barrelSpinner.getValue())) / 20000000;
             rotation = ((double) ((Integer) this.rotationSpinner.getValue())) / 300;
@@ -97,7 +94,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
                     }
                 }
             }
-            Graphics g = DistortionPreview.preview.previewLabel.getGraphics();
+            Graphics g = DistortionPreview.preview.getGraphics();
             g.drawImage(this.previewImage, 0, 0, null);
             g.setColor(Color.WHITE);
             g.fillRect(this.topLeftPoint.x - 5, this.topLeftPoint.y - 5, 10, 10);
@@ -106,18 +103,18 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
         }
     }
 
+    public void repaint() {
+        super.repaint();
+        this.updateDistortion();
+    }
+
     public static void addDistortionListener(DistortionListener listener) {
         Distortion.distortion.distortionListeners.add(listener);
     }
 
     @Override
     public void nextFrame(BufferedImage image, long time) {
-        if (this.savedImage == null) {
-            this.savedImage = image;
-            this.updateDistortion();
-        } else {
-            this.savedImage = image;
-        }
+        this.savedImage = image;
     }
 
 //	private void distortPoint(PointGeometry pg){
@@ -146,6 +143,17 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 
         this.distortionListeners = new LinkedList<DistortionListener>();
         this.setLayout(null);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(!Thread.interrupted()) {
+                    if(DistortionPreview.preview.visible) {
+                        Distortion.distortion.updateDistortion();
+                        DistortionPreview.preview.visible = false;
+                    }
+                }
+            }
+        }).start();
         this.addFocusListener(new FocusListener() {
 
             @Override
@@ -154,7 +162,7 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
 
             @Override
             public void focusGained(FocusEvent e) {
-                DistortionPreview.preview.setVisible(Constants.GUI);
+//                DistortionPreview.preview.setVisible(Constants.GUI);
             }
         });
 
@@ -240,6 +248,10 @@ public class Distortion extends JPanel implements SaveLoadCapable, RawInputListe
         bottomRightButton.addActionListener(this);
         bottomRightButton.setBounds(210, 240, 148, 23);
         this.add(bottomRightButton);
+
+        Dimension d = DistortionPreview.preview.getSize();
+        DistortionPreview.preview.setBounds(500, 10, (int) (d.getWidth() + 0.5), (int) (d.getHeight() + 0.5));
+        this.add(DistortionPreview.preview);
 
 
         this.barrelSpinner.addChangeListener(this);

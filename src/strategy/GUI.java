@@ -27,7 +27,7 @@ import java.util.ArrayList;
 /**
  * Created by Simon Rovder
  */
-public class GUI extends JFrame implements KeyListener{
+public class GUI extends JPanel implements KeyListener{
 
     public JTextField action;
     public JTextField searchType;
@@ -39,10 +39,10 @@ public class GUI extends JFrame implements KeyListener{
     public static final GUI gui = new GUI();
 
     private GUI(){
-        super("Strategy");
+        super();
         this.setSize(640,480);
         this.setLayout(null);
-        Container c = this.getContentPane();
+        Container c = this;
 
 
         JLabel label = new JLabel("Action:");
@@ -74,11 +74,6 @@ public class GUI extends JFrame implements KeyListener{
         this.behaviour.setEditable(false);
         c.add(this.behaviour);
         this.addKeyListener(this);
-
-        this.setVisible(true);
-
-
-
 
 
         label = new JLabel("Rotational PID: ");
