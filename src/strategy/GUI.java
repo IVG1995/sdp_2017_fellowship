@@ -1,6 +1,10 @@
 package strategy;
 
 import strategy.actions.Behave;
+import strategy.actions.MainOffense;
+import strategy.actions.defence.Annoy;
+import strategy.actions.defence.BlockPass;
+import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
 import strategy.actions.other.Goto;
@@ -132,56 +136,10 @@ public class GUI extends JFrame implements KeyListener{
             this.robot.MOTION_CONTROLLER.setHeading(null);
             this.robot.MOTION_CONTROLLER.setDestination(null);
             this.robot.MOTION_CONTROLLER.clearObstacles();
-            if(this.robot instanceof Fred){
-                ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(false);
-                ((FredRobotPort)this.robot.port).propeller(0);
-                ((FredRobotPort)this.robot.port).propeller(0);
-                ((FredRobotPort)this.robot.port).propeller(0);
-            }
             this.robot.port.sdpPort.commandSender("f");
             this.robot.port.sdpPort.commandSender("f");
             this.robot.port.sdpPort.commandSender("f");
             switch(e.getKeyChar()){
-                case 'a':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(null);
-                    this.robot.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.FELIX));
-                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
-                    break;
-                case 'q':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(null);
-                    this.robot.MOTION_CONTROLLER.setDestination(new InFrontOfRobot(RobotAlias.JEFFREY));
-                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.JEFFREY));
-                    break;
-                case 'o':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(null);
-                    this.robot.MOTION_CONTROLLER.setDestination(new MidPoint(new RobotPoint(RobotAlias.FELIX), new BallPoint()));
-                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.FELIX));
-                    break;
-                case 'p':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(null);
-                    this.robot.MOTION_CONTROLLER.setDestination(new MidPoint(new RobotPoint(RobotAlias.JEFFREY), new BallPoint()));
-                    this.robot.MOTION_CONTROLLER.setHeading(new RobotPoint(RobotAlias.JEFFREY));
-                    break;
-                case 'd':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(new DefendGoal(this.robot));
-                    break;
-                case 'k':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(new OffensiveKick(this.robot));
-                    break;
-                case 's':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(new GoToSafeLocation(this.robot));
-                    break;
-                case 'b':
-                    this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(new Behave(this.robot));
-                    break;
                 case '1':
                     this.robot.ACTION_CONTROLLER.setAction(new Goto(this.robot, new ConstantPoint(-50,-50)));
                     break;
@@ -210,16 +168,46 @@ public class GUI extends JFrame implements KeyListener{
                     this.robot.ACTION_CONTROLLER.setAction(new Goto(this.robot, new ConstantPoint(50,50)));
                     break;
                 case 'h':
-                case ' ':
-                    this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.OFF);
-                    if(this.robot instanceof Fred){
-                        ((Fred)this.robot).PROPELLER_CONTROLLER.setActive(false);
-                        ((PropellerEquipedRobotPort) this.robot.port).propeller(0);
-                        ((PropellerEquipedRobotPort) this.robot.port).propeller(0);
-                        ((PropellerEquipedRobotPort) this.robot.port).propeller(0);
-                    }
                     this.robot.ACTION_CONTROLLER.setAction(new Waiting(this.robot));
+                    this.robot.port.halt();
+                    this.robot.port.stop();
+                case 'd':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new DefendGoal(this.robot));
                     break;
+                case 'k':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new OffensiveKick(this.robot));
+                    break;
+                case 's':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new GoToSafeLocation(this.robot));
+                    break;
+                case 'b':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new Behave(this.robot));
+                    break;
+                case 'o':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new MainOffense(this.robot));
+                    break;
+                case 'g':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new Goto(this.robot, new BallPoint()));
+                    break;
+                case 'a':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new Annoy(this.robot));
+                    break;
+                case 'p':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new BlockPass(this.robot));
+                    break;
+                case 'w':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new WallKick(this.robot));
+                    break;
+
             }
         }
 

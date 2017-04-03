@@ -1,7 +1,7 @@
 package strategy;
 
 import strategy.actions.Behave;
-import strategy.actions.NoGrabber;
+import strategy.actions.MainOffense;
 import strategy.actions.offense.BallGrab;
 import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.ShuntKick;
@@ -9,7 +9,6 @@ import strategy.actions.other.*;
 import strategy.controllers.essentials.MotionController;
 import strategy.points.basicPoints.*;
 import strategy.robots.Frodo;
-import strategy.robots.RobotBase;
 import vision.*;
 import vision.Robot;
 
@@ -182,7 +181,7 @@ public class TestStrategy {
                     frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new GrabbablePoint(RobotType.FRIEND_2)));
                     break;
                 case "no_grabber":
-                    frodo.ACTION_CONTROLLER.setAction(new NoGrabber(frodo));
+                    frodo.ACTION_CONTROLLER.setAction(new MainOffense(frodo));
                     break;
                 case "update":
                     this.updateWorld();
