@@ -1,5 +1,6 @@
 package strategy.actions;
 
+import strategy.GUI;
 import strategy.Strategy;
 import strategy.drives.FourWheelHolonomicDrive;
 import strategy.points.DynamicPoint;
@@ -48,6 +49,9 @@ public abstract class ActionBase implements ActionInterface {
         this.robot = robot;
         this.point = point;
         this.enterState(0);
+
+        // Set Strategy GUI text-field to show this action
+        GUI.gui.action.setText(this.description());
     }
 
     public ActionBase(RobotBase robot){

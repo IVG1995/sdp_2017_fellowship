@@ -257,7 +257,7 @@ public class BgRobotAnalysis extends RobotAnalysisBase {
                 for (RobotType rType : lastKnownRobots.keySet()) {
                     if (!robot_mask.containsKey(rType)) {
                         //probabilities based on distance
-                        obj_prob.put(rType, 1 / (Math.sqrt(((lastKnownRobots.get(rType).velocity.x - obj.pos.x) * (lastKnownRobots.get(rType).velocity.x - obj.pos.x)) + ((lastKnownRobots.get(rType).velocity.y - obj.pos.y) * (lastKnownRobots.get(rType).velocity.y - obj.pos.y)))));
+                        obj_prob.put(rType, 1 / (Math.sqrt(((lastKnownRobots.get(rType).location.x - obj.pos.x) * (lastKnownRobots.get(rType).location.x - obj.pos.x)) + ((lastKnownRobots.get(rType).location.y - obj.pos.y) * (lastKnownRobots.get(rType).location.y - obj.pos.y)))));
                         //obj_prob.put(rType, 1 / (Math.sqrt((lastKnownRobots.get(rType).velocity.x - obj.pos.x) * (lastKnownRobots.get(rType).velocity.x - obj.pos.x)) + Math.sqrt((lastKnownRobots.get(rType).velocity.y - obj.pos.y) * (lastKnownRobots.get(rType).velocity.y - obj.pos.y))));
                     }
                 }
