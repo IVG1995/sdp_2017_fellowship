@@ -5,6 +5,7 @@ import strategy.actions.MainOffense;
 import strategy.actions.defence.Annoy;
 import strategy.actions.defence.BlockPass;
 import strategy.actions.offense.OffensiveKick;
+import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
@@ -200,6 +201,10 @@ public class GUI extends JPanel implements KeyListener{
                 case 'k':
                     this.robot.setControllersActive(true);
                     this.robot.ACTION_CONTROLLER.setAction(new OffensiveKick(this.robot));
+                    break;
+                case 'j':
+                    this.robot.setControllersActive(true);
+                    this.robot.ACTION_CONTROLLER.setAction(new PreciseKick(this.robot));
                     break;
                 case 's':
                     this.robot.setControllersActive(true);

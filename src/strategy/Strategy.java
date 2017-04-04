@@ -6,6 +6,7 @@ import strategy.actions.Behave;
 import strategy.actions.MainOffense;
 import strategy.actions.calibration.AimCalibration;
 import strategy.actions.offense.BallGrab;
+import strategy.actions.offense.OffensiveKick;
 import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.ShuntKick;
 import strategy.actions.other.*;
@@ -126,6 +127,9 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     break;
                 case "kick":
                     frodo.ACTION_CONTROLLER.setAction(new PreciseKick(frodo));
+                    break;
+                case "offensive_kick":
+                    frodo.ACTION_CONTROLLER.setAction(new OffensiveKick(frodo));
                     break;
                 case "go_kick":
                     frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new KickablePoint()));
