@@ -11,7 +11,9 @@ import strategy.actions.other.GoToSafeLocation;
 import strategy.actions.other.Goto;
 import strategy.actions.other.Waiting;
 import strategy.controllers.essentials.MotionController;
+import strategy.drives.FourWheelHolonomicDrive;
 import strategy.points.basicPoints.BallPoint;
+import strategy.robots.Frodo;
 import strategy.robots.RobotBase;
 import vision.Ball;
 import vision.Robot;
@@ -26,7 +28,7 @@ import java.util.HashMap;
  */
 
 enum MainOffenseEnum {
-    DEFEND, SAFE, SCORE, CLEAR, ANNOY, GET_OPEN, BLOCK_PASS, WAIT, WALL, GO_TO_BALL
+    DEFEND, SAFE, SCORE, ANNOY, GET_OPEN, BLOCK_PASS, WAIT, WALL, GO_TO_BALL, START
 }
 
 public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
@@ -35,8 +37,13 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
     // each robot is from the ball, etc.
     private ClosestRobotInfo closestRobotInfo = new ClosestRobotInfo();
 
+    // Keep track of how long Frodo has been executing one continuous action.
+    // If long enough, reset PID settings so they don't go stale.
+    private int in_a_row = 0;
+
     public MainOffense(RobotBase robot) {
         super(robot, null);
+        this.lastState = MainOffenseEnum.START;
     }
 
     @Override
@@ -110,9 +117,6 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
                 return this.nextState;
             }
 
-            // We are closest to the ball by far AND have no shot ==> CLEAR
-            // TODO
-
             // None of the above conditions hold ==> DEFEND
             this.nextState = MainOffenseEnum.DEFEND;
             return this.nextState;
@@ -146,7 +150,6 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
         }
 
         // Friend has the ball ==> GET_OPEN
-        // TODO: Figure this out
         if (ballHolderType == RobotType.FRIEND_1 || this.closestRobotInfo.friendPossession()) {
             this.nextState = MainOffenseEnum.WAIT;
             return this.nextState;
@@ -198,6 +201,16 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
     @Override
     public void tok() {
         this.robot.MOTION_CONTROLLER.clearObstacles();
+
+        // Reset PID settings if they may have gone stale
+        if (this.lastState == this.nextState) {
+            this.in_a_row++;
+        } else this.in_a_row = 0;
+        if (this.in_a_row > 40) {
+            ((FourWheelHolonomicDrive)((Frodo)this.robot).drive).resetHistory();
+        }
+
+
         this.lastState = this.nextState;
         if (this.nextState != MainOffenseEnum.WAIT) {
             this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
@@ -223,9 +236,6 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
                 break;
             case BLOCK_PASS:
                 this.enterAction(new BlockPass(this.robot), 0, 0);
-                break;
-            case CLEAR:
-                this.enterAction(new Clear(this.robot), 0, 0);
                 break;
             case GO_TO_BALL:
                 this.enterAction(new Goto(this.robot, new BallPoint()), 0, 0);
