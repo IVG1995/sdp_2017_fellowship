@@ -3,7 +3,6 @@ package strategy.actions;
 import strategy.Strategy;
 import strategy.actions.defence.Annoy;
 import strategy.actions.defence.BlockPass;
-import strategy.actions.defence.Clear;
 import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
@@ -27,15 +26,15 @@ import java.util.HashMap;
  * A root action focused on offense and built for 2v2 matches.
  */
 
-enum MainOffenseEnum {
+enum OffenseEnum {
     DEFEND, SAFE, SCORE, ANNOY, GET_OPEN, BLOCK_PASS, WAIT, WALL, GO_TO_BALL, START
 }
 
-public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
+public class MainOffense extends StatefulActionBase<OffenseEnum>{
 
     // Contains info about which robot is closest to ball, how far away
     // each robot is from the ball, etc.
-    private ClosestRobotInfo closestRobotInfo = new ClosestRobotInfo();
+    private Samwise samwise = new Samwise();
 
     // Keep track of how long Frodo has been executing one continuous action.
     // If long enough, reset PID settings so they don't go stale.
@@ -43,24 +42,24 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
 
     public MainOffense(RobotBase robot) {
         super(robot, null);
-        this.lastState = MainOffenseEnum.START;
+        this.lastState = OffenseEnum.START;
     }
 
     @Override
     public void enterState(int newState) { this.state = newState; }
 
     @Override
-    protected MainOffenseEnum getState() {
+    protected OffenseEnum getState() {
         Ball ball = Strategy.world.getBall();
         Robot ally = Strategy.world.getRobot(RobotType.FRIEND_1);
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
         RobotType ballHolderType = Strategy.world.getProbableBallHolder();
-        this.closestRobotInfo.calculate_closest();
+        this.samwise.calculate_closest();
 
 
         if (us == null) {
             // ???
-            this.nextState = MainOffenseEnum.WAIT;
+            this.nextState = OffenseEnum.WAIT;
             return this.nextState;
         }
 
@@ -71,54 +70,54 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
 
             // Enemies have the ball OR ball is lost ==> DEFEND
             if (ballHolderType == RobotType.FOE_1 || ballHolderType == RobotType.FOE_2 || ball == null) {
-                this.nextState = MainOffenseEnum.DEFEND;
+                this.nextState = OffenseEnum.DEFEND;
                 return this.nextState;
             }
 
             // We're further away from our goal than the ball is ==> SAFE
             VectorGeometry ourGoal = new VectorGeometry(-Constants.PITCH_WIDTH / 2, 0);
             if (us.location.distance(ourGoal) > ball.location.distance(ourGoal)) {
-                this.nextState = MainOffenseEnum.SAFE;
+                this.nextState = OffenseEnum.SAFE;
                 return this.nextState;
             }
 
             // The ball is close to a wall ==> DEFEND
             if (Math.abs(ball.location.y) > Constants.PITCH_HEIGHT - 20 ||
                     Math.abs(ball.location.x) > Constants.PITCH_WIDTH - 20) {
-                this.nextState = MainOffenseEnum.DEFEND;
+                this.nextState = OffenseEnum.DEFEND;
                 return this.nextState;
             }
 
             // We have the ball AND a shot on goal ==> SCORE
             if (ballHolderType == RobotType.FRIEND_2 && shot_on_goal(us, us.location)) {
-                this.nextState = MainOffenseEnum.SCORE;
+                this.nextState = OffenseEnum.SCORE;
                 return this.nextState;
             }
 
             // There are no enemies ==> SCORE
             // ?: We are 0 distance away from the ball ==> SCORE
-            if (this.closestRobotInfo.getClosestEnemyDist() == null || this.closestRobotInfo.getDist(RobotType.FRIEND_2) == 0) {
-                this.nextState = MainOffenseEnum.SCORE;
+            if (this.samwise.getClosestEnemyDist() == null || this.samwise.getDist(RobotType.FRIEND_2) == 0) {
+                this.nextState = OffenseEnum.SCORE;
                 return this.nextState;
             }
 
             // Bug?: We are 0 distance away from the ball ==> SCORE
             // There are no enemies on the pitch ==> SCORE
-            if (this.closestRobotInfo.getDist(RobotType.FRIEND_2) == 0 || this.closestRobotInfo.getClosestEnemyDist() == null) {
-                this.nextState = MainOffenseEnum.SCORE;
+            if (this.samwise.getDist(RobotType.FRIEND_2) == 0 || this.samwise.getClosestEnemyDist() == null) {
+                this.nextState = OffenseEnum.SCORE;
                 return this.nextState;
             }
             
             // We are closest to the ball by far AND could have a shot ==> SCORE
-            if (this.closestRobotInfo.getClosest() == RobotType.FRIEND_2 && shot_on_goal(us, ball.location) &&
-                    (this.closestRobotInfo.getClosestEnemyDist() / this.closestRobotInfo.getDist(RobotType.FRIEND_2)) >= 2 &&
-                    this.closestRobotInfo.getClosestEnemyDist() > 50) {
-                this.nextState = MainOffenseEnum.SCORE;
+            if (this.samwise.getClosest() == RobotType.FRIEND_2 && shot_on_goal(us, ball.location) &&
+                    (this.samwise.getClosestEnemyDist() / this.samwise.getDist(RobotType.FRIEND_2)) >= 2 &&
+                    this.samwise.getClosestEnemyDist() > 50) {
+                this.nextState = OffenseEnum.SCORE;
                 return this.nextState;
             }
 
             // None of the above conditions hold ==> DEFEND
-            this.nextState = MainOffenseEnum.DEFEND;
+            this.nextState = OffenseEnum.DEFEND;
             return this.nextState;
 
         }
@@ -130,8 +129,8 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
 
         // We need to defend (see method for details) ==> DEFEND
         // (basically if the defender is out of position)
-        if (doWeNeedToDefend()) {
-            this.nextState = MainOffenseEnum.DEFEND;
+        if (samwise.doWeNeedToDefend()) {
+            this.nextState = OffenseEnum.DEFEND;
             return this.nextState;
         }
 
@@ -142,22 +141,23 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
         //      (to keep out of friendly defender's way)
         if (ballHolderType == RobotType.FOE_1 || ballHolderType == RobotType.FOE_2)  {
             if (holderRobot.location.x > -(Constants.PITCH_WIDTH / 2) + 50) {
-                this.nextState = MainOffenseEnum.ANNOY;
+                this.nextState = OffenseEnum.ANNOY;
             } else {
-                this.nextState = MainOffenseEnum.BLOCK_PASS;
+                this.nextState = OffenseEnum.BLOCK_PASS;
             }
             return this.nextState;
         }
 
-        // Friend has the ball ==> GET_OPEN
-        if (ballHolderType == RobotType.FRIEND_1 || this.closestRobotInfo.friendPossession()) {
-            this.nextState = MainOffenseEnum.WAIT;
+        // Friend has the ball and is moving up offensively ==> SAFE
+        if ((ballHolderType == RobotType.FRIEND_1 || this.samwise.friendPossession()) &&
+                ally.location.x > -50 && ally.velocity.x > 3) {
+            this.nextState = OffenseEnum.SAFE;
             return this.nextState;
         }
 
         // Ball is lost ==> WAIT
         if (ball == null) {
-            this.nextState = MainOffenseEnum.WAIT;
+            this.nextState = OffenseEnum.WAIT;
             return this.nextState;
         }
 
@@ -165,34 +165,33 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
         // We're further/sameish distance from our goal than the ball is ==> SCORE
         //  (SCORE makes Frodo reposition himself behind the ball)
         if (us.location.distance(ourGoal) > (ball.location.distance(ourGoal) - 20)) {
-            this.nextState = MainOffenseEnum.SCORE;
+            this.nextState = OffenseEnum.SCORE;
             return this.nextState;
         }
 
         // Ball is near a wall ==> WALL
         if (Math.abs(ball.location.x) > (Constants.PITCH_WIDTH / 2) - 20 ||
                 Math.abs(ball.location.y) > (Constants.PITCH_HEIGHT / 2) - 20) {
-            this.nextState = MainOffenseEnum.WALL;
+            this.nextState = OffenseEnum.WALL;
         }
 
-        // Ball is close to our goal ==> GET_OPEN
-        // TODO: figure this out
+        // Ball is close to our goal ==> SAFE
         if (ball.location.x < -60) {
-            this.nextState = MainOffenseEnum.WAIT;
+            this.nextState = OffenseEnum.SAFE;
             return this.nextState;
         }
 
         // Frodo has the ball ==> SCORE
         // Frodo is closest and could have a shot on goal ==> SCORE
         if (ballHolderType == RobotType.FRIEND_2 ||
-                (this.closestRobotInfo.getClosest() == RobotType.FRIEND_2 && shot_on_goal(us, ball.location))) {
-            this.nextState = MainOffenseEnum.SCORE;
+                (this.samwise.getClosest() == RobotType.FRIEND_2 && shot_on_goal(us, ball.location))) {
+            this.nextState = OffenseEnum.SCORE;
             return this.nextState;
         }
 
         // TODO: ???
         // Ball is free, no other conditions apply ==> GO_TO_BALL
-        this.nextState = MainOffenseEnum.GO_TO_BALL;
+        this.nextState = OffenseEnum.GO_TO_BALL;
 
         return this.nextState;
 
@@ -212,7 +211,7 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
 
 
         this.lastState = this.nextState;
-        if (this.nextState != MainOffenseEnum.WAIT) {
+        if (this.nextState != OffenseEnum.WAIT) {
             this.robot.MOTION_CONTROLLER.setMode(MotionController.MotionMode.MOVE);
         }
         switch (this.nextState) {
@@ -267,15 +266,16 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
     }
 
     /**
-     * Used for calculating all robots' distances to the ball.
+     * Used for calculating all robots' distances to the ball, deciding whether Frodo needs to run back
+     * and defend our goal.
      */
-    private class ClosestRobotInfo {
+    private class Samwise {
         private RobotType closest;
         private HashMap<RobotType, Integer> distances = new HashMap<>();
 
         private final Integer POSSESSION_RANGE = 8;
 
-        public void calculate_closest() {
+        void calculate_closest() {
             distances.clear();
             this.closest = null;
             if (Strategy.world.getBall() == null) return;
@@ -295,16 +295,16 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
             }
         }
 
-        public RobotType getClosest() { return this.closest; }
+        RobotType getClosest() { return this.closest; }
 
         /**
          * Returns the robot's distance from the ball, or null if the robot is lost.
          * @param robot
          * @return
          */
-        public Integer getDist(RobotType robot) { return distances.get(robot); }
+        Integer getDist(RobotType robot) { return distances.get(robot); }
 
-        public Integer getClosestEnemyDist() {
+        Integer getClosestEnemyDist() {
             Integer one = this.distances.get(RobotType.FOE_1);
             Integer two = this.distances.get(RobotType.FOE_2);
             if (one != null) {
@@ -317,67 +317,59 @@ public class MainOffense extends StatefulActionBase<MainOffenseEnum>{
         }
 
         /**
-         * Checks if the closest robot is actually close enough to be considered to have
-         * possession of the ball, and that that robot is an enemy.
-         * @return
-         */
-        public boolean enemyPossession() {
-            Integer closestDist = this.getDist(this.closest);
-            if (closestDist == null) { return false; }
-
-            return (closestDist <= POSSESSION_RANGE && (closest == RobotType.FOE_1 || closest == RobotType.FOE_2));
-        }
-
-        /**
          * Same as enemyPossession but for friendly robot.
          * @return
          */
-        public boolean friendPossession() {
+        boolean friendPossession() {
             Integer closestDist = this.getDist(this.closest);
             if (closestDist == null) { return false; }
 
             return (closestDist <= POSSESSION_RANGE && closest == RobotType.FRIEND_1);
         }
-    }
 
-    /**
-     * A method for determining if Frodo needs to run back and defend our goal.
-     * An enemy ball must be holding/closest to the ball plus one of the following:
-     * 1. Both Frodo and enemy ball holder are closer to our goal than friend ==> TRUE
-     * 2. Frodo is closer to our goal, is in a better position to block a shot
-     *      and enemy ball holder is very close to our goal ==> TRUE
-     * Otherwise ==> FALSE
-     * @return
-     */
-    private boolean doWeNeedToDefend() {
-        Robot friend = Strategy.world.getRobot(RobotType.FRIEND_1);
-        Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
-        if (friend == null) {
-            return true;
-        }
-
-        ClosestRobotInfo c = new ClosestRobotInfo();
-        c.calculate_closest();
-        Robot ballHolder = Strategy.world.getRobot(Strategy.world.getProbableBallHolder());
-
-        if (ballHolder == null) { return false; }
-
-        VectorGeometry friendlyGoal = new VectorGeometry((-Constants.PITCH_WIDTH / 2), 0);
-        VectorGeometry ballHolderToGoal = VectorGeometry.fromTo(ballHolder.location, friendlyGoal);
-
-        if (us.location.distance(friendlyGoal) < friend.location.distance(friendlyGoal)) {
-
-            if (ballHolder.location.distance(friendlyGoal) < friend.location.distance(friendlyGoal)) {
+        /**
+         * A method for determining if Frodo needs to run back and defend our goal.
+         * An enemy ball must be holding/closest to the ball plus one of the following:
+         * 1. Both Frodo and enemy ball holder are closer to our goal than friend ==> TRUE
+         * 2. Frodo is closer to our goal, is in a better position to block a shot
+         *      and enemy ball holder is very close to our goal ==> TRUE
+         * Otherwise ==> FALSE
+         * @return
+         */
+        boolean doWeNeedToDefend() {
+            Robot friend = Strategy.world.getRobot(RobotType.FRIEND_1);
+            Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
+            if (friend == null || friend.location.x > 20) {
                 return true;
             }
 
-            if (VectorGeometry.closestPointToLine(ballHolder.location, ballHolderToGoal, friend.location).length() >
-                    VectorGeometry.closestPointToLine(ballHolder.location, ballHolderToGoal, us.location).length() &&
-                    ballHolder.location.x < -60) {
-                return true;
-            }
-        }
+            Robot ballHolder = Strategy.world.getRobot(Strategy.world.getProbableBallHolder());
 
-        return false;
+            if (ballHolder == null) {
+                if (this.closest == RobotType.FOE_2 || this.closest == RobotType.FOE_1) {
+                    ballHolder = Strategy.world.getRobot(this.closest);
+                } else return false;
+            }
+
+            VectorGeometry friendlyGoal = new VectorGeometry((-Constants.PITCH_WIDTH / 2), 0);
+            VectorGeometry ballHolderToGoal = VectorGeometry.fromTo(ballHolder.location, friendlyGoal);
+
+            if (us.location.distance(friendlyGoal) < friend.location.distance(friendlyGoal)) {
+
+                if (ballHolder.location.distance(friendlyGoal) < friend.location.distance(friendlyGoal)) {
+                    return true;
+                }
+
+                if (VectorGeometry.closestPointToLine(ballHolder.location, ballHolderToGoal, friend.location).length() >
+                        VectorGeometry.closestPointToLine(ballHolder.location, ballHolderToGoal, us.location).length() &&
+                        ballHolder.location.x < -60) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
+
+
 }
