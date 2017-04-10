@@ -21,6 +21,7 @@ import vision.constants.Constants;
 import vision.tools.VectorGeometry;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * A root action focused on offense and built for 2v2 matches.
@@ -64,9 +65,9 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
         }
 
         // =======================================================================================
-        // What to do when our ally is lost or off the pitch.
+        // What to do when our ally is lost, off the pitch, or immobile.
         // =======================================================================================
-        if (ally == null) {
+        if (ally == null || this.samwise.isImmobile(ally.type)) {
 
             // Enemies have the ball OR ball is lost ==> DEFEND
             if (ballHolderType == RobotType.FOE_1 || ballHolderType == RobotType.FOE_2 || ball == null) {
@@ -94,9 +95,10 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
                 return this.nextState;
             }
 
-            // There are no enemies ==> SCORE
-            // ?: We are 0 distance away from the ball ==> SCORE
-            if (this.samwise.getClosestEnemyDist() == null || this.samwise.getDist(RobotType.FRIEND_2) == 0) {
+            // There are no enemies/they're both immobile ==> SCORE
+            // We are the ball holder ==> SCORE
+            if (this.samwise.getClosestEnemyDist() == null || this.samwise.getDist(RobotType.FRIEND_2) == 0 ||
+                    (this.samwise.isImmobile(RobotType.FOE_1) && this.samwise.isImmobile(RobotType.FOE_2))) {
                 this.nextState = OffenseEnum.SCORE;
                 return this.nextState;
             }
@@ -267,11 +269,25 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
 
     /**
      * Used for calculating all robots' distances to the ball, deciding whether Frodo needs to run back
-     * and defend our goal.
+     * and defend our goal, determining whether a robot has been immobile for a while.
      */
     private class Samwise {
         private RobotType closest;
-        private HashMap<RobotType, Integer> distances = new HashMap<>();
+        private HashMap<RobotType, Integer> distances;
+
+        private HashMap<RobotType, CircularFIFO> trackers;
+        private final int trackingGranularity = 5;
+        private int t;
+
+        Samwise() {
+            this.distances = new HashMap<>();
+            this.trackers = new HashMap<>();
+            this.trackers.put(RobotType.FRIEND_2, new CircularFIFO(5));
+            this.trackers.put(RobotType.FRIEND_1, new CircularFIFO(5));
+            this.trackers.put(RobotType.FOE_1, new CircularFIFO(5));
+            this.trackers.put(RobotType.FOE_2, new CircularFIFO(5));
+            this.t = 0;
+        }
 
         private final Integer POSSESSION_RANGE = 8;
 
@@ -285,6 +301,14 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
 
             for (Robot r : Strategy.world.getRobots()) {
                 if (r == null) continue;
+
+                // Update immobile-tracker every 5 calls to this method
+                if (this.t++ % trackingGranularity == 0) {
+                    this.trackers.get(r.type).add(r.location);
+                }
+
+
+                // Get distance
                 double dist = VectorGeometry.distance(r.location, ball_loc);
                 distances.put(r.type, (int) dist);
 
@@ -368,6 +392,53 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
             }
 
             return false;
+        }
+
+        boolean isImmobile(RobotType r) {
+            return (this.trackers.get(r) != null && this.trackers.get(r).isImmobile());
+        }
+    }
+
+    /**
+     * Track last n locations of each robot. Helps determine if a robot is immobile.
+     *
+     */
+    private class CircularFIFO {
+
+        private LinkedList<VectorGeometry> list;
+        private int cap;
+        private final int tolerance = 5;
+
+        CircularFIFO(int cap) {
+            assert (cap > 0);
+            this.cap = cap;
+            this.list = new LinkedList<VectorGeometry>();
+        }
+
+        /**
+         * Add element to front of list, remove last-added element if list is over capacity.
+         */
+        void add(VectorGeometry location) {
+            this.list.add(location);
+            if (this.list.size() > this.cap) {
+                this.list.remove();
+            }
+        }
+
+        /**
+         * Check if a robot has moved much recently.
+         * @return
+         */
+        boolean isImmobile() {
+            VectorGeometry v = this.list.getFirst();
+            for (VectorGeometry loc : this.list) {
+                if (v.distance(loc) > this.tolerance) return false;
+            }
+            return true;
+        }
+
+        int size() {
+            return this.list.size();
         }
     }
 
