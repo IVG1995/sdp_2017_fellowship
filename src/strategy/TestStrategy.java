@@ -1,7 +1,7 @@
 package strategy;
 
 import strategy.actions.Behave;
-import strategy.actions.MainOffense;
+import strategy.actions.Offense;
 import strategy.actions.offense.BallGrab;
 import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.ShuntKick;
@@ -181,7 +181,7 @@ public class TestStrategy {
                     frodo.ACTION_CONTROLLER.setAction(new Goto(frodo, new GrabbablePoint(RobotType.FRIEND_2)));
                     break;
                 case "no_grabber":
-                    frodo.ACTION_CONTROLLER.setAction(new MainOffense(frodo));
+                    frodo.ACTION_CONTROLLER.setAction(new Offense(frodo));
                     break;
                 case "update":
                     this.updateWorld();

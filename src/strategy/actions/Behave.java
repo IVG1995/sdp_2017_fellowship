@@ -5,6 +5,7 @@ import strategy.actions.offense.PreciseKick;
 import strategy.actions.offense.WallKick;
 import strategy.actions.other.DefendGoal;
 import strategy.actions.other.GoToSafeLocation;
+import strategy.actions.other.Waiting;
 import strategy.actions.offense.ShuntKick;
 import strategy.robots.RobotBase;
 import vision.Ball;
@@ -69,6 +70,7 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
                 this.enterAction(new GoToSafeLocation(this.robot), 0, 0);
                 break;
             case EMPTY:
+                this.enterAction(new Waiting(this.robot), 0, 0);
                 break;
         }
     }
@@ -83,7 +85,8 @@ public class Behave extends StatefulActionBase<BehaviourEnum> {
         } else {
             Robot us = Strategy.world.getRobot(this.robot.robotType);
             if(us == null){
-                // TODO: Angry yelling
+                // Angry yelling
+                this.nextState = BehaviourEnum.EMPTY;
             } else {
                 // If our robot is further away from our goal then the ball is, go into SAFE mode (execute sub-action GoToSafeLocation).
                 // This action rushes our robot back to right in front of our goal while also making sure not to accidentally

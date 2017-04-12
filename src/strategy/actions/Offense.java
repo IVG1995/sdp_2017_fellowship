@@ -31,7 +31,7 @@ enum OffenseEnum {
     DEFEND, SAFE, SCORE, ANNOY, GET_OPEN, BLOCK_PASS, WAIT, WALL, GO_TO_BALL, START
 }
 
-public class MainOffense extends StatefulActionBase<OffenseEnum>{
+public class Offense extends StatefulActionBase<OffenseEnum>{
 
     // Contains info about which robot is closest to ball, how far away
     // each robot is from the ball, etc.
@@ -41,7 +41,7 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
     // If long enough, reset PID settings so they don't go stale.
     private int in_a_row = 0;
 
-    public MainOffense(RobotBase robot) {
+    public Offense(RobotBase robot) {
         super(robot, null);
         this.lastState = OffenseEnum.START;
     }
@@ -61,6 +61,10 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
         if (us == null) {
             // ???
             this.nextState = OffenseEnum.WAIT;
+            return this.nextState;
+        } else if (ball != null && ((Strategy.world.getRobot(RobotType.FOE_1) == null && Strategy.world.getRobot(RobotType.FOE_2) == null) ||
+                this.samwise.isImmobile(RobotType.FOE_2) && this.samwise.isImmobile(RobotType.FOE_1))) {
+            this.nextState = OffenseEnum.SCORE;
             return this.nextState;
         }
 
@@ -96,16 +100,8 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
             }
 
             // There are no enemies/they're both immobile ==> SCORE
-            // We are the ball holder ==> SCORE
-            if (this.samwise.getClosestEnemyDist() == null || this.samwise.getDist(RobotType.FRIEND_2) == 0 ||
+            if (this.samwise.getClosestEnemyDist() == null ||
                     (this.samwise.isImmobile(RobotType.FOE_1) && this.samwise.isImmobile(RobotType.FOE_2))) {
-                this.nextState = OffenseEnum.SCORE;
-                return this.nextState;
-            }
-
-            // Bug?: We are 0 distance away from the ball ==> SCORE
-            // There are no enemies on the pitch ==> SCORE
-            if (this.samwise.getDist(RobotType.FRIEND_2) == 0 || this.samwise.getClosestEnemyDist() == null) {
                 this.nextState = OffenseEnum.SCORE;
                 return this.nextState;
             }
@@ -191,10 +187,8 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
             return this.nextState;
         }
 
-        // TODO: ???
         // Ball is free, no other conditions apply ==> GO_TO_BALL
         this.nextState = OffenseEnum.GO_TO_BALL;
-
         return this.nextState;
 
     }
@@ -210,6 +204,7 @@ public class MainOffense extends StatefulActionBase<OffenseEnum>{
         if (this.in_a_row > 40) {
             ((FourWheelHolonomicDrive)((Frodo)this.robot).drive).resetHistory();
         }
+        // =======
 
 
         this.lastState = this.nextState;
