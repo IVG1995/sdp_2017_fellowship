@@ -1,7 +1,7 @@
 package strategy;
 
 import strategy.actions.Behave;
-import strategy.actions.MainOffense;
+import strategy.actions.Offense;
 import strategy.actions.defence.Annoy;
 import strategy.actions.defence.BlockPass;
 import strategy.actions.offense.OffensiveKick;
@@ -216,7 +216,7 @@ public class GUI extends JPanel implements KeyListener{
                     break;
                 case 'o':
                     this.robot.setControllersActive(true);
-                    this.robot.ACTION_CONTROLLER.setAction(new MainOffense(this.robot));
+                    this.robot.ACTION_CONTROLLER.setAction(new Offense(this.robot));
                     break;
                 case 'g':
                     this.robot.setControllersActive(true);

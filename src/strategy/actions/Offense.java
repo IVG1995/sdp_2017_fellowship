@@ -55,7 +55,7 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
         Robot ally = Strategy.world.getRobot(RobotType.FRIEND_1);
         Robot us = Strategy.world.getRobot(RobotType.FRIEND_2);
         RobotType ballHolderType = Strategy.world.getProbableBallHolder();
-        this.samwise.calculate_closest();
+        this.samwise.recalculate();
 
 
         if (us == null) {
@@ -271,13 +271,12 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
         private HashMap<RobotType, Integer> distances;
 
         private HashMap<RobotType, CircularFIFO> trackers;
-        private final int trackingGranularity = 5;
+        private final int trackingGranularity = 10;
         private int t;
 
         Samwise() {
             this.distances = new HashMap<>();
             this.trackers = new HashMap<>();
-            this.trackers.put(RobotType.FRIEND_2, new CircularFIFO(5));
             this.trackers.put(RobotType.FRIEND_1, new CircularFIFO(5));
             this.trackers.put(RobotType.FOE_1, new CircularFIFO(5));
             this.trackers.put(RobotType.FOE_2, new CircularFIFO(5));
@@ -286,7 +285,7 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
 
         private final Integer POSSESSION_RANGE = 8;
 
-        void calculate_closest() {
+        void recalculate() {
             distances.clear();
             this.closest = null;
             if (Strategy.world.getBall() == null) return;
@@ -297,8 +296,8 @@ public class Offense extends StatefulActionBase<OffenseEnum>{
             for (Robot r : Strategy.world.getRobots()) {
                 if (r == null) continue;
 
-                // Update immobile-tracker every 5 calls to this method
-                if (this.t++ % trackingGranularity == 0) {
+                // Update immobile-tracker every 10 calls to this method (every second)
+                if (r.type != RobotType.FRIEND_2 && this.t++ % trackingGranularity == 0) {
                     this.trackers.get(r.type).add(r.location);
                 }
 

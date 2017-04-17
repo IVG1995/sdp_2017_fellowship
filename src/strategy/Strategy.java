@@ -3,7 +3,7 @@ package strategy;
 import communication.PortListener;
 import communication.ports.robotPorts.FrodoRobotPort;
 import strategy.actions.Behave;
-import strategy.actions.MainOffense;
+import strategy.actions.Offense;
 import strategy.actions.calibration.AimCalibration;
 import strategy.actions.offense.BallGrab;
 import strategy.actions.offense.OffensiveKick;
@@ -231,7 +231,7 @@ public class Strategy implements VisionListener, PortListener, ActionListener {
                     frodo.port.sdpPort.commandSender("r", 0, 0, 200, 200);
                     break;
                 case "no_grabber":
-                    frodo.ACTION_CONTROLLER.setAction(new MainOffense(frodo));
+                    frodo.ACTION_CONTROLLER.setAction(new Offense(frodo));
                     break;
                 case "aim":
                     frodo.ACTION_CONTROLLER.setAction(new AimCalibration(frodo));
